@@ -1,18 +1,256 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="ja">
 
 <head>
 
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>BOAT HUNTER</title>
+
+<style>
+
+body{
+
+ margin:0;
+
+ background:#050505;
+
+ color:white;
+
+ font-family:Arial,sans-serif;
+
+}
+
+header{
+
+ background:#000;
+
+ color:#d4af37;
+
+ text-align:center;
+
+ padding:25px 10px;
+
+ font-size:34px;
+
+ font-weight:bold;
+
+ letter-spacing:2px;
+
+ border-bottom:2px solid #d4af37;
+
+}
+
+.sub{
+
+ text-align:center;
+
+ color:#aaa;
+
+ margin-top:10px;
+
+}
+
+.container{
+
+ padding:20px;
+
+}
+
+.card{
+
+ background:#151515;
+
+ border:1px solid #d4af37;
+
+ border-radius:15px;
+
+ padding:20px;
+
+ margin-bottom:20px;
+
+ box-shadow:0 0 15px #000;
+
+}
+
+.title{
+
+ color:#d4af37;
+
+ font-size:20px;
+
+ margin-bottom:15px;
+
+}
+
+select,input{
+
+ width:100%;
+
+ padding:14px;
+
+ margin-top:8px;
+
+ margin-bottom:15px;
+
+ border-radius:8px;
+
+ border:none;
+
+ font-size:16px;
+
+}
+
+button{
+
+ width:100%;
+
+ padding:16px;
+
+ background:linear-gradient(90deg,#b8860b,#ffd700);
+
+ border:none;
+
+ border-radius:12px;
+
+ font-size:18px;
+
+ font-weight:bold;
+
+ color:#000;
+
+}
+
+.rank{
+
+ display:flex;
+
+ justify-content:space-between;
+
+ background:#222;
+
+ padding:12px;
+
+ margin-top:10px;
+
+ border-radius:8px;
+
+}
+
+</style>
 
 </head>
 
-<body style="background:#111;color:#d4af37;text-align:center;">
+<body>
 
-<h1>🚤 BOAT HUNTER</h1>
+<header>
 
-<p>AI競艇予想システム</p>
+🚤 BOAT HUNTER
+
+</header>
+
+<div class="sub">
+
+人気ではなく期待値で勝つ
+
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<div class="title">
+
+🏟 競艇場選択
+
+</div>
+
+<select>
+
+<option>戸田</option>
+
+<option>平和島</option>
+
+<option>桐生</option>
+
+<option>江戸川</option>
+
+<option>住之江</option>
+
+</select>
+
+<div class="title">
+
+🏁 レース番号
+
+</div>
+
+<select>
+
+<option>1R</option>
+
+<option>2R</option>
+
+<option>3R</option>
+
+<option>12R</option>
+
+</select>
+
+<div class="title">
+
+💰 投資予算
+
+</div>
+
+<input type="number" placeholder="例：5000円">
+
+<button>
+
+AI解析開始
+
+</button>
+
+</div>
+
+<div class="card">
+
+<div class="title">
+
+🔥 AI期待値ランキング
+
+</div>
+
+<div class="rank">
+
+🥇 1号艇
+
+<span>期待値 85%</span>
+
+</div>
+
+<div class="rank">
+
+🥈 3号艇
+
+<span>期待値 72%</span>
+
+</div>
+
+<div class="rank">
+
+🥉 5号艇
+
+<span>穴指数 90%</span>
+
+</div>
+
+</div>
+
+</div>
 
 </body>
 
