@@ -6,13 +6,19 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+
+content="width=device-width,initial-scale=1.0">
 
 <title>BOAT HUNTER</title>
 
 <style>
 
-*{box-sizing:border-box}
+*{
+
+box-sizing:border-box;
+
+}
 
 body{
 
@@ -20,7 +26,7 @@ margin:0;
 
 background:#080808;
 
-color:white;
+color:#fff;
 
 font-family:Arial,sans-serif;
 
@@ -92,7 +98,9 @@ margin-top:10px;
 
 }
 
-select,input{
+select,
+
+input{
 
 width:100%;
 
@@ -104,10 +112,6 @@ border-radius:7px;
 
 border:1px solid #555;
 
-background:#222;
-
-color:white;
-
 font-size:16px;
 
 }
@@ -118,7 +122,7 @@ width:100%;
 
 padding:15px;
 
-margin-top:14px;
+margin-top:12px;
 
 border:0;
 
@@ -131,6 +135,44 @@ color:#000;
 font-size:17px;
 
 font-weight:bold;
+
+}
+
+button:active{
+
+transform:scale(.98);
+
+}
+
+.secondary{
+
+background:#222;
+
+color:#d4af37;
+
+border:1px solid #d4af37;
+
+}
+
+.boat{
+
+background:#101010;
+
+border:1px solid #333;
+
+border-radius:10px;
+
+padding:13px;
+
+margin-bottom:12px;
+
+}
+
+.boat h3{
+
+color:#d4af37;
+
+margin-top:0;
 
 }
 
@@ -150,85 +192,21 @@ line-height:1.7;
 
 }
 
-.success{color:#70ff8a}
+.success{
 
-.error{color:#ff7777}
-
-.warning{color:#ffd166}
-
-.boat{
-
-background:#101010;
-
-border:1px solid #333;
-
-border-radius:10px;
-
-padding:14px;
-
-margin-bottom:10px;
+color:#70ff8a;
 
 }
 
-.boatTop{
+.error{
 
-display:flex;
-
-align-items:center;
-
-gap:12px;
+color:#ff7777;
 
 }
 
-.number{
+.warning{
 
-width:42px;
-
-height:42px;
-
-border-radius:8px;
-
-background:#d4af37;
-
-color:#000;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-font-size:18px;
-
-font-weight:bold;
-
-}
-
-.player{
-
-font-size:20px;
-
-font-weight:bold;
-
-}
-
-.grade{
-
-color:#d4af37;
-
-margin-top:3px;
-
-}
-
-.info{
-
-color:#bbb;
-
-font-size:13px;
-
-line-height:1.8;
-
-margin-top:10px;
+color:#ffd166;
 
 }
 
@@ -258,7 +236,7 @@ font-weight:bold;
 
 .big{
 
-font-size:23px;
+font-size:22px;
 
 color:#d4af37;
 
@@ -268,7 +246,7 @@ font-weight:bold;
 
 .bet{
 
-padding:14px;
+padding:13px;
 
 margin:7px 0;
 
@@ -276,11 +254,7 @@ background:#222;
 
 border-radius:8px;
 
-font-size:19px;
-
-font-weight:bold;
-
-text-align:center;
+font-size:18px;
 
 }
 
@@ -290,15 +264,41 @@ display:none;
 
 }
 
+.racer{
+
+padding:12px;
+
+margin:8px 0;
+
+background:#101010;
+
+border-left:4px solid #d4af37;
+
+border-radius:7px;
+
+}
+
 </style>
 
 </head>
 
 <body>
 
-<header>🚤 BOAT HUNTER</header>
+<header>
 
-<div style="text-align:center;color:#aaa;padding:8px;">
+🚤 BOAT HUNTER
+
+</header>
+
+<div style="
+
+text-align:center;
+
+color:#aaa;
+
+padding:8px;
+
+">
 
 人気ではなく期待値で勝つ
 
@@ -306,105 +306,173 @@ display:none;
 
 <div class="container">
 
+<!-- =========================
+
+HOME
+
+========================= -->
+
+<div id="home">
+
 <div class="card">
 
-<div class="title">🏟 レース選択</div>
+<div class="title">
 
-<label>競艇場</label>
+🏟 レース選択
+
+</div>
+
+<label>
+
+競艇場
+
+</label>
 
 <select id="venue">
 
-<option value="1">桐生</option>
+<option>桐生</option>
 
-<option value="2">戸田</option>
+<option>戸田</option>
 
-<option value="3">江戸川</option>
+<option>江戸川</option>
 
-<option value="4">平和島</option>
+<option>平和島</option>
 
-<option value="5">多摩川</option>
+<option>多摩川</option>
 
-<option value="6">浜名湖</option>
+<option>浜名湖</option>
 
-<option value="7">蒲郡</option>
+<option>蒲郡</option>
 
-<option value="8">常滑</option>
+<option>常滑</option>
 
-<option value="9">津</option>
+<option>津</option>
 
-<option value="10">三国</option>
+<option>三国</option>
 
-<option value="11">びわこ</option>
+<option>びわこ</option>
 
-<option value="12">住之江</option>
+<option>住之江</option>
 
-<option value="13">尼崎</option>
+<option>尼崎</option>
 
-<option value="14">鳴門</option>
+<option>鳴門</option>
 
-<option value="15">丸亀</option>
+<option>丸亀</option>
 
-<option value="16">児島</option>
+<option>児島</option>
 
-<option value="17">宮島</option>
+<option>宮島</option>
 
-<option value="18">徳山</option>
+<option>徳山</option>
 
-<option value="19">下関</option>
+<option>下関</option>
 
-<option value="20">若松</option>
+<option>若松</option>
 
-<option value="21">芦屋</option>
+<option>芦屋</option>
 
-<option value="22">福岡</option>
+<option>福岡</option>
 
-<option value="23">唐津</option>
+<option>唐津</option>
 
-<option value="24">大村</option>
+<option>大村</option>
 
 </select>
 
-<label>レース番号</label>
+<label>
+
+レース番号
+
+</label>
 
 <select id="race">
 
-<option value="1">1R</option>
+<option>1R</option>
 
-<option value="2">2R</option>
+<option>2R</option>
 
-<option value="3">3R</option>
+<option>3R</option>
 
-<option value="4">4R</option>
+<option>4R</option>
 
-<option value="5">5R</option>
+<option>5R</option>
 
-<option value="6">6R</option>
+<option>6R</option>
 
-<option value="7">7R</option>
+<option>7R</option>
 
-<option value="8">8R</option>
+<option>8R</option>
 
-<option value="9">9R</option>
+<option>9R</option>
 
-<option value="10">10R</option>
+<option>10R</option>
 
-<option value="11">11R</option>
+<option>11R</option>
 
-<option value="12">12R</option>
+<option>12R</option>
 
 </select>
 
-<label>予算</label>
+<label>
 
-<input id="budget" type="number" value="3000">
+予算
 
-<button onclick="getProgram()">
+</label>
 
-🔥 BOAT HUNTER解析開始
+<input
+
+id="budget"
+
+type="number"
+
+placeholder="例：5000"
+
+>
+
+<button onclick="startApp()">
+
+🔥 AI解析を開始
 
 </button>
 
-<div id="status" class="status">
+</div>
+
+</div>
+
+<!-- =========================
+
+INPUT
+
+========================= -->
+
+<div id="inputPage"
+
+class="hidden">
+
+<div class="card">
+
+<div class="title">
+
+🌐 無料出走表
+
+</div>
+
+<button
+
+class="secondary"
+
+onclick="getProgram()">
+
+🚤 無料出走表を取得
+
+</button>
+
+<div
+
+id="status"
+
+class="status">
 
 まだ取得していません
 
@@ -414,65 +482,217 @@ display:none;
 
 <div class="card">
 
-<div class="title">📋 出走表</div>
+<div class="title">
 
-<div id="program">
-
-まだ出走表を取得していません
+📊 出走表
 
 </div>
 
+<div id="boats">
+
 </div>
-
-<div id="analysis" class="hidden">
-
-<div class="card">
-
-<div class="title">🏆 AI判定</div>
-
-<div id="judgement"></div>
 
 </div>
 
 <div class="card">
 
-<div class="title">📊 AI期待値ランキング</div>
+<div class="title">
 
-<div id="ranking"></div>
+🌊 水面情報
+
+</div>
+
+<label>
+
+風速
+
+</label>
+
+<input
+
+id="wind"
+
+type="number"
+
+step="0.1"
+
+placeholder="例：3.0"
+
+>
+
+<label>
+
+風向
+
+</label>
+
+<select id="windDir">
+
+<option>無風</option>
+
+<option>追い風</option>
+
+<option>向かい風</option>
+
+<option>左横風</option>
+
+<option>右横風</option>
+
+</select>
+
+<label>
+
+波高
+
+</label>
+
+<input
+
+id="wave"
+
+type="number"
+
+placeholder="例：2"
+
+>
+
+<label>
+
+進入予想
+
+</label>
+
+<input
+
+id="entry"
+
+value="123456"
+
+>
+
+</div>
+
+<button onclick="analyze()">
+
+🔥 BOAT HUNTER解析
+
+</button>
+
+</div>
+
+<!-- =========================
+
+RESULT
+
+========================= -->
+
+<div id="resultPage"
+
+class="hidden">
+
+<div class="card">
+
+<div class="title">
+
+🏆 AI判定
+
+</div>
+
+<div id="judgement">
+
+</div>
 
 </div>
 
 <div class="card">
 
-<div class="title">🌊 展開予想</div>
+<div class="title">
 
-<div id="development"></div>
+📊 AIランキング
+
+</div>
+
+<div id="ranking">
+
+</div>
 
 </div>
 
 <div class="card">
 
-<div class="title">🎯 的中率重視</div>
+<div class="title">
 
-<div id="safe"></div>
+🌊 展開予想
+
+</div>
+
+<div id="development">
+
+</div>
 
 </div>
 
 <div class="card">
 
-<div class="title">💎 回収率重視</div>
+<div class="title">
 
-<div id="value"></div>
+🎯 的中率重視
+
+</div>
+
+<div id="safe">
+
+</div>
 
 </div>
 
 <div class="card">
 
-<div class="title">🔥 穴狙い</div>
+<div class="title">
 
-<div id="dark"></div>
+💎 回収率重視
 
 </div>
+
+<div id="value">
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="title">
+
+🔥 穴狙い
+
+</div>
+
+<div id="dark">
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="title">
+
+🚤 AI自動買い目
+
+</div>
+
+<div id="autoBet">
+
+</div>
+
+</div>
+
+<button onclick="location.reload()">
+
+↩ 最初に戻る
+
+</button>
 
 </div>
 
@@ -480,95 +700,121 @@ display:none;
 
 <script>
 
-const API_URL =
+/* =====================================
 
-"https://boatraceopenapi.github.io/programs/v3/today.json";
+会場番号
 
-const VENUES = {
+===================================== */
 
-1:"桐生",
+const venueMap = {
 
-2:"戸田",
+"桐生":1,
 
-3:"江戸川",
+"戸田":2,
 
-4:"平和島",
+"江戸川":3,
 
-5:"多摩川",
+"平和島":4,
 
-6:"浜名湖",
+"多摩川":5,
 
-7:"蒲郡",
+"浜名湖":6,
 
-8:"常滑",
+"蒲郡":7,
 
-9:"津",
+"常滑":8,
 
-10:"三国",
+"津":9,
 
-11:"びわこ",
+"三国":10,
 
-12:"住之江",
+"びわこ":11,
 
-13:"尼崎",
+"住之江":12,
 
-14:"鳴門",
+"尼崎":13,
 
-15:"丸亀",
+"鳴門":14,
 
-16:"児島",
+"丸亀":15,
 
-17:"宮島",
+"児島":16,
 
-18:"徳山",
+"宮島":17,
 
-19:"下関",
+"徳山":18,
 
-20:"若松",
+"下関":19,
 
-21:"芦屋",
+"若松":20,
 
-22:"福岡",
+"芦屋":21,
 
-23:"唐津",
+"福岡":22,
 
-24:"大村"
+"唐津":23,
 
-};
-
-const CLASS_NAMES = {
-
-1:"A1",
-
-2:"A2",
-
-3:"B1",
-
-4:"B2"
+"大村":24
 
 };
 
-/* =========================
+/* =====================================
+
+APIデータ
+
+===================================== */
+
+let boatData = null;
+
+let currentProgram = null;
+
+/* =====================================
+
+開始
+
+===================================== */
+
+function startApp(){
+
+document
+
+.getElementById("home")
+
+.classList.add("hidden");
+
+document
+
+.getElementById("inputPage")
+
+.classList.remove("hidden");
+
+}
+
+/* =====================================
 
 出走表取得
 
-========================= */
+===================================== */
 
 async function getProgram(){
 
 const venue =
 
-Number(
-
-document.getElementById("venue").value
-
-);
+document.getElementById("venue").value;
 
 const race =
 
-Number(
+parseInt(
 
-document.getElementById("race").value
+document
+
+.getElementById("race")
+
+.value
+
+.replace("R",""),
+
+10
 
 );
 
@@ -576,29 +822,19 @@ const status =
 
 document.getElementById("status");
 
-const programBox =
-
-document.getElementById("program");
-
 status.innerHTML =
 
-"⏳ "+
-
-VENUES[venue]+
-
-" "+
-
-race+
-
-"R の出走表を取得中...";
-
-programBox.innerHTML = "";
+"⏳ 無料出走表を取得中...";
 
 try{
 
 const response =
 
-await fetch(API_URL);
+await fetch(
+
+"https://boatraceopenapi.github.io/programs/v3/today.json"
+
+);
 
 if(!response.ok){
 
@@ -610,211 +846,73 @@ throw new Error(
 
 }
 
-const data =
+boatData =
 
 await response.json();
 
-/*
+const stadium =
 
-APIのprogramsから
+venueMap[venue];
 
-選択された場・レースを探す
+currentProgram =
 
-*/
+boatData.programs.find(
 
-const raceData =
+function(p){
 
-data.programs.find(function(p){
+return Number(
 
-return Number(p.stadium_number) === venue
+p.stadium_number
+
+) === stadium
 
 &&
 
-Number(p.number) === race;
+Number(
+
+p.number
+
+) === race;
 
 });
 
-if(!raceData){
+if(!currentProgram){
 
 throw new Error(
 
-VENUES[venue]+
+venue+
 
 " "+
 
 race+
 
-"R のデータが見つかりません"
+"Rのデータが見つかりません"
 
 );
 
 }
 
-/*
+if(
 
-6艇を枠番順に並べる
+!currentProgram.boats ||
 
-*/
+currentProgram.boats.length < 6
 
-const boats =
-
-Array.isArray(raceData.boats)
-
-?
-
-raceData.boats.slice().sort(
-
-function(a,b){
-
-return Number(a.racer_boat_number)
-
--
-
-Number(b.racer_boat_number);
-
-}
-
-)
-
-:
-
-[];
-
-if(boats.length === 0){
+){
 
 throw new Error(
 
-"出走艇データがありません"
+"6艇の出走表がありません"
 
 );
 
 }
 
-/*
+displayBoats(
 
-出走表表示
+currentProgram.boats
 
-*/
-
-let html = "";
-
-boats.forEach(function(b){
-
-const no =
-
-Number(b.racer_boat_number);
-
-const name =
-
-b.racer_name || "選手名不明";
-
-const grade =
-
-CLASS_NAMES[
-
-Number(b.racer_class_number)
-
-] || "不明";
-
-html += `
-
-<div class="boat">
-
-<div class="boatTop">
-
-<div class="number">
-
-${no}
-
-</div>
-
-<div>
-
-<div class="player">
-
-${name}
-
-</div>
-
-<div class="grade">
-
-${grade}
-
-</div>
-
-</div>
-
-</div>
-
-<div class="info">
-
-全国勝率：
-
-${num(b.racer_national_top_1_percent,2)}
-
-<br>
-
-全国2連率：
-
-${num(b.racer_national_top_2_percent,2)}%
-
-<br>
-
-全国3連率：
-
-${num(b.racer_national_top_3_percent,2)}%
-
-<br>
-
-当地勝率：
-
-${num(b.racer_local_top_1_percent,2)}
-
-<br>
-
-当地2連率：
-
-${num(b.racer_local_top_2_percent,2)}%
-
-<br>
-
-当地3連率：
-
-${num(b.racer_local_top_3_percent,2)}%
-
-<br>
-
-モーター：
-
-${b.racer_assigned_motor_number ?? "-"}
-
-<br>
-
-モーター2連率：
-
-${num(b.racer_assigned_motor_top_2_percent,2)}%
-
-<br>
-
-モーター3連率：
-
-${num(b.racer_assigned_motor_top_3_percent,2)}%
-
-<br>
-
-平均ST：
-
-${num(b.racer_average_start_timing,2)}
-
-</div>
-
-</div>
-
-`;
-
-});
-
-programBox.innerHTML = html;
+);
 
 status.innerHTML =
 
@@ -824,21 +922,23 @@ status.innerHTML =
 
 "</span>"+
 
+"<br><br>"+
+
+venue+
+
+" "+
+
+race+
+
+"R"+
+
 "<br>"+
 
-VENUES[venue]+" "+race+"R"+
+currentProgram.title+
 
-"<br>"+
+"<br><br>"+
 
-boats.length+"艇の選手データを取得";
-
-/*
-
-AI解析
-
-*/
-
-runAI(boats);
+"選手名・成績データを取得しました。";
 
 }
 
@@ -862,41 +962,235 @@ error.message;
 
 }
 
-/* =========================
+/* =====================================
 
-数値処理
+6艇表示
 
-========================= */
+===================================== */
 
-function num(value,digits){
+function displayBoats(boats){
 
-const n =
+let html = "";
 
-Number(value);
+boats
 
-if(!Number.isFinite(n)){
+.slice()
+
+.sort(
+
+function(a,b){
+
+return Number(
+
+a.racer_boat_number
+
+)
+
+-
+
+Number(
+
+b.racer_boat_number
+
+);
+
+})
+
+.forEach(
+
+function(b){
+
+html += `
+
+<div class="racer">
+
+<b style="color:#d4af37;font-size:18px;">
+
+${b.racer_boat_number}号艇
+
+</b>
+
+<br><br>
+
+<strong>
+
+${b.racer_name || "不明"}
+
+</strong>
+
+<br>
+
+登録番号：
+
+${b.racer_number}
+
+<br>
+
+級別：
+
+${className(
+
+b.racer_class_number
+
+)}
+
+<br>
+
+全国3連対率：
+
+${num(
+
+b.racer_national_top_3_percent
+
+)}%
+
+<br>
+
+当地3連対率：
+
+${num(
+
+b.racer_local_top_3_percent
+
+)}%
+
+<br>
+
+モーター2連率：
+
+${num(
+
+b.racer_assigned_motor_top_2_percent
+
+)}%
+
+<br>
+
+平均ST：
+
+${num(
+
+b.racer_average_start_timing
+
+)}
+
+</div>
+
+`;
+
+});
+
+document
+
+.getElementById("boats")
+
+.innerHTML =
+
+html;
+
+}
+
+/* =====================================
+
+級別
+
+===================================== */
+
+function className(n){
+
+if(Number(n)===1)
+
+return "A1";
+
+if(Number(n)===2)
+
+return "A2";
+
+if(Number(n)===3)
+
+return "B1";
+
+return "B2";
+
+}
+
+/* =====================================
+
+数値
+
+===================================== */
+
+function num(n){
+
+const x =
+
+Number(n);
+
+if(isNaN(x))
 
 return "-";
 
-}
-
-return n.toFixed(digits);
+return x.toFixed(2);
 
 }
 
-/* =========================
+/* =====================================
 
-AIスコア
+AI解析
 
-========================= */
+===================================== */
 
-function scoreBoat(b,index){
+function analyze(){
+
+if(!currentProgram){
+
+alert(
+
+"先に出走表を取得してください。"
+
+);
+
+return;
+
+}
+
+const boats =
+
+currentProgram.boats
+
+.slice()
+
+.sort(
+
+function(a,b){
+
+return Number(
+
+a.racer_boat_number
+
+)
+
+-
+
+Number(
+
+b.racer_boat_number
+
+);
+
+});
+
+let ranking =
+
+boats.map(
+
+function(b,index){
 
 const national =
 
 Number(
 
-b.racer_national_top_1_percent
+b.racer_national_top_3_percent
 
 ) || 0;
 
@@ -904,11 +1198,11 @@ const local =
 
 Number(
 
-b.racer_local_top_1_percent
+b.racer_local_top_3_percent
 
 ) || 0;
 
-const motor =
+const motor2 =
 
 Number(
 
@@ -932,25 +1226,27 @@ b.racer_average_start_timing
 
 ) || 0.20;
 
-/*
-
-選手力
-
-*/
-
-let score =
-
-national * 8;
+let score = 0;
 
 /*
 
-当地適性
+全国成績
 
 */
 
 score +=
 
-local * 5;
+national * 0.40;
+
+/*
+
+当地成績
+
+*/
+
+score +=
+
+local * 0.30;
 
 /*
 
@@ -960,83 +1256,107 @@ local * 5;
 
 score +=
 
-motor * 0.35;
+motor2 * 0.25;
 
 score +=
 
-motor3 * 0.15;
+motor3 * 0.10;
 
 /*
 
-スタート
+ST
 
 */
 
 score +=
 
-(0.20 - st) * 100;
+Math.max(
+
+0,
+
+(0.23-st)*100
+
+);
 
 /*
 
-コース補正
+枠番
 
 */
 
-const courseBonus = [
-
-18,
-
-10,
-
-7,
-
-4,
-
-2,
-
-0
-
-];
-
 score +=
 
-courseBonus[index] || 0;
+[22,13,10,7,4,2][index];
 
-return score;
+/*
 
-}
+A級
 
-/* =========================
+*/
 
-AI解析
+if(
 
-========================= */
+Number(
 
-function runAI(boats){
+b.racer_class_number
 
-const ranking =
+) === 1
 
-boats.map(function(b,index){
+)
+
+score += 6;
+
+else if(
+
+Number(
+
+b.racer_class_number
+
+) === 2
+
+)
+
+score += 4;
+
+else if(
+
+Number(
+
+b.racer_class_number
+
+) === 3
+
+)
+
+score += 2;
 
 return {
 
 boat:
 
-Number(b.racer_boat_number),
+Number(
+
+b.racer_boat_number
+
+),
 
 name:
 
-b.racer_name || "不明",
+b.racer_name ||
+
+"不明",
 
 score:
 
-scoreBoat(b,index)
+score
 
 };
 
 });
 
-ranking.sort(function(a,b){
+ranking.sort(
+
+function(a,b){
 
 return b.score-a.score;
 
@@ -1058,33 +1378,39 @@ const fourth =
 
 ranking[3];
 
-document.getElementById(
+/* =====================================
 
-"analysis"
+結果画面
 
-).classList.remove(
+===================================== */
 
-"hidden"
+document
 
-);
+.getElementById("inputPage")
 
-/*
+.classList.add("hidden");
 
-本命・対抗・穴
+document
 
-*/
+.getElementById("resultPage")
 
-document.getElementById(
+.classList.remove("hidden");
 
-"judgement"
+/* 判定 */
 
-).innerHTML = `
+document
+
+.getElementById("judgement")
+
+.innerHTML = `
 
 <p>
 
 <span class="big">
 
-◎ 本命 ${first.boat}号艇
+◎ 本命
+
+${first.boat}号艇
 
 </span>
 
@@ -1098,7 +1424,9 @@ ${first.name}
 
 <span class="big">
 
-○ 対抗 ${second.boat}号艇
+○ 対抗
+
+${second.boat}号艇
 
 </span>
 
@@ -1112,7 +1440,9 @@ ${second.name}
 
 <span class="big">
 
-▲ 穴 ${third.boat}号艇
+▲ 穴
+
+${third.boat}号艇
 
 </span>
 
@@ -1124,15 +1454,17 @@ ${third.name}
 
 `;
 
-/*
+/* =====================================
 
 ランキング
 
-*/
+===================================== */
 
 let rankingHTML = "";
 
-ranking.forEach(function(x,i){
+ranking.forEach(
+
+function(x,i){
 
 rankingHTML += `
 
@@ -1160,55 +1492,73 @@ ${x.score.toFixed(1)}
 
 });
 
-document.getElementById(
+document
 
-"ranking"
+.getElementById("ranking")
 
-).innerHTML =
+.innerHTML =
 
 rankingHTML;
 
-/*
+/* =====================================
 
 展開
 
-*/
+===================================== */
 
-document.getElementById(
+document
 
-"development"
+.getElementById("development")
 
-).innerHTML =
+.innerHTML =
 
 "基本展開：1号艇のイン逃げを軸に評価。"+
 
 "<br><br>"+
 
-"本命："+first.boat+"号艇"+
+"◎ "+
+
+first.boat+
+
+"号艇 "+
+
+first.name+
 
 "<br>"+
 
-"対抗："+second.boat+"号艇"+
+"○ "+
+
+second.boat+
+
+"号艇 "+
+
+second.name+
 
 "<br>"+
 
-"穴："+third.boat+"号艇"+
+"▲ "+
+
+third.boat+
+
+"号艇 "+
+
+third.name+
 
 "<br><br>"+
 
-"全国勝率・当地勝率・モーター・ST・枠番を総合評価。";
+"全国成績・当地成績・モーター・ST・枠番を総合評価。";
 
-/*
+/* =====================================
 
 的中率重視
 
-*/
+===================================== */
 
-document.getElementById(
+document
 
-"safe"
+.getElementById("safe")
 
-).innerHTML = `
+.innerHTML = `
 
 <div class="bet">
 
@@ -1230,17 +1580,17 @@ ${first.boat}-${second.boat}-${fourth.boat}
 
 `;
 
-/*
+/* =====================================
 
 回収率重視
 
-*/
+===================================== */
 
-document.getElementById(
+document
 
-"value"
+.getElementById("value")
 
-).innerHTML = `
+.innerHTML = `
 
 <div class="bet">
 
@@ -1262,17 +1612,17 @@ ${second.boat}-${third.boat}-${first.boat}
 
 `;
 
-/*
+/* =====================================
 
 穴狙い
 
-*/
+===================================== */
 
-document.getElementById(
+document
 
-"dark"
+.getElementById("dark")
 
-).innerHTML = `
+.innerHTML = `
 
 <div class="bet">
 
@@ -1294,1711 +1644,196 @@ document.getElementById(
 
 `;
 
-}
-/* =================================================
+/* =====================================
 
-   BOAT HUNTER AI 強化エンジン
+AI自動買い目
 
-================================================= */
+===================================== */
 
-function enhancedAI(){
+generateAutoBets(
 
-    if(!selectedProgram ||
-
-       !selectedProgram.boats ||
-
-       selectedProgram.boats.length < 6){
-
-        alert("先に出走表を取得してください。");
-
-        return;
-
-    }
-
-    const boats =
-
-        selectedProgram.boats
-
-        .slice()
-
-        .sort(function(a,b){
-
-            return Number(a.racer_boat_number)
-
-                 - Number(b.racer_boat_number);
-
-        });
-
-    const wind =
-
-        Number(
-
-            document.getElementById("wind").value
-
-        ) || 0;
-
-    const wave =
-
-        Number(
-
-            document.getElementById("wave").value
-
-        ) || 0;
-
-    const entryText =
-
-        document.getElementById("entry").value
-
-        .replace(/[^1-6]/g,"");
-
-    const entry =
-
-        entryText.length === 6
-
-        ? entryText
-
-        : "123456";
-
-    /*
-
-    ================================================
-
-    各艇を評価
-
-    ================================================
-
-    */
-
-    let ranking = boats.map(function(b,index){
-
-        const boat =
-
-            Number(b.racer_boat_number);
-
-        const national1 =
-
-            Number(
-
-                b.racer_national_top_1_percent
-
-            ) || 0;
-
-        const national2 =
-
-            Number(
-
-                b.racer_national_top_2_percent
-
-            ) || 0;
-
-        const national3 =
-
-            Number(
-
-                b.racer_national_top_3_percent
-
-            ) || 0;
-
-        const local1 =
-
-            Number(
-
-                b.racer_local_top_1_percent
-
-            ) || 0;
-
-        const local2 =
-
-            Number(
-
-                b.racer_local_top_2_percent
-
-            ) || 0;
-
-        const local3 =
-
-            Number(
-
-                b.racer_local_top_3_percent
-
-            ) || 0;
-
-        const motor2 =
-
-            Number(
-
-                b.racer_assigned_motor_top_2_percent
-
-            ) || 0;
-
-        const motor3 =
-
-            Number(
-
-                b.racer_assigned_motor_top_3_percent
-
-            ) || 0;
-
-        const st =
-
-            Number(
-
-                b.racer_average_start_timing
-
-            ) || 0.20;
-
-        const cls =
-
-            Number(
-
-                b.racer_class_number
-
-            ) || 3;
-
-        let score = 0;
-
-        /*
-
-        --------------------------------------------
-
-        選手能力
-
-        --------------------------------------------
-
-        */
-
-        score += national1 * 4.0;
-
-        score += national2 * 0.35;
-
-        score += national3 * 0.15;
-
-        /*
-
-        --------------------------------------------
-
-        当地適性
-
-        --------------------------------------------
-
-        */
-
-        score += local1 * 3.0;
-
-        score += local2 * 0.25;
-
-        score += local3 * 0.10;
-
-        /*
-
-        --------------------------------------------
-
-        モーター
-
-        --------------------------------------------
-
-        */
-
-        score += motor2 * 0.45;
-
-        score += motor3 * 0.20;
-
-        /*
-
-        --------------------------------------------
-
-        ST
-
-        --------------------------------------------
-
-        */
-
-        score +=
-
-            Math.max(
-
-                0,
-
-                (0.23 - st) * 100
-
-            );
-
-        /*
-
-        --------------------------------------------
-
-        級別
-
-        --------------------------------------------
-
-        */
-
-        if(cls === 1){
-
-            score += 6;
-
-        }else if(cls === 2){
-
-            score += 4;
-
-        }else if(cls === 3){
-
-            score += 2;
-
-        }
-
-        /*
-
-        --------------------------------------------
-
-        コース補正
-
-        --------------------------------------------
-
-        */
-
-        const courseBonus = [
-
-            22,
-
-            13,
-
-            10,
-
-            7,
-
-            4,
-
-            2
-
-        ];
-
-        score +=
-
-            courseBonus[index] || 0;
-
-        /*
-
-        --------------------------------------------
-
-        風・波補正
-
-        --------------------------------------------
-
-        */
-
-        if(wind >= 5){
-
-            /*
-
-            強風時は外枠の攻めを少し評価
-
-            */
-
-            if(boat >= 4){
-
-                score += 2;
-
-            }
-
-        }
-
-        if(wave >= 4){
-
-            /*
-
-            荒水面ではST・機力を重視
-
-            */
-
-            score +=
-
-                Math.max(
-
-                    0,
-
-                    (motor2 - 30) * 0.10
-
-                );
-
-        }
-
-        return {
-
-            boat:boat,
-
-            name:
-
-                b.racer_name || "不明",
-
-            score:score,
-
-            st:st,
-
-            motor2:motor2,
-
-            motor3:motor3,
-
-            national1:national1,
-
-            national3:national3,
-
-            local1:local1,
-
-            local3:local3
-
-        };
-
-    });
-
-    /*
-
-    ================================================
-
-    ランキング
-
-    ================================================
-
-    */
-
-    ranking.sort(function(a,b){
-
-        return b.score-a.score;
-
-    });
-
-    /*
-
-    ================================================
-
-    AI確率
-
-    ================================================
-
-    */
-
-    let total = 0;
-
-    ranking.forEach(function(x){
-
-        total += Math.max(
-
-            x.score,
-
-            1
-
-        );
-
-    });
-
-    ranking.forEach(function(x){
-
-        x.probability =
-
-            Math.max(
-
-                x.score,
-
-                1
-
-            )
-
-            /
-
-            total
-
-            *
-
-            100;
-
-    });
-
-    const first =
-
-        ranking[0];
-
-    const second =
-
-        ranking[1];
-
-    const third =
-
-        ranking[2];
-
-    const fourth =
-
-        ranking[3];
-
-    /*
-
-    ================================================
-
-    結果表示
-
-    ================================================
-
-    */
-
-    document.getElementById(
-
-        "inputPage"
-
-    ).classList.add("hidden");
-
-    document.getElementById(
-
-        "resultPage"
-
-    ).classList.remove("hidden");
-
-    /*
-
-    ================================================
-
-    本命・対抗・穴
-
-    ================================================
-
-    */
-
-    document.getElementById(
-
-        "judgement"
-
-    ).innerHTML = `
-
-        <div class="aiBox">
-
-        <p>
-
-        <span class="big">
-
-        ◎ 本命 ${first.boat}号艇
-
-        </span>
-
-        <br>
-
-        ${first.name}
-
-        <br>
-
-        AI確率：
-
-        ${first.probability.toFixed(1)}%
-
-        </p>
-
-        <p>
-
-        <span class="big">
-
-        ○ 対抗 ${second.boat}号艇
-
-        </span>
-
-        <br>
-
-        ${second.name}
-
-        <br>
-
-        AI確率：
-
-        ${second.probability.toFixed(1)}%
-
-        </p>
-
-        <p>
-
-        <span class="big">
-
-        ▲ 穴 ${third.boat}号艇
-
-        </span>
-
-        <br>
-
-        ${third.name}
-
-        <br>
-
-        AI確率：
-
-        ${third.probability.toFixed(1)}%
-
-        </p>
-
-        </div>
-
-    `;
-
-    /*
-
-    ================================================
-
-    ランキング
-
-    ================================================
-
-    */
-
-    let rankingHTML = "";
-
-    ranking.forEach(function(x,i){
-
-        rankingHTML += `
-
-        <div class="result">
-
-        <div>
-
-        <b>
-
-        ${i+1}位　
-
-        ${x.boat}号艇　
-
-        ${x.name}
-
-        </b>
-
-        <br>
-
-        <span class="small">
-
-        全国1着率：
-
-        ${x.national1.toFixed(2)}%
-
-        <br>
-
-        全国3連対率：
-
-        ${x.national3.toFixed(2)}%
-
-        <br>
-
-        当地1着率：
-
-        ${x.local1.toFixed(2)}%
-
-        <br>
-
-        当地3連対率：
-
-        ${x.local3.toFixed(2)}%
-
-        <br>
-
-        モーター2連率：
-
-        ${x.motor2.toFixed(2)}%
-
-        <br>
-
-        平均ST：
-
-        ${x.st.toFixed(2)}
-
-        </span>
-
-        </div>
-
-        <div class="score">
-
-        ${x.score.toFixed(1)}
-
-        <br>
-
-        ${x.probability.toFixed(1)}%
-
-        </div>
-
-        </div>
-
-        `;
-
-    });
-
-    document.getElementById(
-
-        "ranking"
-
-    ).innerHTML =
-
-        rankingHTML;
-
-    /*
-
-    ================================================
-
-    展開予想
-
-    ================================================
-
-    */
-
-    let development = "";
-
-    if(entry.startsWith("123")){
-
-        development =
-
-        "枠なり進入を想定。"+
-
-        "<br><br>"+
-
-        "1号艇のイン逃げを基本線。"+
-
-        "<br>"+
-
-        "2号艇の差し、3号艇のまくり差しを警戒。";
-
-    }else{
-
-        development =
-
-        "進入変化を考慮。"+
-
-        "<br><br>"+
-
-        "スタート力の高い艇による攻めを警戒。";
-
-    }
-
-    if(wind >= 5){
-
-        development +=
-
-        "<br><br>"+
-
-        "⚠️ 強風のためスタート・外枠の攻めを通常より重視。";
-
-    }
-
-    if(wave >= 4){
-
-        development +=
-
-        "<br><br>"+
-
-        "⚠️ 波高が高いため、モーター機力を重視。";
-
-    }
-
-    document.getElementById(
-
-        "development"
-
-    ).innerHTML = `
-
-        <div class="aiBox">
-
-        <b>進入予想：</b>
-
-        ${entry}
-
-        <br><br>
-
-        ${development}
-
-        <br><br>
-
-        <b>本命：</b>
-
-        ${first.boat}号艇 ${first.name}
-
-        <br>
-
-        <b>対抗：</b>
-
-        ${second.boat}号艇 ${second.name}
-
-        <br>
-
-        <b>穴：</b>
-
-        ${third.boat}号艇 ${third.name}
-
-        </div>
-
-    `;
-
-    /*
-
-    ================================================
-
-    的中率重視
-
-    ================================================
-
-    */
-
-    document.getElementById(
-
-        "safe"
-
-    ).innerHTML = `
-
-        <div class="bet">
-
-        ${first.boat}-${second.boat}-${third.boat}
-
-        </div>
-
-        <div class="bet">
-
-        ${first.boat}-${third.boat}-${second.boat}
-
-        </div>
-
-        <div class="bet">
-
-        ${first.boat}-${second.boat}-${fourth.boat}
-
-        </div>
-
-    `;
-
-    /*
-
-    ================================================
-
-    回収率重視
-
-    ================================================
-
-    */
-
-    document.getElementById(
-
-        "value"
-
-    ).innerHTML = `
-
-        <div class="bet">
-
-        ${first.boat}-${third.boat}-${fourth.boat}
-
-        </div>
-
-        <div class="bet">
-
-        ${third.boat}-${first.boat}-${second.boat}
-
-        </div>
-
-        <div class="bet">
-
-        ${second.boat}-${third.boat}-${first.boat}
-
-        </div>
-
-    `;
-
-    /*
-
-    ================================================
-
-    穴狙い
-
-    ================================================
-
-    */
-
-    document.getElementById(
-
-        "dark"
-
-    ).innerHTML = `
-
-        <div class="bet">
-
-        🔥 ${third.boat}-${first.boat}-${fourth.boat}
-
-        </div>
-
-        <div class="bet">
-
-        🔥 ${fourth.boat}-${third.boat}-${first.boat}
-
-        </div>
-
-        <div class="bet">
-
-        🔥 ${third.boat}-${fourth.boat}-${first.boat}
-
-        </div>
-
-    `;const autoBetButton =
-
-    document.createElement("button");
-
-autoBetButton.innerHTML =
-
-    "🚤 AI自動買い目を生成";
-
-autoBetButton.onclick =
-
-    generateBettingLines;
-
-autoBetButton.style.width =
-
-    "100%";
-
-autoBetButton.style.padding =
-
-    "15px";
-
-autoBetButton.style.marginTop =
-
-    "12px";
-
-autoBetButton.style.border =
-
-    "0";
-
-autoBetButton.style.borderRadius =
-
-    "10px";
-
-autoBetButton.style.background =
-
-    "#d4af37";
-
-autoBetButton.style.color =
-
-    "#000";
-
-autoBetButton.style.fontSize =
-
-    "17px";
-
-autoBetButton.style.fontWeight =
-
-    "bold";
-
-document.getElementById(
-
-    "resultPage"
-
-).appendChild(
-
-    autoBetButton
+ranking
 
 );
 
 }
 
-/*
+/* =====================================
 
-=================================================
+AI自動買い目
 
-既存の解析ボタンから強化AIを呼び出す
+===================================== */
 
-=================================================
+function generateAutoBets(
 
-*/
+ranking
 
-function analyze(){
+){
 
-    enhancedAI();
+const top =
 
-}
+ranking.slice(0,4);
 
-/* =========================================
+let combinations = [];
 
-   BOAT HUNTER 期待値エンジン
+top.forEach(
 
-========================================= */
+function(a){
 
-function calculateExpectedValue(){
+top.forEach(
 
-    const odds = prompt(
+function(b){
 
-        "3連単オッズを入力してください\n例：12.5"
+top.forEach(
 
-    );
+function(c){
 
-    if(!odds) return;
+if(
 
-    const odd = Number(odds);
+a.boat===b.boat ||
 
-    if(!Number.isFinite(odd) || odd <= 0){
+a.boat===c.boat ||
 
-        alert("正しいオッズを入力してください");
+b.boat===c.boat
 
-        return;
+){
 
-    }
-
-    const probability = prompt(
-
-        "AI推定的中率を入力してください（％）\n例：12"
-
-    );
-
-    if(!probability) return;
-
-    const prob = Number(probability);
-
-    if(!Number.isFinite(prob) || prob <= 0){
-
-        alert("正しい確率を入力してください");
-
-        return;
-
-    }
-
-    const expectedValue =
-
-        (prob / 100) * odd;
-
-    let judgement = "";
-
-    if(expectedValue >= 1.20){
-
-        judgement =
-
-            "🔥 強く買い候補";
-
-    }else if(expectedValue >= 1.00){
-
-        judgement =
-
-            "🟡 買い候補";
-
-    }else{
-
-        judgement =
-
-            "🔴 見送り";
-
-    }
-
-    alert(
-
-        "BOAT HUNTER 期待値分析\n\n" +
-
-        "AI確率：" +
-
-        prob.toFixed(1) +
-
-        "%\n" +
-
-        "オッズ：" +
-
-        odd.toFixed(1) +
-
-        "倍\n\n" +
-
-        "期待値：" +
-
-        expectedValue.toFixed(2) +
-
-        "\n\n" +
-
-        judgement
-
-    );
+return;
 
 }
-/* =========================================
 
-   BOAT HUNTER 3連単自動買い目生成
+let score =
 
-========================================= */
+a.score *
 
-function generateBettingLines(){
+b.score *
 
-    if(!window.boatData){
+c.score;
 
-        alert("先に出走表を取得してください。");
+combinations.push({
 
-        return;
+bet:
 
-    }
+a.boat+
 
-    const programs =
+"-"+
 
-        window.boatData.programs || [];
+b.boat+
 
-    const venue =
+"-"+
 
-        document.getElementById("venue").value;
+c.boat,
 
-    const raceText =
+score:
 
-        document.getElementById("race").value;
+score
 
-    const raceNumber =
+});
 
-        parseInt(
+});
 
-            raceText.replace("R",""),
+});
 
-            10
+});
 
-        );
+combinations.sort(
 
-    const venueMap = {
+function(a,b){
 
-        "桐生":1,
+return b.score-a.score;
 
-        "戸田":2,
+});
 
-        "江戸川":3,
+const best =
 
-        "平和島":4,
+combinations.slice(0,10);
 
-        "多摩川":5,
+let total = 0;
 
-        "浜名湖":6,
+best.forEach(
 
-        "蒲郡":7,
+function(x){
 
-        "常滑":8,
+total += x.score;
 
-        "津":9,
+});
 
-        "三国":10,
+let html = "";
 
-        "びわこ":11,
+best.forEach(
 
-        "住之江":12,
+function(x,i){
 
-        "尼崎":13,
+const probability =
 
-        "鳴門":14,
+x.score /
 
-        "丸亀":15,
+total *
 
-        "児島":16,
+100;
 
-        "宮島":17,
+html += `
 
-        "徳山":18,
+<div class="bet">
 
-        "下関":19,
+<b>
 
-        "若松":20,
+${i+1}位　
 
-        "芦屋":21,
+${x.bet}
 
-        "福岡":22,
+</b>
 
-        "唐津":23,
+<br>
 
-        "大村":24
+AI推定値：
 
-    };
+${probability.toFixed(2)}%
 
-    const stadiumNumber =
+<br>
 
-        venueMap[venue];
+AIスコア：
 
-    const program =
+${x.score.toFixed(1)}
 
-        programs.find(function(p){
-
-            return Number(p.stadium_number)
-
-                === stadiumNumber
-
-                &&
-
-                Number(p.number)
-
-                === raceNumber;
-
-        });
-
-    if(!program){
-
-        alert(
-
-            venue +
-
-            " " +
-
-            raceText +
-
-            " の出走表が見つかりません。"
-
-        );
-
-        return;
-
-    }
-
-    if(!program.boats ||
-
-       program.boats.length < 6){
-
-        alert(
-
-            "6艇分の出走データを取得できませんでした。"
-
-        );
-
-        return;
-
-    }
-
-    const boats =
-
-        program.boats
-
-        .slice()
-
-        .sort(function(a,b){
-
-            return Number(a.racer_boat_number)
-
-                 -
-
-                   Number(b.racer_boat_number);
-
-        });
-
-        });
-
-    /*
-
-    AIスコアを再計算
-
-    */
-
-    let ranking = boats.map(function(b,index){
-
-        const national3 =
-
-            Number(b.racer_national_top_3_percent) || 0;
-
-        const local3 =
-
-            Number(b.racer_local_top_3_percent) || 0;
-
-        const motor2 =
-
-            Number(b.racer_assigned_motor_top_2_percent) || 0;
-
-        const motor3 =
-
-            Number(b.racer_assigned_motor_top_3_percent) || 0;
-
-        const st =
-
-            Number(b.racer_average_start_timing) || 0.20;
-
-        const cls =
-
-            Number(b.racer_class_number) || 3;
-
-        let score = 0;
-
-        score += national3 * 0.55;
-
-        score += local3 * 0.35;
-
-        score += motor2 * 0.40;
-
-        score += motor3 * 0.20;
-
-        score +=
-
-            Math.max(0,(0.23-st)*100);
-
-        if(cls === 1) score += 6;
-
-        if(cls === 2) score += 4;
-
-        if(cls === 3) score += 2;
-
-        const courseBonus =
-
-            [22,13,10,7,4,2];
-
-        score += courseBonus[index];
-
-        return {
-
-            boat:Number(b.racer_boat_number),
-
-            name:b.racer_name || "不明",
-
-            score:score
-
-        };
-
-    });
-
-    ranking.sort(function(a,b){
-
-        return b.score-a.score;
-
-    });
-
-    /*
-
-    上位4艇を中心に買い目生成
-
-    */
-
-    const top =
-
-        ranking.slice(0,4);
-
-    let combinations = [];
-
-    /*
-
-    1着候補
-
-    */
-
-    top.forEach(function(a){
-
-        top.forEach(function(b){
-
-            top.forEach(function(c){
-
-                if(
-
-                    a.boat === b.boat ||
-
-                    a.boat === c.boat ||
-
-                    b.boat === c.boat
-
-                ){
-
-                    return;
-
-                }
-
-                /*
-
-                3艇のスコアから
-
-                仮想的な組み合わせ確率を作る
-
-                */
-
-                const raw =
-
-                    Math.max(a.score,1) *
-
-                    Math.max(b.score,1) *
-
-                    Math.max(c.score,1);
-
-                combinations.push({
-
-                    bet:
-
-                        a.boat+"-"+b.boat+"-"+c.boat,
-
-                    score:raw,
-
-                    first:a.boat,
-
-                    second:b.boat,
-
-                    third:c.boat
-
-                });
-
-            });
-
-        });
-
-    });
-
-    /*
-
-    スコア順
-
-    */
-
-    combinations.sort(function(a,b){
-
-        return b.score-a.score;
-
-    });
-
-    /*
-
-    上位10点
-
-    */
-
-    combinations =
-
-        combinations.slice(0,10);
-
-    /*
-
-    正規化
-
-    */
-
-    let total = 0;
-
-    combinations.forEach(function(x){
-
-        total += x.score;
-
-    });
-
-    combinations.forEach(function(x){
-
-        x.probability =
-
-            x.score / total * 100;
-
-    });
-
-    /*
-
-    結果表示
-
-    */
-
-    let html = "";
-
-    combinations.forEach(function(x,i){
-
-        html += `
-
-        <div class="bet">
-
-            <b>
-
-            ${i+1}位　${x.bet}
-
-            </b>
-
-            <br>
-
-            AI推定確率：
-
-            ${x.probability.toFixed(2)}%
-
-            <br>
-
-            AIスコア：
-
-            ${x.score.toFixed(1)}
-
-        </div>
-
-        `;
-
-    });
-
-    /*
-
-    期待値入力欄
-
-    */
-
-    html += `
-
-        <div style="
-
-            margin-top:15px;
-
-            padding:15px;
-
-            background:#111;
-
-            border:1px solid #d4af37;
-
-            border-radius:10px;
-
-        ">
-
-        <b style="color:#d4af37;">
-
-        💎 オッズを入力して期待値判定
-<button onclick="generateBettingLines()">
-
-🚤 AI自動買い目を生成
-
-</button>
-        </b>
-
-        <br><br>
-
-        <input
-
-            id="betOdds"
-
-            type="number"
-
-            step="0.1"
-
-            placeholder="例：12.5"
-
-        >
-
-        <button
-
-            onclick="evaluateTopBet()"
-
-        >
-
-            💎 1位買い目の期待値を計算
-
-        </button>
-
-        <div
-
-            id="evResult"
-
-            class="status"
-
-        >
-
-        </div>
-
-        </div>
-
-    `;
-
-    /*
-
-    期待値カードを追加
-
-    */
-
-    let resultPage =
-
-        document.getElementById("resultPage");
-
-    let old =
-
-        document.getElementById(
-
-            "autoBetCard"
-
-        );
-
-    if(old){
-
-        old.remove();
-
-    }
-
-    const card =
-
-        document.createElement("div");
-
-    card.id =
-
-        "autoBetCard";
-
-    card.className =
-
-        "card";
-
-    card.innerHTML = `
-
-        <div class="title">
-
-        🚤 AI自動買い目
-
-        </div>
-
-        <div class="status">
-
-        上位4艇を中心に
-
-        3連単を自動生成しています。
-
-        </div>
-
-        ${html}
-
-    `;
-
-    resultPage.appendChild(card);
-
-}
-
-/* =========================================
-
-   1位買い目の期待値
-
-========================================= */
-
-function evaluateTopBet(){
-
-    const odds =
-
-        Number(
-
-            document.getElementById(
-
-                "betOdds"
-
-            ).value
-
-        );
-
-    if(!odds || odds <= 0){
-
-        alert(
-
-            "オッズを入力してください。"
-
-        );
-
-        return;
-
-    }
-
-    const probability =
-
-        getTopBetProbability();
-
-    const expectedValue =
-
-        (probability / 100) * odds;
-
-    let judgement;
-
-    if(expectedValue >= 1.30){
-
-        judgement =
-
-            "🔥 強く買いたい";
-
-    }else if(expectedValue >= 1.10){
-
-        judgement =
-
-            "🟢 買い候補";
-
-    }else if(expectedValue >= 1.00){
-
-        judgement =
-
-            "🟡 条件付き";
-
-    }else{
-
-        judgement =
-
-            "🔴 見送り";
-
-    }
-
-    document.getElementById(
-
-        "evResult"
-
-    ).innerHTML =
-
-        "<b>買い目：</b> AIランキング1位"+
-
-        "<br>"+
-
-        "<b>AI確率：</b>"+
-
-        probability.toFixed(2)+"%"+
-
-        "<br>"+
-
-        "<b>オッズ：</b>"+
-
-        odds.toFixed(1)+"倍"+
-
-        "<br><br>"+
-
-        "<span class='big'>"+
-
-        "期待値 "+
-
-        expectedValue.toFixed(2)+
-
-        "</span>"+
-
-        "<br><br>"+
-
-        judgement;
-
-}
-
-/* =========================================
-
-   生成した買い目の1位確率
-
-========================================= */
-
-function getTopBetProbability(){
-
-    /*
-
-    現在表示されている
-
-    AI自動買い目の1位を取得
-
-    */
-
-    const cards =
-
-        document.querySelectorAll(
-
-            "#autoBetCard .bet"
-
-        );
-
-    if(!cards.length){
-
-        return 5;
-
-    }
-
-    const text =
-
-        cards[0].innerText;
-
-    const match =
-
-        text.match(
-
-            /AI推定確率：\s*([0-9.]+)%/
-
-        );
-
-    if(match){
-
-        return Number(match[1]);
-
-    }
-
-    return 5;
-
-}
-</script>
-<div class="card">
-
-    <div class="title">💎 期待値分析</div>
-
-    <button onclick="calculateExpectedValue()">
-
-        💎 期待値を計算
-
-    </button>
-<button onclick="generateBettingLines()">
-
-🚤 AI自動買い目を生成
-
-</button>
 </div>
+
+`;
+
+});
+
+document
+
+.getElementById("autoBet")
+
+.innerHTML =
+
+html;
+
+}
+
+/* =====================================
+
+ページ表示時
+
+===================================== */
+
+window.addEventListener(
+
+"load",
+
+function(){
+
+console.log(
+
+"BOAT HUNTER READY"
+
+);
+
+});
+
+</script>
+
 </body>
 
 </html>
