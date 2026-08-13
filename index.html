@@ -484,31 +484,103 @@ function analyze(){
 
     let win=parseFloat(document.getElementById("win"+i).value)||0;
 
+    let local=parseFloat(document.getElementById("local"+i).value)||0;
+
     let motor=parseFloat(document.getElementById("motor"+i).value)||0;
 
     let st=parseFloat(document.getElementById("st"+i).value)||0.20;
 
+    let exhibit=parseFloat(document.getElementById("exhibit"+i).value)||0;
+
     let classPoint={
 
-      "A1":10,
+      "A1":5,
 
-      "A2":7,
+      "A2":4,
 
-      "B1":4,
+      "B1":2,
 
-      "B2":2
+      "B2":1
 
     }[cls];
 
-    let score =
+    /*
 
-      win*8 +
+      BOAT HUNTER SCORE
 
-      motor*0.5 +
+      100点満点
 
-      (0.20-st)*40 +
+    */
 
-      classPoint;
+    let winScore=Math.min(win/8*15,15);
+
+    let localScore=Math.min(local/8*15,15);
+
+    let motorScore=Math.min(motor/50*15,15);
+
+    let stScore=Math.max(0,Math.min((0.20-st)*50,10));
+
+    let exhibitScore=0;
+
+    if(exhibit>0){
+
+      exhibitScore=Math.max(0,Math.min((7.0-exhibit)*10,10));
+
+    }
+
+    /*
+
+      1号艇のコース優位を簡易評価
+
+    */
+
+    let courseScore=20;
+
+    if(i===1){
+
+      courseScore=20;
+
+    }else if(i===2){
+
+      courseScore=15;
+
+    }else if(i===3){
+
+      courseScore=13;
+
+    }else if(i===4){
+
+      courseScore=10;
+
+    }else if(i===5){
+
+      courseScore=7;
+
+    }else{
+
+      courseScore=5;
+
+    }
+
+    let waterScore=5;
+
+    let score=
+
+      winScore+
+
+      localScore+
+
+      motorScore+
+
+      stScore+
+
+      exhibitScore+
+
+      classPoint+
+
+      courseScore+
+
+      waterScore;
 
     data.push({
 
@@ -522,45 +594,129 @@ function analyze(){
 
   }
 
+  /*
+
+    スコア順
+
+  */
+
   data.sort((a,b)=>b.score-a.score);
+
+  /*
+
+    結果画面
+
+  */
 
   document.getElementById("inputPage").classList.add("hidden");
 
   document.getElementById("resultPage").classList.remove("hidden");
 
+  /*
+
+    ランキング
+
+  */
+
   let ranking="";
 
   data.forEach((x,index)=>{
 
-    ranking += `
+    ranking+=`
 
     <div class="result">
 
-      <span>${index+1}位　${x.boat}号艇 ${x.name}</span>
+      <span>
 
-      <strong>${x.score.toFixed(1)}点</strong>
+      ${index+1}位　
 
-    </div>`;
+      ${x.boat}号艇　
+
+      ${x.name}
+
+      </span>
+
+      <strong>
+
+      ${x.score.toFixed(1)}点
+
+      </strong>
+
+    </div>
+
+    `;
 
   });
 
   document.getElementById("ranking").innerHTML=ranking;
 
+  /*
+
+    本命・対抗・穴
+
+  */
+
   document.getElementById("judgement").innerHTML=`
 
-    <p>◎ 本命：<strong>${data[0].boat}号艇</strong></p>
+    <p>
 
-    <p>○ 対抗：<strong>${data[1].boat}号艇</strong></p>
+    ◎ 本命：
 
-    <p>▲ 穴：<strong>${data[2].boat}号艇</strong></p>
+    <strong>${data[0].boat}号艇</strong>
+
+    </p>
+
+    <p>
+
+    ○ 対抗：
+
+    <strong>${data[1].boat}号艇</strong>
+
+    </p>
+
+    <p>
+
+    ▲ 穴：
+
+    <strong>${data[2].boat}号艇</strong>
+
+    </p>
 
   `;
 
-  document.getElementById("development").innerHTML=
+  /*
 
-    `${data[0].boat}号艇を中心に展開。`+
+    展開予想
 
-    `<br>上位艇のST・選手力を重視した評価です。`;
+  */
+
+  let entry=document.getElementById("entry").value;
+
+  let wind=parseFloat(document.getElementById("wind").value)||0;
+
+  let wave=parseFloat(document.getElementById("wave").value)||0;
+
+  document.getElementById("development").innerHTML=`
+
+    進入予想：${entry || "未入力"}<br>
+
+    風速：${wind}m<br>
+
+    波高：${wave}cm<br><br>
+
+    ${data[0].boat}号艇を中心に評価。<br>
+
+    上位艇の選手力・モーター・ST・展示タイムを
+
+    総合して判定しています。
+
+  `;
+
+  /*
+
+    買い目
+
+  */
 
   let a=data[0].boat;
 
@@ -568,15 +724,25 @@ function analyze(){
 
   let c=data[2].boat;
 
-  document.getElementById("safe").innerHTML=
+  document.getElementById("safe").innerHTML=`
 
-    `${a}-${b}-${c}<br>${a}-${c}-${b}`;
+    ${a}-${b}-${c}<br>
 
-  document.getElementById("value").innerHTML=
+    ${a}-${c}-${b}<br>
 
-    `${c}-${a}-${b}<br>${b}-${c}-${a}`;
+    ${b}-${a}-${c}
 
-}
+  `;
+
+  document.getElementById("value").innerHTML=`
+
+    ${c}-${a}-${b}<br>
+
+    ${c}-${b}-${a}<br>
+
+    ${b}-${c}-${a}
+
+  `;
 
 </script>
 
