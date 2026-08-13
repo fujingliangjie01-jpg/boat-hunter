@@ -1761,11 +1761,259 @@ function calculateExpectedValue(){
 
     if(!ranking || ranking.length < 4){
 
-        alert("先に出走表を取得してAI解析してください。");
+        alert("先に出走表を取得してください。");
 
         return;
 
     }
+
+    const top = ranking.slice(0,4);
+
+    let combinations = [];
+
+    top.forEach(function(a){
+
+        top.forEach(function(b){
+
+            top.forEach(function(c){
+
+                if(
+
+                    a.boat === b.boat ||
+
+                    a.boat === c.boat ||
+
+                    b.boat === c.boat
+
+                ){
+
+                    return;
+
+                }
+
+                combinations.push({
+
+                    bet:
+
+                        a.boat + "-" +
+
+                        b.boat + "-" +
+
+                        c.boat,
+
+                    score:
+
+                        a.score *
+
+                        b.score *
+
+                        c.score
+
+                });
+
+            });
+
+        });
+
+    });
+
+    combinations.sort(function(a,b){
+
+        return b.score-a.score;
+
+    });
+
+    const best =
+
+        combinations.slice(0,10);
+
+    /* オッズ入力欄を作る */
+
+    let inputHTML = "";
+
+    best.forEach(function(x,i){
+
+        inputHTML += `
+
+        <div class="bet">
+
+            <b>
+
+            ${i+1}位　
+
+            ${x.bet}
+
+            </b>
+
+            <br><br>
+
+            <label>
+
+            オッズ
+
+            </label>
+
+            <input
+
+                id="odds_${i}"
+
+                type="number"
+
+                step="0.1"
+
+                min="0"
+
+                placeholder="例：15.2"
+
+            >
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById(
+
+        "oddsInputs"
+
+    ).innerHTML = inputHTML;
+
+    /* 計算結果 */
+
+    let resultHTML = "";
+
+    best.forEach(function(x,i){
+
+        const odds =
+
+            Number(
+
+                document.getElementById(
+
+                    "odds_"+i
+
+                ).value
+
+            );
+
+        if(!odds || odds <= 0){
+
+            return;
+
+        }
+
+        const totalScore =
+
+            best.reduce(function(sum,item){
+
+                return sum + item.score;
+
+            },0);
+
+        const probability =
+
+            x.score /
+
+            totalScore *
+
+            100;
+
+        const expectedValue =
+
+            odds *
+
+            probability /
+
+            100;
+
+        let judgement = "🔴 見送り";
+
+        if(expectedValue >= 1.20){
+
+            judgement =
+
+                "🔥 強く買い";
+
+        }
+
+        else if(expectedValue >= 1.00){
+
+            judgement =
+
+                "🟢 買い";
+
+        }
+
+        else if(expectedValue >= 0.80){
+
+            judgement =
+
+                "🟡 抑え";
+
+        }
+
+        resultHTML += `
+
+        <div class="bet">
+
+            <b>
+
+            ${x.bet}
+
+            </b>
+
+            <br><br>
+
+            オッズ：
+
+            <span class="gold">
+
+            ${odds.toFixed(1)}倍
+
+            </span>
+
+            <br>
+
+            AI推定確率：
+
+            ${probability.toFixed(2)}%
+
+            <br>
+
+            期待値：
+
+            <span class="gold">
+
+            ${expectedValue.toFixed(2)}
+
+            </span>
+
+            <br><br>
+
+            <b>
+
+            ${judgement}
+
+            </b>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById(
+
+        "expectedValue"
+
+    ).innerHTML =
+
+        resultHTML ||
+
+        "<div class='status'>オッズを入力してください。</div>";
+
+}
 
     const combinations = [
 
