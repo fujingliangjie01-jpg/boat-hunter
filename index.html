@@ -1427,7 +1427,83 @@ function analyze(){
 }
 
 </script>
+<div id="apiStatus" style="
 
+margin:15px 0;
+
+padding:12px;
+
+border:1px solid #d4af37;
+
+border-radius:10px;
+
+background:#111;
+
+color:#aaa;
+
+font-size:13px;
+
+text-align:center;
+
+">
+
+無料データ取得：準備中
+
+</div>
+
+<script>
+
+async function testBoatAPI(){
+
+  const status=document.getElementById("apiStatus");
+
+  status.innerHTML="⏳ 無料データを取得中...";
+
+  try{
+
+    const response=await fetch(
+
+      "https://boatraceopenapi.github.io/programs/v3/today.json"
+
+    );
+
+    if(!response.ok){
+
+      throw new Error("HTTP "+response.status);
+
+    }
+
+    const data=await response.json();
+
+    console.log("BOATRACE DATA",data);
+
+    status.innerHTML=
+
+      "✅ 無料データ取得成功<br>" +
+
+      "データ件数："+Object.keys(data).length;
+
+  }catch(error){
+
+    console.error(error);
+
+    status.innerHTML=
+
+      "⚠️ データ取得できませんでした<br>" +
+
+      "現在は手入力モードで利用できます。";
+
+  }
+
+}
+
+</script>
+
+<button type="button" onclick="testBoatAPI()">
+
+🌐 無料データ取得テスト
+
+</button>
 </body>
 
 </html>
