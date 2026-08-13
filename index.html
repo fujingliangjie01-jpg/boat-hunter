@@ -1295,7 +1295,861 @@ document.getElementById(
 `;
 
 }
+/* =================================================
 
+   BOAT HUNTER AI 強化エンジン
+
+================================================= */
+
+function enhancedAI(){
+
+    if(!selectedProgram ||
+
+       !selectedProgram.boats ||
+
+       selectedProgram.boats.length < 6){
+
+        alert("先に出走表を取得してください。");
+
+        return;
+
+    }
+
+    const boats =
+
+        selectedProgram.boats
+
+        .slice()
+
+        .sort(function(a,b){
+
+            return Number(a.racer_boat_number)
+
+                 - Number(b.racer_boat_number);
+
+        });
+
+    const wind =
+
+        Number(
+
+            document.getElementById("wind").value
+
+        ) || 0;
+
+    const wave =
+
+        Number(
+
+            document.getElementById("wave").value
+
+        ) || 0;
+
+    const entryText =
+
+        document.getElementById("entry").value
+
+        .replace(/[^1-6]/g,"");
+
+    const entry =
+
+        entryText.length === 6
+
+        ? entryText
+
+        : "123456";
+
+    /*
+
+    ================================================
+
+    各艇を評価
+
+    ================================================
+
+    */
+
+    let ranking = boats.map(function(b,index){
+
+        const boat =
+
+            Number(b.racer_boat_number);
+
+        const national1 =
+
+            Number(
+
+                b.racer_national_top_1_percent
+
+            ) || 0;
+
+        const national2 =
+
+            Number(
+
+                b.racer_national_top_2_percent
+
+            ) || 0;
+
+        const national3 =
+
+            Number(
+
+                b.racer_national_top_3_percent
+
+            ) || 0;
+
+        const local1 =
+
+            Number(
+
+                b.racer_local_top_1_percent
+
+            ) || 0;
+
+        const local2 =
+
+            Number(
+
+                b.racer_local_top_2_percent
+
+            ) || 0;
+
+        const local3 =
+
+            Number(
+
+                b.racer_local_top_3_percent
+
+            ) || 0;
+
+        const motor2 =
+
+            Number(
+
+                b.racer_assigned_motor_top_2_percent
+
+            ) || 0;
+
+        const motor3 =
+
+            Number(
+
+                b.racer_assigned_motor_top_3_percent
+
+            ) || 0;
+
+        const st =
+
+            Number(
+
+                b.racer_average_start_timing
+
+            ) || 0.20;
+
+        const cls =
+
+            Number(
+
+                b.racer_class_number
+
+            ) || 3;
+
+        let score = 0;
+
+        /*
+
+        --------------------------------------------
+
+        選手能力
+
+        --------------------------------------------
+
+        */
+
+        score += national1 * 4.0;
+
+        score += national2 * 0.35;
+
+        score += national3 * 0.15;
+
+        /*
+
+        --------------------------------------------
+
+        当地適性
+
+        --------------------------------------------
+
+        */
+
+        score += local1 * 3.0;
+
+        score += local2 * 0.25;
+
+        score += local3 * 0.10;
+
+        /*
+
+        --------------------------------------------
+
+        モーター
+
+        --------------------------------------------
+
+        */
+
+        score += motor2 * 0.45;
+
+        score += motor3 * 0.20;
+
+        /*
+
+        --------------------------------------------
+
+        ST
+
+        --------------------------------------------
+
+        */
+
+        score +=
+
+            Math.max(
+
+                0,
+
+                (0.23 - st) * 100
+
+            );
+
+        /*
+
+        --------------------------------------------
+
+        級別
+
+        --------------------------------------------
+
+        */
+
+        if(cls === 1){
+
+            score += 6;
+
+        }else if(cls === 2){
+
+            score += 4;
+
+        }else if(cls === 3){
+
+            score += 2;
+
+        }
+
+        /*
+
+        --------------------------------------------
+
+        コース補正
+
+        --------------------------------------------
+
+        */
+
+        const courseBonus = [
+
+            22,
+
+            13,
+
+            10,
+
+            7,
+
+            4,
+
+            2
+
+        ];
+
+        score +=
+
+            courseBonus[index] || 0;
+
+        /*
+
+        --------------------------------------------
+
+        風・波補正
+
+        --------------------------------------------
+
+        */
+
+        if(wind >= 5){
+
+            /*
+
+            強風時は外枠の攻めを少し評価
+
+            */
+
+            if(boat >= 4){
+
+                score += 2;
+
+            }
+
+        }
+
+        if(wave >= 4){
+
+            /*
+
+            荒水面ではST・機力を重視
+
+            */
+
+            score +=
+
+                Math.max(
+
+                    0,
+
+                    (motor2 - 30) * 0.10
+
+                );
+
+        }
+
+        return {
+
+            boat:boat,
+
+            name:
+
+                b.racer_name || "不明",
+
+            score:score,
+
+            st:st,
+
+            motor2:motor2,
+
+            motor3:motor3,
+
+            national1:national1,
+
+            national3:national3,
+
+            local1:local1,
+
+            local3:local3
+
+        };
+
+    });
+
+    /*
+
+    ================================================
+
+    ランキング
+
+    ================================================
+
+    */
+
+    ranking.sort(function(a,b){
+
+        return b.score-a.score;
+
+    });
+
+    /*
+
+    ================================================
+
+    AI確率
+
+    ================================================
+
+    */
+
+    let total = 0;
+
+    ranking.forEach(function(x){
+
+        total += Math.max(
+
+            x.score,
+
+            1
+
+        );
+
+    });
+
+    ranking.forEach(function(x){
+
+        x.probability =
+
+            Math.max(
+
+                x.score,
+
+                1
+
+            )
+
+            /
+
+            total
+
+            *
+
+            100;
+
+    });
+
+    const first =
+
+        ranking[0];
+
+    const second =
+
+        ranking[1];
+
+    const third =
+
+        ranking[2];
+
+    const fourth =
+
+        ranking[3];
+
+    /*
+
+    ================================================
+
+    結果表示
+
+    ================================================
+
+    */
+
+    document.getElementById(
+
+        "inputPage"
+
+    ).classList.add("hidden");
+
+    document.getElementById(
+
+        "resultPage"
+
+    ).classList.remove("hidden");
+
+    /*
+
+    ================================================
+
+    本命・対抗・穴
+
+    ================================================
+
+    */
+
+    document.getElementById(
+
+        "judgement"
+
+    ).innerHTML = `
+
+        <div class="aiBox">
+
+        <p>
+
+        <span class="big">
+
+        ◎ 本命 ${first.boat}号艇
+
+        </span>
+
+        <br>
+
+        ${first.name}
+
+        <br>
+
+        AI確率：
+
+        ${first.probability.toFixed(1)}%
+
+        </p>
+
+        <p>
+
+        <span class="big">
+
+        ○ 対抗 ${second.boat}号艇
+
+        </span>
+
+        <br>
+
+        ${second.name}
+
+        <br>
+
+        AI確率：
+
+        ${second.probability.toFixed(1)}%
+
+        </p>
+
+        <p>
+
+        <span class="big">
+
+        ▲ 穴 ${third.boat}号艇
+
+        </span>
+
+        <br>
+
+        ${third.name}
+
+        <br>
+
+        AI確率：
+
+        ${third.probability.toFixed(1)}%
+
+        </p>
+
+        </div>
+
+    `;
+
+    /*
+
+    ================================================
+
+    ランキング
+
+    ================================================
+
+    */
+
+    let rankingHTML = "";
+
+    ranking.forEach(function(x,i){
+
+        rankingHTML += `
+
+        <div class="result">
+
+        <div>
+
+        <b>
+
+        ${i+1}位　
+
+        ${x.boat}号艇　
+
+        ${x.name}
+
+        </b>
+
+        <br>
+
+        <span class="small">
+
+        全国1着率：
+
+        ${x.national1.toFixed(2)}%
+
+        <br>
+
+        全国3連対率：
+
+        ${x.national3.toFixed(2)}%
+
+        <br>
+
+        当地1着率：
+
+        ${x.local1.toFixed(2)}%
+
+        <br>
+
+        当地3連対率：
+
+        ${x.local3.toFixed(2)}%
+
+        <br>
+
+        モーター2連率：
+
+        ${x.motor2.toFixed(2)}%
+
+        <br>
+
+        平均ST：
+
+        ${x.st.toFixed(2)}
+
+        </span>
+
+        </div>
+
+        <div class="score">
+
+        ${x.score.toFixed(1)}
+
+        <br>
+
+        ${x.probability.toFixed(1)}%
+
+        </div>
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById(
+
+        "ranking"
+
+    ).innerHTML =
+
+        rankingHTML;
+
+    /*
+
+    ================================================
+
+    展開予想
+
+    ================================================
+
+    */
+
+    let development = "";
+
+    if(entry.startsWith("123")){
+
+        development =
+
+        "枠なり進入を想定。"+
+
+        "<br><br>"+
+
+        "1号艇のイン逃げを基本線。"+
+
+        "<br>"+
+
+        "2号艇の差し、3号艇のまくり差しを警戒。";
+
+    }else{
+
+        development =
+
+        "進入変化を考慮。"+
+
+        "<br><br>"+
+
+        "スタート力の高い艇による攻めを警戒。";
+
+    }
+
+    if(wind >= 5){
+
+        development +=
+
+        "<br><br>"+
+
+        "⚠️ 強風のためスタート・外枠の攻めを通常より重視。";
+
+    }
+
+    if(wave >= 4){
+
+        development +=
+
+        "<br><br>"+
+
+        "⚠️ 波高が高いため、モーター機力を重視。";
+
+    }
+
+    document.getElementById(
+
+        "development"
+
+    ).innerHTML = `
+
+        <div class="aiBox">
+
+        <b>進入予想：</b>
+
+        ${entry}
+
+        <br><br>
+
+        ${development}
+
+        <br><br>
+
+        <b>本命：</b>
+
+        ${first.boat}号艇 ${first.name}
+
+        <br>
+
+        <b>対抗：</b>
+
+        ${second.boat}号艇 ${second.name}
+
+        <br>
+
+        <b>穴：</b>
+
+        ${third.boat}号艇 ${third.name}
+
+        </div>
+
+    `;
+
+    /*
+
+    ================================================
+
+    的中率重視
+
+    ================================================
+
+    */
+
+    document.getElementById(
+
+        "safe"
+
+    ).innerHTML = `
+
+        <div class="bet">
+
+        ${first.boat}-${second.boat}-${third.boat}
+
+        </div>
+
+        <div class="bet">
+
+        ${first.boat}-${third.boat}-${second.boat}
+
+        </div>
+
+        <div class="bet">
+
+        ${first.boat}-${second.boat}-${fourth.boat}
+
+        </div>
+
+    `;
+
+    /*
+
+    ================================================
+
+    回収率重視
+
+    ================================================
+
+    */
+
+    document.getElementById(
+
+        "value"
+
+    ).innerHTML = `
+
+        <div class="bet">
+
+        ${first.boat}-${third.boat}-${fourth.boat}
+
+        </div>
+
+        <div class="bet">
+
+        ${third.boat}-${first.boat}-${second.boat}
+
+        </div>
+
+        <div class="bet">
+
+        ${second.boat}-${third.boat}-${first.boat}
+
+        </div>
+
+    `;
+
+    /*
+
+    ================================================
+
+    穴狙い
+
+    ================================================
+
+    */
+
+    document.getElementById(
+
+        "dark"
+
+    ).innerHTML = `
+
+        <div class="bet">
+
+        🔥 ${third.boat}-${first.boat}-${fourth.boat}
+
+        </div>
+
+        <div class="bet">
+
+        🔥 ${fourth.boat}-${third.boat}-${first.boat}
+
+        </div>
+
+        <div class="bet">
+
+        🔥 ${third.boat}-${fourth.boat}-${first.boat}
+
+        </div>
+
+    `;
+
+}
+
+/*
+
+=================================================
+
+既存の解析ボタンから強化AIを呼び出す
+
+=================================================
+
+*/
+
+function analyze(){
+
+    enhancedAI();
+
+}
 </script>
 
 </body>
