@@ -2312,11 +2312,7 @@ function calculateExpectedValue(){
 
 function generateBettingLines(){
 
-    if(!selectedProgram ||
-
-       !selectedProgram.boats ||
-
-       selectedProgram.boats.length < 6){
+    if(!window.boatData){
 
         alert("先に出走表を取得してください。");
 
@@ -2324,9 +2320,135 @@ function generateBettingLines(){
 
     }
 
+    const programs =
+
+        window.boatData.programs || [];
+
+    const venue =
+
+        document.getElementById("venue").value;
+
+    const raceText =
+
+        document.getElementById("race").value;
+
+    const raceNumber =
+
+        parseInt(
+
+            raceText.replace("R",""),
+
+            10
+
+        );
+
+    const venueMap = {
+
+        "桐生":1,
+
+        "戸田":2,
+
+        "江戸川":3,
+
+        "平和島":4,
+
+        "多摩川":5,
+
+        "浜名湖":6,
+
+        "蒲郡":7,
+
+        "常滑":8,
+
+        "津":9,
+
+        "三国":10,
+
+        "びわこ":11,
+
+        "住之江":12,
+
+        "尼崎":13,
+
+        "鳴門":14,
+
+        "丸亀":15,
+
+        "児島":16,
+
+        "宮島":17,
+
+        "徳山":18,
+
+        "下関":19,
+
+        "若松":20,
+
+        "芦屋":21,
+
+        "福岡":22,
+
+        "唐津":23,
+
+        "大村":24
+
+    };
+
+    const stadiumNumber =
+
+        venueMap[venue];
+
+    const program =
+
+        programs.find(function(p){
+
+            return Number(p.stadium_number)
+
+                === stadiumNumber
+
+                &&
+
+                Number(p.number)
+
+                === raceNumber;
+
+        });
+
+    if(!program){
+
+        alert(
+
+            venue +
+
+            " " +
+
+            raceText +
+
+            " の出走表が見つかりません。"
+
+        );
+
+        return;
+
+    }
+
+    if(!program.boats ||
+
+       program.boats.length < 6){
+
+        alert(
+
+            "6艇分の出走データを取得できませんでした。"
+
+        );
+
+        return;
+
+    }
+
     const boats =
 
-        selectedProgram.boats
+        program.boats
 
         .slice()
 
@@ -2334,7 +2456,11 @@ function generateBettingLines(){
 
             return Number(a.racer_boat_number)
 
-                 - Number(b.racer_boat_number);
+                 -
+
+                   Number(b.racer_boat_number);
+
+        });
 
         });
 
