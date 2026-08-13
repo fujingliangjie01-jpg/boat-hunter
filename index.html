@@ -6,7 +6,9 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport"
+
+content="width=device-width,initial-scale=1.0">
 
 <title>BOAT HUNTER</title>
 
@@ -504,6 +506,94 @@ color:#888;
 
 }
 
+.pick-box{
+
+background:#0b0b0b;
+
+border:1px solid #333;
+
+border-radius:10px;
+
+padding:14px;
+
+margin-top:10px;
+
+}
+
+.pick-title{
+
+font-size:14px;
+
+font-weight:900;
+
+color:#d4af37;
+
+}
+
+.pick-line{
+
+padding:9px 0;
+
+border-bottom:1px solid #222;
+
+font-size:18px;
+
+font-weight:900;
+
+}
+
+.pick-line:last-child{
+
+border-bottom:none;
+
+}
+
+.pick-money{
+
+font-size:12px;
+
+color:#888;
+
+margin-left:8px;
+
+}
+
+.roi-main{
+
+border:1px solid #d4af37;
+
+box-shadow:0 0 12px rgba(212,175,55,.15);
+
+}
+
+.badge{
+
+display:inline-block;
+
+padding:4px 8px;
+
+border-radius:5px;
+
+font-size:10px;
+
+font-weight:900;
+
+margin-left:5px;
+
+background:#222;
+
+color:#fff;
+
+}
+
+.badge-main{
+
+background:#d4af37;
+
+color:#000;
+
+}
+
 footer{
 
 text-align:center;
@@ -555,12 +645,6 @@ BOAT HUNTER
 </header>
 
 <main class="container">
-
-<!-- ============================= -->
-
-<!-- レース選択 -->
-
-<!-- ============================= -->
 
 <section class="card">
 
@@ -682,12 +766,6 @@ step="100"
 
 <div id="result" class="hidden">
 
-<!-- ============================= -->
-
-<!-- 出走表 -->
-
-<!-- ============================= -->
-
 <section class="card">
 
 <div class="title">
@@ -699,12 +777,6 @@ step="100"
 <div id="boats" class="boats"></div>
 
 </section>
-
-<!-- ============================= -->
-
-<!-- スタート・展示 -->
-
-<!-- ============================= -->
 
 <section class="card">
 
@@ -726,12 +798,6 @@ step="100"
 
 </section>
 
-<!-- ============================= -->
-
-<!-- モーター -->
-
-<!-- ============================= -->
-
 <section class="card">
 
 <div class="title">
@@ -743,12 +809,6 @@ step="100"
 <div id="motorInfo"></div>
 
 </section>
-
-<!-- ============================= -->
-
-<!-- 風 -->
-
-<!-- ============================= -->
 
 <section class="card">
 
@@ -812,12 +872,6 @@ step="100"
 
 </section>
 
-<!-- ============================= -->
-
-<!-- 手動進入 -->
-
-<!-- ============================= -->
-
 <section class="card">
 
 <div class="title">
@@ -828,7 +882,7 @@ step="100"
 
 <div class="warning">
 
-展示・ピット離れを確認して、<br>
+展示・ピット離れを確認して、
 
 <strong>本番の進入コース順</strong>
 
@@ -886,12 +940,6 @@ onclick="analyzeRace()">
 
 </section>
 
-<!-- ============================= -->
-
-<!-- 前付け -->
-
-<!-- ============================= -->
-
 <section class="card">
 
 <div class="title">
@@ -911,12 +959,6 @@ onclick="analyzeRace()">
 </div>
 
 </section>
-
-<!-- ============================= -->
-
-<!-- AI解析 -->
-
-<!-- ============================= -->
 
 <section class="card">
 
@@ -938,12 +980,6 @@ onclick="analyzeRace()">
 
 </section>
 
-<!-- ============================= -->
-
-<!-- AIランキング -->
-
-<!-- ============================= -->
-
 <section class="card">
 
 <div class="title">
@@ -963,12 +999,6 @@ onclick="analyzeRace()">
 </div>
 
 </section>
-
-<!-- ============================= -->
-
-<!-- 最終評価 -->
-
-<!-- ============================= -->
 
 <section class="card">
 
@@ -990,12 +1020,6 @@ onclick="analyzeRace()">
 
 </section>
 
-<!-- ============================= -->
-
-<!-- 買い目 -->
-
-<!-- ============================= -->
-
 <section class="card">
 
 <div class="title">
@@ -1004,61 +1028,11 @@ onclick="analyzeRace()">
 
 </div>
 
-<div class="rank">
+<div id="pickArea">
 
-<strong>
+<div class="note">
 
-的中率重視
-
-</strong>
-
-<div
-
-id="hitPick"
-
-class="pick">
-
--
-
-</div>
-
-<div
-
-id="hitMoney"
-
-class="note">
-
--
-
-</div>
-
-</div>
-
-<div class="rank">
-
-<strong>
-
-回収率重視
-
-</strong>
-
-<div
-
-id="roiPick"
-
-class="pick">
-
--
-
-</div>
-
-<div
-
-id="roiMoney"
-
-class="note">
-
--
+解析待ち
 
 </div>
 
@@ -1077,12 +1051,6 @@ BOAT HUNTER © 2026
 </footer>
 
 <script>
-
-/* =====================================
-
-設定
-
-===================================== */
 
 const API_BASE =
 
@@ -1265,6 +1233,8 @@ throw new Error(
 }
 
 raceData = race;
+
+selectedEntry = [];
 
 displayRace(race);
 
@@ -1554,7 +1524,7 @@ element.innerHTML = html;
 
 /* =====================================
 
-モーター情報
+モーター
 
 ===================================== */
 
@@ -1652,7 +1622,7 @@ element.innerHTML = html;
 
 /* =====================================
 
-％表示
+％
 
 ===================================== */
 
@@ -1678,7 +1648,7 @@ return Number(value).toFixed(2) + "%";
 
 /* =====================================
 
-風・水面
+天候
 
 ===================================== */
 
@@ -1774,12 +1744,6 @@ w.wave_height,
 
 }
 
-/* =====================================
-
-文字セット
-
-===================================== */
-
 function setText(id,value){
 
 const el =
@@ -1795,12 +1759,6 @@ value ?? "--";
 }
 
 }
-
-/* =====================================
-
-単位
-
-===================================== */
 
 function valueWithUnit(
 
@@ -1878,12 +1836,6 @@ container.appendChild(button);
 
 }
 
-/* =====================================
-
-進入選択
-
-===================================== */
-
 function selectEntry(boat){
 
 if(
@@ -1919,12 +1871,6 @@ document
 selectedEntry.join("-");
 
 }
-
-/* =====================================
-
-ボタン状態
-
-===================================== */
 
 function updateEntryButtons(){
 
@@ -2010,15 +1956,11 @@ document
 
 document
 
-.getElementById("hitPick")
+.getElementById("pickArea")
 
-.innerText = "-";
+.innerHTML =
 
-document
-
-.getElementById("roiPick")
-
-.innerText = "-";
+'<div class="note">解析待ち</div>';
 
 }
 
@@ -2032,7 +1974,11 @@ function analyzeRace(){
 
 if(!raceData){
 
-alert("先に出走表を取得してください。");
+alert(
+
+"先に出走表を取得してください。"
+
+);
 
 return;
 
@@ -2040,7 +1986,11 @@ return;
 
 if(selectedEntry.length !== 6){
 
-alert("6艇すべての進入を入力してください。");
+alert(
+
+"6艇すべての進入を入力してください。"
+
+);
 
 return;
 
@@ -2052,7 +2002,7 @@ analyzeEntry();
 
 /* =====================================
 
-進入解析
+進入・展開・ランキング
 
 ===================================== */
 
@@ -2083,18 +2033,6 @@ entry[2];
 const maezuke =
 
 first !== 1;
-
-const maezukeBoat =
-
-maezuke
-
-?
-
-first
-
-:
-
-null;
 
 document
 
@@ -2146,9 +2084,7 @@ maezuke
 
 ?
 
-maezukeBoat +
-
-"号艇が1コース"
+first + "号艇が1コース"
 
 :
 
@@ -2170,7 +2106,7 @@ if(first === 1){
 
 developmentText =
 
-"1号艇のイン戦。2・3コースの差し/まくり差しが中心。";
+"1号艇のイン戦。2・3コースの差し・まくり差しを中心に評価。";
 
 }else{
 
@@ -2178,7 +2114,7 @@ developmentText =
 
 first +
 
-"号艇の前付けにより、1号艇が深くなる可能性を警戒。";
+"号艇が1コースを取る前付け。1号艇が深くなり、差し・まくり差し展開を警戒。";
 
 }
 
@@ -2238,7 +2174,11 @@ ${third}号艇
 
 <div class="ai-box">
 
-<strong>AI展開判断</strong>
+<strong>
+
+AI展開判断
+
+</strong>
 
 <div class="note">
 
@@ -2250,7 +2190,11 @@ ${developmentText}
 
 `;
 
-/* スコア */
+/* =====================================
+
+スコア
+
+===================================== */
 
 const ranking =
 
@@ -2302,7 +2246,7 @@ b.score-a.score
 
 );
 
-/* ランキング表示 */
+/* ランキング */
 
 const rankingElement =
 
@@ -2473,8 +2417,6 @@ ${entry.join("-")}
 </div>
 
 `;
-
-/* 買い目 */
 
 createPicks(
 
@@ -2648,37 +2590,49 @@ Number(
 
 document.getElementById("budget").value
 
-);
+) || 3000;
 
-/* 上位 */
+/* =====================================
 
-const a =
+順位
 
-ranking[0].number;
+===================================== */
 
-const b =
+const a = ranking[0].number;
 
-ranking[1].number;
+const b = ranking[1].number;
 
-const c =
+const c = ranking[2].number;
 
-ranking[2].number;
+const d = ranking[3].number;
 
-const d =
+const e = ranking[4].number;
 
-ranking[3].number;
+const f = ranking[5].number;
 
-const e =
+/* =====================================
 
-ranking[4].number;
+重複削除
 
-const f =
+===================================== */
 
-ranking[5].number;
+function unique(picks){
 
-/* 的中率 */
+return [...new Set(picks)];
 
-const hitPicks = [
+}
+
+/* =====================================
+
+的中率重視
+
+-------------------------------------
+
+評価1～3位を中心
+
+===================================== */
+
+let hitPicks = [
 
 `${a}-${b}-${c}`,
 
@@ -2690,97 +2644,315 @@ const hitPicks = [
 
 `${b}-${a}-${c}`,
 
-`${b}-${c}-${a}`
+`${b}-${c}-${a}`,
+
+`${c}-${a}-${b}`
 
 ];
 
-/* 回収率 */
+hitPicks =
 
-const roiPicks = [
+unique(hitPicks);
 
-`${c}-${a}-${b}`,
+/* =====================================
+
+回収率重視
+
+-------------------------------------
+
+評価上位を残しながら穴を追加
+
+===================================== */
+
+let roiPicks = [
+
+/* 1位頭 */
+
+`${a}-${b}-${c}`,
+
+`${a}-${c}-${b}`,
+
+`${a}-${b}-${d}`,
+
+/* 2位頭 */
+
+`${b}-${a}-${c}`,
 
 `${b}-${c}-${a}`,
 
+`${b}-${a}-${d}`,
+
+/* 3位頭 */
+
+`${c}-${a}-${b}`,
+
 `${c}-${b}-${a}`,
+
+`${c}-${a}-${d}`,
+
+/* 4位頭 */
 
 `${d}-${a}-${b}`,
 
-`${d}-${c}-${a}`,
+`${d}-${b}-${a}`,
+
+/* 5位頭 */
 
 `${e}-${a}-${b}`
 
 ];
 
-const hitMoney =
+roiPicks =
+
+unique(roiPicks);
+
+/* =====================================
+
+予算配分
+
+===================================== */
+
+let hitBudget =
 
 Math.floor(
 
-budget * 0.6
+budget * 0.60 / 100
+
+) * 100;
+
+let roiBudget =
+
+budget - hitBudget;
+
+/* =====================================
+
+点数に合わせて均等配分
+
+===================================== */
+
+let hitUnit =
+
+Math.floor(
+
+hitBudget /
+
+hitPicks.length /
+
+100
+
+) * 100;
+
+let roiUnit =
+
+Math.floor(
+
+roiBudget /
+
+roiPicks.length /
+
+100
+
+) * 100;
+
+/* =====================================
+
+最低100円
+
+===================================== */
+
+if(hitUnit < 100){
+
+hitUnit = 100;
+
+}
+
+if(roiUnit < 100){
+
+roiUnit = 100;
+
+}
+
+/* =====================================
+
+実投資額
+
+===================================== */
+
+const hitActual =
+
+hitUnit *
+
+hitPicks.length;
+
+const roiActual =
+
+roiUnit *
+
+roiPicks.length;
+
+/* =====================================
+
+表示HTML
+
+===================================== */
+
+function makePickHTML(
+
+picks,
+
+unit,
+
+main
+
+){
+
+return picks
+
+.map(
+
+function(p,index){
+
+const firstBoat =
+
+Number(
+
+p.split("-")[0]
 
 );
 
-const roiMoney =
+let badge = "";
 
-budget - hitMoney;
+if(firstBoat === a){
 
-/* 表示 */
+badge =
 
-document
+'<span class="badge badge-main">AI1位</span>';
 
-.getElementById("hitPick")
+}
 
-.innerHTML =
+return `
 
-hitPicks
+<div class="pick-line">
 
-.map(
+${index+1}. ${p}
 
-p => "・" + p
+${badge}
 
-)
+<span class="pick-money">
 
-.join("<br>");
+${unit}円
 
-document
+</span>
 
-.getElementById("hitMoney")
+</div>
 
-.innerText =
+`;
 
-"予算 " +
+})
 
-hitMoney +
+.join("");
 
-"円";
+}
 
-document
+/* =====================================
 
-.getElementById("roiPick")
+買い目表示
 
-.innerHTML =
-
-roiPicks
-
-.map(
-
-p => "・" + p
-
-)
-
-.join("<br>");
+===================================== */
 
 document
 
-.getElementById("roiMoney")
+.getElementById("pickArea")
 
-.innerText =
+.innerHTML = `
 
-"予算 " +
+<div class="pick-box">
 
-roiMoney +
+<div class="pick-title">
 
-"円";
+🟢 的中率重視
+
+</div>
+
+<div class="note">
+
+AI評価1～3位を中心に、的中しやすい組み合わせを優先
+
+</div>
+
+${makePickHTML(
+
+hitPicks,
+
+hitUnit,
+
+false
+
+)}
+
+<div class="note">
+
+予算配分：${hitActual}円
+
+</div>
+
+</div>
+
+<div class="pick-box roi-main">
+
+<div class="pick-title">
+
+🔥 回収率重視
+
+</div>
+
+<div class="note">
+
+AI評価1位を残しつつ、4～5位の穴頭まで拾う構成
+
+</div>
+
+${makePickHTML(
+
+roiPicks,
+
+roiUnit,
+
+true
+
+)}
+
+<div class="note">
+
+予算配分：${roiActual}円
+
+</div>
+
+</div>
+
+<div class="ai-box">
+
+<strong>
+
+🎯 AI買い目の考え方
+
+</strong>
+
+<div class="note">
+
+・AI評価上位を買い目から除外しない<br>
+
+・回収率重視では上位＋中位評価＋穴を組み合わせる<br>
+
+・同一買い目は重複購入しない<br>
+
+・予算に応じて1点100円単位で配分
+
+</div>
+
+</div>
+
+`;
 
 }
 
