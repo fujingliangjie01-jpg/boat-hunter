@@ -6,123 +6,177 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>BOAT HUNTER</title>
 
 <style>
 
+*{box-sizing:border-box}
+
 body{
 
-margin:0;
+  margin:0;
 
-background:#050505;
+  background:#050505;
 
-color:white;
+  color:#fff;
 
-font-family:Arial,sans-serif;
+  font-family:Arial,sans-serif;
 
 }
 
 header{
 
-background:#000;
+  background:#000;
 
-color:#d4af37;
+  color:#d4af37;
 
-text-align:center;
+  text-align:center;
 
-padding:25px;
+  padding:22px 10px;
 
-font-size:32px;
+  font-size:30px;
 
-font-weight:bold;
+  font-weight:bold;
 
-border-bottom:2px solid #d4af37;
+  border-bottom:2px solid #d4af37;
+
+}
+
+.sub{
+
+  text-align:center;
+
+  color:#aaa;
+
+  padding:10px;
 
 }
 
-.container{
-
-padding:20px;
-
-}
+.container{padding:15px}
 
 .card{
 
-background:#151515;
+  background:#151515;
 
-border:1px solid #d4af37;
+  border:1px solid #d4af37;
 
-border-radius:15px;
+  border-radius:14px;
 
-padding:20px;
+  padding:16px;
 
-margin-bottom:20px;
+  margin-bottom:16px;
 
 }
 
 .title{
 
-color:#d4af37;
+  color:#d4af37;
 
-font-size:20px;
+  font-size:19px;
 
-margin-bottom:15px;
+  font-weight:bold;
+
+  margin-bottom:14px;
+
+}
+
+label{
+
+  display:block;
+
+  color:#aaa;
+
+  font-size:13px;
+
+  margin-top:8px;
 
 }
 
 select,input{
 
-width:100%;
+  width:100%;
 
-padding:14px;
+  padding:12px;
 
-margin-bottom:15px;
+  margin-top:5px;
 
-border-radius:8px;
+  margin-bottom:8px;
+
+  border-radius:7px;
+
+  border:1px solid #555;
+
+  font-size:16px;
 
 }
 
 button{
 
-width:100%;
+  width:100%;
 
-padding:16px;
+  padding:15px;
 
-background:#d4af37;
+  margin-top:10px;
 
-border:none;
+  background:#d4af37;
 
-border-radius:10px;
+  color:#000;
 
-font-size:18px;
+  border:0;
 
-font-weight:bold;
+  border-radius:10px;
 
-}
+  font-size:17px;
 
-.rank{
-
-background:#222;
-
-padding:12px;
-
-margin-top:10px;
-
-border-radius:8px;
-
-display:flex;
-
-justify-content:space-between;
+  font-weight:bold;
 
 }
 
-.gold{
+.boat{
 
-color:#d4af37;
+  border:1px solid #333;
+
+  padding:12px;
+
+  margin-bottom:12px;
+
+  border-radius:10px;
+
+  background:#101010;
 
 }
+
+.boat h3{
+
+  color:#d4af37;
+
+  margin:0 0 8px;
+
+}
+
+.result{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  padding:12px;
+
+  margin:7px 0;
+
+  background:#222;
+
+  border-radius:8px;
+
+}
+
+.gold{color:#d4af37}
+
+.center{text-align:center}
+
+.hidden{display:none}
 
 </style>
 
@@ -130,195 +184,179 @@ color:#d4af37;
 
 <body>
 
-<header>
+<header>🚤 BOAT HUNTER</header>
 
-🚤 BOAT HUNTER
-
-</header>
+<div class="sub">人気ではなく期待値で勝つ</div>
 
 <div class="container">
+
+<!-- ホーム -->
 
 <div id="home">
 
 <div class="card">
 
-<div class="title">
+<div class="title">🏟 レース情報</div>
 
-🏟 競艇場
+<label>競艇場</label>
 
-</div>
-
-<select>
-
-<option>戸田</option>
-
-<option>平和島</option>
+<select id="venue">
 
 <option>桐生</option>
 
+<option>戸田</option>
+
+<option>江戸川</option>
+
+<option>平和島</option>
+
+<option>多摩川</option>
+
+<option>浜名湖</option>
+
+<option>蒲郡</option>
+
+<option>常滑</option>
+
+<option>津</option>
+
+<option>三国</option>
+
+<option>びわこ</option>
+
 <option>住之江</option>
+
+<option>尼崎</option>
+
+<option>鳴門</option>
+
+<option>丸亀</option>
+
+<option>児島</option>
+
+<option>宮島</option>
+
+<option>徳山</option>
+
+<option>下関</option>
+
+<option>若松</option>
+
+<option>芦屋</option>
+
+<option>福岡</option>
+
+<option>唐津</option>
 
 <option>大村</option>
 
 </select>
 
-<div class="title">
+<label>レース番号</label>
 
-🏁 レース番号
-
-</div>
-
-<select>
+<select id="race">
 
 <option>1R</option>
 
+<option>2R</option>
+
+<option>3R</option>
+
+<option>4R</option>
+
+<option>5R</option>
+
 <option>6R</option>
+
+<option>7R</option>
+
+<option>8R</option>
+
+<option>9R</option>
+
+<option>10R</option>
+
+<option>11R</option>
 
 <option>12R</option>
 
 </select>
 
-<div class="title">
+<label>予算（円）</label>
 
-💰 予算
+<input id="budget" type="number" placeholder="例：5000">
 
-</div>
-
-<input placeholder="5000円">
-
-<button onclick="analysis()">
-
-AI解析開始
-
-</button>
+<button onclick="showInput()">AI解析開始</button>
 
 </div>
 
 </div>
 
-<div id="result" style="display:none;">
+<!-- データ入力 -->
+
+<div id="inputPage" class="hidden">
 
 <div class="card">
 
-<div class="title">
+<div class="title">📊 6艇データ入力</div>
 
-🔥 AI期待値ランキング
+<p style="color:#aaa;font-size:13px">
 
-</div>
+全国勝率・モーター2連率・平均STを入力してください。
 
-<div class="rank">
-
-🥇 1号艇
-
-<span>86点</span>
+</p>
 
 </div>
 
-<div class="rank">
+<div id="boats"></div>
 
-🥈 3号艇
-
-<span>78点</span>
+<button onclick="analyze()">🔥 解析する</button>
 
 </div>
 
-<div class="rank">
+<!-- 結果 -->
 
-🥉 5号艇
+<div id="resultPage" class="hidden">
 
-<span>72点</span>
+<div class="card">
 
-</div>
+<div class="title">🔥 AI期待値ランキング</div>
+
+<div id="ranking"></div>
 
 </div>
 
 <div class="card">
 
-<div class="title">
+<div class="title">🏆 AI判定</div>
 
-🏆 AI判定
-
-</div>
-
-<p>
-
-◎ 本命：1号艇
-
-</p>
-
-<p>
-
-○ 対抗：3号艇
-
-</p>
-
-<p>
-
-▲ 穴馬：5号艇
-
-</p>
+<div id="judgement"></div>
 
 </div>
 
 <div class="card">
 
-<div class="title">
+<div class="title">🌊 展開予想</div>
 
-🌊 展開予想
-
-</div>
-
-<p>
-
-1号艇逃げ中心</p>
-
-<p>
-
-3号艇差し警戒</p>
-
-<p>
-
-5号艇まくり差し期待</p>
+<div id="development"></div>
 
 </div>
 
 <div class="card">
 
-<div class="title">
+<div class="title">💰 買い目</div>
 
-💰 買い目
+<h3 class="gold">🎯 的中率重視</h3>
 
-</div>
+<div id="safe"></div>
 
-<h3 class="gold">
+<h3 class="gold">💎 回収率重視</h3>
 
-的中率重視
-
-</h3>
-
-<p>
-
-1-3-5<br>
-
-1-5-3
-
-</p>
-
-<h3 class="gold">
-
-回収率重視
-
-</h3>
-
-<p>
-
-5-1-3<br>
-
-3-5-1
-
-</p>
+<div id="value"></div>
 
 </div>
+
+<button onclick="location.reload()">↩ 最初に戻る</button>
 
 </div>
 
@@ -326,11 +364,163 @@ AI解析開始
 
 <script>
 
-function analysis(){
+function showInput(){
 
-document.getElementById("home").style.display="none";
+  document.getElementById("home").classList.add("hidden");
 
-document.getElementById("result").style.display="block";
+  document.getElementById("inputPage").classList.remove("hidden");
+
+  let html="";
+
+  for(let i=1;i<=6;i++){
+
+    html += `
+
+    <div class="boat">
+
+    <h3>${i}号艇</h3>
+
+    <label>選手名</label>
+
+    <input id="name${i}" placeholder="選手名">
+
+    <label>級別</label>
+
+    <select id="class${i}">
+
+      <option>A1</option>
+
+      <option>A2</option>
+
+      <option>B1</option>
+
+      <option>B2</option>
+
+    </select>
+
+    <label>全国勝率</label>
+
+    <input id="win${i}" type="number" step="0.01" placeholder="例 6.50">
+
+    <label>モーター2連率（%）</label>
+
+    <input id="motor${i}" type="number" step="0.1" placeholder="例 40.0">
+
+    <label>平均ST</label>
+
+    <input id="st${i}" type="number" step="0.01" placeholder="例 0.15">
+
+    </div>`;
+
+  }
+
+  document.getElementById("boats").innerHTML=html;
+
+}
+
+function analyze(){
+
+  let data=[];
+
+  for(let i=1;i<=6;i++){
+
+    let name=document.getElementById("name"+i).value || i+"号艇";
+
+    let cls=document.getElementById("class"+i).value;
+
+    let win=parseFloat(document.getElementById("win"+i).value)||0;
+
+    let motor=parseFloat(document.getElementById("motor"+i).value)||0;
+
+    let st=parseFloat(document.getElementById("st"+i).value)||0.20;
+
+    let classPoint={
+
+      "A1":10,
+
+      "A2":7,
+
+      "B1":4,
+
+      "B2":2
+
+    }[cls];
+
+    let score =
+
+      win*8 +
+
+      motor*0.5 +
+
+      (0.20-st)*40 +
+
+      classPoint;
+
+    data.push({
+
+      boat:i,
+
+      name:name,
+
+      score:score
+
+    });
+
+  }
+
+  data.sort((a,b)=>b.score-a.score);
+
+  document.getElementById("inputPage").classList.add("hidden");
+
+  document.getElementById("resultPage").classList.remove("hidden");
+
+  let ranking="";
+
+  data.forEach((x,index)=>{
+
+    ranking += `
+
+    <div class="result">
+
+      <span>${index+1}位　${x.boat}号艇 ${x.name}</span>
+
+      <strong>${x.score.toFixed(1)}点</strong>
+
+    </div>`;
+
+  });
+
+  document.getElementById("ranking").innerHTML=ranking;
+
+  document.getElementById("judgement").innerHTML=`
+
+    <p>◎ 本命：<strong>${data[0].boat}号艇</strong></p>
+
+    <p>○ 対抗：<strong>${data[1].boat}号艇</strong></p>
+
+    <p>▲ 穴：<strong>${data[2].boat}号艇</strong></p>
+
+  `;
+
+  document.getElementById("development").innerHTML=
+
+    `${data[0].boat}号艇を中心に展開。`+
+
+    `<br>上位艇のST・選手力を重視した評価です。`;
+
+  let a=data[0].boat;
+
+  let b=data[1].boat;
+
+  let c=data[2].boat;
+
+  document.getElementById("safe").innerHTML=
+
+    `${a}-${b}-${c}<br>${a}-${c}-${b}`;
+
+  document.getElementById("value").innerHTML=
+
+    `${c}-${a}-${b}<br>${b}-${c}-${a}`;
 
 }
 
