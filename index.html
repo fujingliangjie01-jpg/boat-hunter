@@ -138,12 +138,6 @@ font-weight:bold;
 
 }
 
-button:active{
-
-transform:scale(.98);
-
-}
-
 .secondary{
 
 background:#222;
@@ -154,25 +148,9 @@ border:1px solid #d4af37;
 
 }
 
-.boat{
+.hidden{
 
-background:#101010;
-
-border:1px solid #333;
-
-border-radius:10px;
-
-padding:13px;
-
-margin-bottom:12px;
-
-}
-
-.boat h3{
-
-color:#d4af37;
-
-margin-top:0;
+display:none;
 
 }
 
@@ -204,9 +182,17 @@ color:#ff7777;
 
 }
 
-.warning{
+.racer{
 
-color:#ffd166;
+padding:12px;
+
+margin:8px 0;
+
+background:#101010;
+
+border-left:4px solid #d4af37;
+
+border-radius:7px;
 
 }
 
@@ -258,26 +244,6 @@ font-size:18px;
 
 }
 
-.hidden{
-
-display:none;
-
-}
-
-.racer{
-
-padding:12px;
-
-margin:8px 0;
-
-background:#101010;
-
-border-left:4px solid #d4af37;
-
-border-radius:7px;
-
-}
-
 </style>
 
 </head>
@@ -306,11 +272,7 @@ padding:8px;
 
 <div class="container">
 
-<!-- =========================
-
-HOME
-
-========================= -->
+<!-- HOME -->
 
 <div id="home">
 
@@ -322,11 +284,7 @@ HOME
 
 </div>
 
-<label>
-
-競艇場
-
-</label>
+<label>競艇場</label>
 
 <select id="venue">
 
@@ -380,11 +338,7 @@ HOME
 
 </select>
 
-<label>
-
-レース番号
-
-</label>
+<label>レース番号</label>
 
 <select id="race">
 
@@ -414,11 +368,7 @@ HOME
 
 </select>
 
-<label>
-
-予算
-
-</label>
+<label>予算</label>
 
 <input
 
@@ -426,9 +376,7 @@ id="budget"
 
 type="number"
 
-placeholder="例：5000"
-
->
+placeholder="例：5000">
 
 <button onclick="startApp()">
 
@@ -440,11 +388,7 @@ placeholder="例：5000"
 
 </div>
 
-<!-- =========================
-
-INPUT
-
-========================= -->
+<!-- INPUT -->
 
 <div id="inputPage"
 
@@ -468,9 +412,7 @@ onclick="getProgram()">
 
 </button>
 
-<div
-
-id="status"
+<div id="status"
 
 class="status">
 
@@ -494,84 +436,6 @@ class="status">
 
 </div>
 
-<div class="card">
-
-<div class="title">
-
-🌊 水面情報
-
-</div>
-
-<label>
-
-風速
-
-</label>
-
-<input
-
-id="wind"
-
-type="number"
-
-step="0.1"
-
-placeholder="例：3.0"
-
->
-
-<label>
-
-風向
-
-</label>
-
-<select id="windDir">
-
-<option>無風</option>
-
-<option>追い風</option>
-
-<option>向かい風</option>
-
-<option>左横風</option>
-
-<option>右横風</option>
-
-</select>
-
-<label>
-
-波高
-
-</label>
-
-<input
-
-id="wave"
-
-type="number"
-
-placeholder="例：2"
-
->
-
-<label>
-
-進入予想
-
-</label>
-
-<input
-
-id="entry"
-
-value="123456"
-
->
-
-</div>
-
 <button onclick="analyze()">
 
 🔥 BOAT HUNTER解析
@@ -580,11 +444,7 @@ value="123456"
 
 </div>
 
-<!-- =========================
-
-RESULT
-
-========================= -->
+<!-- RESULT -->
 
 <div id="resultPage"
 
@@ -687,6 +547,7 @@ class="hidden">
 </div>
 
 </div>
+
 <div class="card">
 
 <div class="title">
@@ -695,17 +556,12 @@ class="hidden">
 
 </div>
 
-<div class="status">
-
-オッズを入力するとAI期待値を計算します。
-
-</div>
-
 <div id="expectedValue">
 
 </div>
 
 </div>
+
 <button onclick="location.reload()">
 
 ↩ 最初に戻る
@@ -718,13 +574,13 @@ class="hidden">
 
 <script>
 
-/* =====================================
+/* =========================
 
 会場番号
 
-===================================== */
+========================= */
 
-const venueMap = {
+const venueMap={
 
 "桐生":1,
 
@@ -776,21 +632,15 @@ const venueMap = {
 
 };
 
-/* =====================================
+let boatData=null;
 
-APIデータ
+let currentProgram=null;
 
-===================================== */
-
-let boatData = null;
-
-let currentProgram = null;
-
-/* =====================================
+/* =========================
 
 開始
 
-===================================== */
+========================= */
 
 function startApp(){
 
@@ -808,45 +658,41 @@ document
 
 }
 
-/* =====================================
+/* =========================
 
 出走表取得
 
-===================================== */
+========================= */
 
 async function getProgram(){
 
-const venue =
+const venue=
 
 document.getElementById("venue").value;
 
-const race =
+const race=
 
 parseInt(
 
-document
+document.getElementById("race")
 
-.getElementById("race")
-
-.value
-
-.replace("R",""),
+.value.replace("R",""),
 
 10
 
 );
 
-const status =
+const status=
 
 document.getElementById("status");
 
-status.innerHTML =
+status.innerHTML=
 
-"⏳ 無料出走表を取得中...";
+"⏳ 出走表を取得中...";
 
 try{
 
-const response =
+const response=
 
 await fetch(
 
@@ -864,33 +710,29 @@ throw new Error(
 
 }
 
-boatData =
+boatData=
 
 await response.json();
 
-const stadium =
+const stadium=
 
 venueMap[venue];
 
-currentProgram =
+currentProgram=
 
 boatData.programs.find(
 
 function(p){
 
-return Number(
+return Number(p.stadium_number)
 
-p.stadium_number
-
-) === stadium
+===stadium
 
 &&
 
-Number(
+Number(p.number)
 
-p.number
-
-) === race;
+===race;
 
 });
 
@@ -898,13 +740,7 @@ if(!currentProgram){
 
 throw new Error(
 
-venue+
-
-" "+
-
-race+
-
-"Rのデータが見つかりません"
+venue+" "+race+"Rが見つかりません"
 
 );
 
@@ -914,13 +750,13 @@ if(
 
 !currentProgram.boats ||
 
-currentProgram.boats.length < 6
+currentProgram.boats.length<6
 
 ){
 
 throw new Error(
 
-"6艇の出走表がありません"
+"6艇のデータがありません"
 
 );
 
@@ -932,7 +768,7 @@ currentProgram.boats
 
 );
 
-status.innerHTML =
+status.innerHTML=
 
 "<span class='success'>"+
 
@@ -942,21 +778,11 @@ status.innerHTML =
 
 "<br><br>"+
 
-venue+
-
-" "+
-
-race+
-
-"R"+
+venue+" "+race+"R"+
 
 "<br>"+
 
-currentProgram.title+
-
-"<br><br>"+
-
-"選手名・成績データを取得しました。";
+currentProgram.title;
 
 }
 
@@ -964,7 +790,7 @@ catch(error){
 
 console.error(error);
 
-status.innerHTML =
+status.innerHTML=
 
 "<span class='error'>"+
 
@@ -980,49 +806,37 @@ error.message;
 
 }
 
-/* =====================================
+/* =========================
 
-6艇表示
+選手表示
 
-===================================== */
+========================= */
 
 function displayBoats(boats){
 
-let html = "";
+let html="";
 
 boats
 
 .slice()
 
-.sort(
+.sort(function(a,b){
 
-function(a,b){
-
-return Number(
-
-a.racer_boat_number
-
-)
+return Number(a.racer_boat_number)
 
 -
 
-Number(
-
-b.racer_boat_number
-
-);
+Number(b.racer_boat_number);
 
 })
 
-.forEach(
+.forEach(function(b){
 
-function(b){
-
-html += `
+html+=`
 
 <div class="racer">
 
-<b style="color:#d4af37;font-size:18px;">
+<b style="color:#d4af37;font-size:18px">
 
 ${b.racer_boat_number}号艇
 
@@ -1032,11 +846,11 @@ ${b.racer_boat_number}号艇
 
 <strong>
 
-${b.racer_name || "不明"}
+${b.racer_name||"不明"}
 
 </strong>
 
-<br>
+<br><br>
 
 登録番号：
 
@@ -1102,61 +916,49 @@ document
 
 .getElementById("boats")
 
-.innerHTML =
-
-html;
+.innerHTML=html;
 
 }
 
-/* =====================================
+/* =========================
 
 級別
 
-===================================== */
+========================= */
 
 function className(n){
 
-if(Number(n)===1)
+if(Number(n)===1)return"A1";
 
-return "A1";
+if(Number(n)===2)return"A2";
 
-if(Number(n)===2)
+if(Number(n)===3)return"B1";
 
-return "A2";
-
-if(Number(n)===3)
-
-return "B1";
-
-return "B2";
+return"B2";
 
 }
 
-/* =====================================
+/* =========================
 
 数値
 
-===================================== */
+========================= */
 
 function num(n){
 
-const x =
+const x=Number(n);
 
-Number(n);
-
-if(isNaN(x))
-
-return "-";
+if(isNaN(x))return"-";
 
 return x.toFixed(2);
 
 }
 
-/* =====================================
+/* =========================
 
 AI解析
 
-===================================== */
+========================= */
 
 function analyze(){
 
@@ -1172,123 +974,77 @@ return;
 
 }
 
-const boats =
+const boats=
 
 currentProgram.boats
 
 .slice()
 
-.sort(
+.sort(function(a,b){
 
-function(a,b){
-
-return Number(
-
-a.racer_boat_number
-
-)
+return Number(a.racer_boat_number)
 
 -
 
-Number(
-
-b.racer_boat_number
-
-);
+Number(b.racer_boat_number);
 
 });
 
-let ranking =
+let ranking=
 
-boats.map(
+boats.map(function(b,index){
 
-function(b,index){
-
-const national =
+const national=
 
 Number(
 
 b.racer_national_top_3_percent
 
-) || 0;
+)||0;
 
-const local =
+const local=
 
 Number(
 
 b.racer_local_top_3_percent
 
-) || 0;
+)||0;
 
-const motor2 =
+const motor2=
 
 Number(
 
 b.racer_assigned_motor_top_2_percent
 
-) || 0;
+)||0;
 
-const motor3 =
+const motor3=
 
 Number(
 
 b.racer_assigned_motor_top_3_percent
 
-) || 0;
+)||0;
 
-const st =
+const st=
 
 Number(
 
 b.racer_average_start_timing
 
-) || 0.20;
+)||0.20;
 
-let score = 0;
+let score=0;
 
-/*
+score+=national*0.40;
 
-全国成績
+score+=local*0.30;
 
-*/
+score+=motor2*0.25;
 
-score +=
+score+=motor3*0.10;
 
-national * 0.40;
-
-/*
-
-当地成績
-
-*/
-
-score +=
-
-local * 0.30;
-
-/*
-
-モーター
-
-*/
-
-score +=
-
-motor2 * 0.25;
-
-score +=
-
-motor3 * 0.10;
-
-/*
-
-ST
-
-*/
-
-score +=
-
-Math.max(
+score+=Math.max(
 
 0,
 
@@ -1296,63 +1052,43 @@ Math.max(
 
 );
 
-/*
-
-枠番
-
-*/
-
-score +=
+score+=
 
 [22,13,10,7,4,2][index];
 
-/*
-
-A級
-
-*/
-
 if(
 
-Number(
+Number(b.racer_class_number)===1
 
-b.racer_class_number
+){
 
-) === 1
+score+=6;
 
-)
-
-score += 6;
+}
 
 else if(
 
-Number(
+Number(b.racer_class_number)===2
 
-b.racer_class_number
+){
 
-) === 2
+score+=4;
 
-)
-
-score += 4;
+}
 
 else if(
 
-Number(
+Number(b.racer_class_number)===3
 
-b.racer_class_number
+){
 
-) === 3
+score+=2;
 
-)
+}
 
-score += 2;
+return{
 
-return {
-
-boat:
-
-Number(
+boat:Number(
 
 b.racer_boat_number
 
@@ -1360,47 +1096,29 @@ b.racer_boat_number
 
 name:
 
-b.racer_name ||
+b.racer_name||"不明",
 
-"不明",
-
-score:
-
-score
+score:score
 
 };
 
 });
 
-ranking.sort(
-
-function(a,b){
+ranking.sort(function(a,b){
 
 return b.score-a.score;
 
 });
 
-const first =
+const first=ranking[0];
 
-ranking[0];
+const second=ranking[1];
 
-const second =
+const third=ranking[2];
 
-ranking[1];
+const fourth=ranking[3];
 
-const third =
-
-ranking[2];
-
-const fourth =
-
-ranking[3];
-
-/* =====================================
-
-結果画面
-
-===================================== */
+/* 結果画面 */
 
 document
 
@@ -1420,7 +1138,7 @@ document
 
 .getElementById("judgement")
 
-.innerHTML = `
+.innerHTML=`
 
 <p>
 
@@ -1472,27 +1190,21 @@ ${third.name}
 
 `;
 
-/* =====================================
+/* ランキング */
 
-ランキング
+let rankingHTML="";
 
-===================================== */
+ranking.forEach(function(x,i){
 
-let rankingHTML = "";
-
-ranking.forEach(
-
-function(x,i){
-
-rankingHTML += `
+rankingHTML+=`
 
 <div class="result">
 
 <span>
 
-${i+1}位　
+${i+1}位
 
-${x.boat}号艇　
+${x.boat}号艇
 
 ${x.name}
 
@@ -1514,69 +1226,43 @@ document
 
 .getElementById("ranking")
 
-.innerHTML =
+.innerHTML=
 
 rankingHTML;
 
-/* =====================================
-
-展開
-
-===================================== */
+/* 展開 */
 
 document
 
 .getElementById("development")
 
-.innerHTML =
+.innerHTML=
 
 "基本展開：1号艇のイン逃げを軸に評価。"+
 
 "<br><br>"+
 
-"◎ "+
-
-first.boat+
-
-"号艇 "+
-
-first.name+
+"◎ "+first.boat+"号艇 "+first.name+
 
 "<br>"+
 
-"○ "+
-
-second.boat+
-
-"号艇 "+
-
-second.name+
+"○ "+second.boat+"号艇 "+second.name+
 
 "<br>"+
 
-"▲ "+
-
-third.boat+
-
-"号艇 "+
-
-third.name+
+"▲ "+third.boat+"号艇 "+third.name+
 
 "<br><br>"+
 
 "全国成績・当地成績・モーター・ST・枠番を総合評価。";
 
-/* =====================================
-
-的中率重視
-
-===================================== */
+/* 的中率 */
 
 document
 
 .getElementById("safe")
 
-.innerHTML = `
+.innerHTML=`
 
 <div class="bet">
 
@@ -1598,17 +1284,13 @@ ${first.boat}-${second.boat}-${fourth.boat}
 
 `;
 
-/* =====================================
-
-回収率重視
-
-===================================== */
+/* 回収率 */
 
 document
 
 .getElementById("value")
 
-.innerHTML = `
+.innerHTML=`
 
 <div class="bet">
 
@@ -1630,17 +1312,13 @@ ${second.boat}-${third.boat}-${first.boat}
 
 `;
 
-/* =====================================
-
-穴狙い
-
-===================================== */
+/* 穴 */
 
 document
 
 .getElementById("dark")
 
-.innerHTML = `
+.innerHTML=`
 
 <div class="bet">
 
@@ -1662,89 +1340,55 @@ document
 
 `;
 
-/* =====================================
+/* AI自動買い目 */
 
-AI自動買い目
+generateAutoBets(ranking);
 
-===================================== */
+/* 期待値 */
 
-generateAutoBets(
-
-ranking
-
-);
+generateExpectedValue(ranking);
 
 }
 
-/* =====================================
+/* =========================
 
 AI自動買い目
 
-===================================== */
+========================= */
 
-function generateAutoBets(
+function generateAutoBets(ranking){
 
-ranking
-
-){
-
-const top =
+const top=
 
 ranking.slice(0,4);
 
-let combinations = [];
+let combinations=[];
 
-top.forEach(
+top.forEach(function(a){
 
-function(a){
+top.forEach(function(b){
 
-top.forEach(
-
-function(b){
-
-top.forEach(
-
-function(c){
+top.forEach(function(c){
 
 if(
 
-a.boat===b.boat ||
+a.boat===b.boat||
 
-a.boat===c.boat ||
+a.boat===c.boat||
 
 b.boat===c.boat
 
-){
-
-return;
-
-}
-
-let score =
-
-a.score *
-
-b.score *
-
-c.score;
+)return;
 
 combinations.push({
 
 bet:
 
-a.boat+
-
-"-"+
-
-b.boat+
-
-"-"+
-
-c.boat,
+a.boat+"-"+b.boat+"-"+c.boat,
 
 score:
 
-score
+a.score*b.score*c.score
 
 });
 
@@ -1754,49 +1398,39 @@ score
 
 });
 
-combinations.sort(
-
-function(a,b){
+combinations.sort(function(a,b){
 
 return b.score-a.score;
 
 });
 
-const best =
+const best=
 
 combinations.slice(0,10);
 
-let total = 0;
+let total=0;
 
-best.forEach(
+best.forEach(function(x){
 
-function(x){
-
-total += x.score;
+total+=x.score;
 
 });
 
-let html = "";
+let html="";
 
-best.forEach(
+best.forEach(function(x,i){
 
-function(x,i){
+const probability=
 
-const probability =
+x.score/total*100;
 
-x.score /
-
-total *
-
-100;
-
-html += `
+html+=`
 
 <div class="bet">
 
 <b>
 
-${i+1}位　
+${i+1}位
 
 ${x.bet}
 
@@ -1824,31 +1458,265 @@ document
 
 .getElementById("autoBet")
 
-.innerHTML =
+.innerHTML=
 
 html;
 
 }
 
-/* =====================================
+/* =========================
 
-ページ表示時
+期待値分析
 
-===================================== */
+========================= */
 
-window.addEventListener(
+function generateExpectedValue(ranking){
 
-"load",
+const top=
 
-function(){
+ranking.slice(0,4);
 
-console.log(
+let combinations=[];
 
-"BOAT HUNTER READY"
+top.forEach(function(a){
+
+top.forEach(function(b){
+
+top.forEach(function(c){
+
+if(
+
+a.boat===b.boat||
+
+a.boat===c.boat||
+
+b.boat===c.boat
+
+)return;
+
+combinations.push({
+
+bet:
+
+a.boat+"-"+b.boat+"-"+c.boat,
+
+score:
+
+a.score+b.score+c.score
+
+});
+
+});
+
+});
+
+});
+
+combinations.sort(function(a,b){
+
+return b.score-a.score;
+
+});
+
+const best=
+
+combinations.slice(0,10);
+
+let total=0;
+
+best.forEach(function(x){
+
+total+=x.score;
+
+});
+
+let html=`
+
+<div class="status">
+
+3連単オッズを入力すると、
+
+AI期待値を計算できます。
+
+</div>
+
+`;
+
+best.forEach(function(x,i){
+
+const probability=
+
+x.score/total*100;
+
+html+=`
+
+<div class="bet">
+
+<b>
+
+${i+1}位　
+
+${x.bet}
+
+</b>
+
+<br><br>
+
+AI推定確率：
+
+${probability.toFixed(2)}%
+
+<br>
+
+<label>
+
+3連単オッズ
+
+</label>
+
+<input
+
+id="odds_${i}"
+
+type="number"
+
+step="0.1"
+
+min="1"
+
+placeholder="例：12.5">
+
+<button onclick="evaluateEV(
+
+${probability},
+
+${i}
+
+)">
+
+💎 期待値を計算
+
+</button>
+
+<div id="ev_${i}"></div>
+
+</div>
+
+`;
+
+});
+
+document
+
+.getElementById("expectedValue")
+
+.innerHTML=
+
+html;
+
+}
+
+/* =========================
+
+期待値計算
+
+========================= */
+
+function evaluateEV(probability,index){
+
+const odds=
+
+Number(
+
+document.getElementById(
+
+"odds_"+index
+
+).value
 
 );
 
-});
+const result=
+
+document.getElementById(
+
+"ev_"+index
+
+);
+
+if(!odds||odds<=0){
+
+result.innerHTML=
+
+"<span class='error'>"+
+
+"オッズを入力してください。"+
+
+"</span>";
+
+return;
+
+}
+
+const expectedValue=
+
+(probability/100)
+
+*odds
+
+*100;
+
+let judgement="";
+
+if(expectedValue>=150){
+
+judgement="🔥 強く買い";
+
+}
+
+else if(expectedValue>=120){
+
+judgement="◎ 買い";
+
+}
+
+else if(expectedValue>=100){
+
+judgement="△ 少額";
+
+}
+
+else{
+
+judgement="× 見送り";
+
+}
+
+result.innerHTML=`
+
+<div class="status">
+
+オッズ：
+
+<b>${odds.toFixed(1)}倍</b>
+
+<br>
+
+期待値：
+
+<b>${expectedValue.toFixed(1)}%</b>
+
+<br><br>
+
+判定：
+
+<b>${judgement}</b>
+
+</div>
+
+`;
+
+}
 
 </script>
 
