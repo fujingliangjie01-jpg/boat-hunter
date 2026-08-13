@@ -384,6 +384,22 @@ line-height:1.7
 
 }
 
+.error{
+
+background:#260d0d;
+
+border:1px solid #8d3030;
+
+padding:15px;
+
+border-radius:10px;
+
+color:#ff8c8c;
+
+line-height:1.6
+
+}
+
 @media(max-width:600px){
 
 .boats{
@@ -560,7 +576,7 @@ step="100"
 
 <div class="title">
 
-⚡ スタート情報
+⚡ スタート・展示情報
 
 </div>
 
@@ -580,13 +596,57 @@ step="100"
 
 <div class="title">
 
+🔧 モーター情報
+
+</div>
+
+<div id="motorInfo">
+
+<div class="note">
+
+出走表から取得できるモーター番号を表示します。
+
+モーター2連率・3連率は取得できた場合のみ表示します。
+
+</div>
+
+</div>
+
+</section>
+
+<section class="card">
+
+<div class="title">
+
+🌬️ 風・水面情報
+
+</div>
+
+<div id="weatherInfo">
+
+<div class="note">
+
+現在の公開APIから取得できる情報のみ表示します。
+
+取得できない項目は「取得不可」と表示します。
+
+</div>
+
+</div>
+
+</section>
+
+<section class="card">
+
+<div class="title">
+
 🚦 本番進入を手動入力
 
 </div>
 
 <div class="warning">
 
-展示やピット離れを見て、
+展示やピット離れを確認して、
 
 <strong>
 
@@ -598,7 +658,7 @@ step="100"
 
 <br><br>
 
-前付けがあれば、
+例えば前付けなら
 
 <strong>
 
@@ -754,6 +814,12 @@ let raceData = null;
 
 let selectedEntry = [];
 
+/* ================================
+
+JST日付
+
+================================ */
+
 function getJstDate(){
 
 const now = new Date();
@@ -811,6 +877,12 @@ day
 };
 
 }
+
+/* ================================
+
+出走表取得
+
+================================ */
 
 async function loadRace(){
 
@@ -926,6 +998,10 @@ displayRace(race);
 
 displayStartInfo(race);
 
+displayMotorInfo(race);
+
+displayWeatherInfo(race);
+
 createEntryButtons();
 
 document
@@ -953,6 +1029,12 @@ error.message;
 }
 
 }
+
+/* ================================
+
+出走表
+
+================================ */
 
 function displayRace(race){
 
@@ -1034,6 +1116,12 @@ boats.appendChild(div);
 
 }
 
+/* ================================
+
+ST・展示
+
+================================ */
+
 function displayStartInfo(race){
 
 const element =
@@ -1046,13 +1134,11 @@ race.preview;
 
 if(!preview || !preview.racers){
 
-element.innerHTML =
-
-`
+element.innerHTML = `
 
 <div class="note">
 
-まだ直前情報がありません。
+直前情報はまだありません。
 
 </div>
 
@@ -1090,15 +1176,15 @@ ${r.entry_number}号艇
 
 <span class="right">
 
-ST
-
-${r.start_timing ?? "-"}
+進入 ${r.course_number ?? "-"}
 
 　
 
-展示
+ST ${r.start_timing ?? "-"}
 
-${r.exhibition_time ?? "-"}
+　
+
+展示 ${r.exhibition_time ?? "-"}
 
 </span>
 
@@ -1113,6 +1199,298 @@ element.innerHTML =
 html;
 
 }
+
+/* ================================
+
+モーター
+
+================================ */
+
+function displayMotorInfo(race){
+
+const element =
+
+document.getElementById("motorInfo");
+
+const racers =
+
+race.racers || {};
+
+let html = "";
+
+Object.keys(racers)
+
+.sort(
+
+(a,b)=>Number(a)-Number(b)
+
+)
+
+.forEach(function(key){
+
+const r =
+
+racers[key];
+
+const motor2 =
+
+r.motor_top_2_percent ??
+
+r.motor_2ren_rate ??
+
+null;
+
+const motor3 =
+
+r.motor_top_3_percent ??
+
+r.motor_3ren_rate ??
+
+null;
+
+html += `
+
+<div class="row">
+
+<span class="left">
+
+${r.entry_number}号艇
+
+M${r.motor_number ?? "-"}
+
+</span>
+
+<span class="right">
+
+2連率
+
+${motor2 != null ? format(motor2)+"%" : "取得不可"}
+
+<br>
+
+3連率
+
+${motor3 != null ? format(motor3)+"%" : "取得不可"}
+
+</span>
+
+</div>
+
+`;
+
+});
+
+element.innerHTML =
+
+html ||
+
+`
+
+<div class="note">
+
+モーター情報を取得できません。
+
+</div>
+
+`;
+
+}
+
+/* ================================
+
+風・水面
+
+================================ */
+
+function displayWeatherInfo(race){
+
+const element =
+
+document.getElementById("weatherInfo");
+
+const weather =
+
+race.weather ||
+
+race.water ||
+
+race.conditions ||
+
+null;
+
+if(!weather){
+
+element.innerHTML = `
+
+<div class="note">
+
+現在の出走表APIからは
+
+風・水面情報を取得できません。
+
+<br><br>
+
+※架空の数字は表示しません。
+
+</div>
+
+`;
+
+return;
+
+}
+
+const weatherName =
+
+weather.weather ??
+
+weather.condition ??
+
+"取得不可";
+
+const temperature =
+
+weather.temperature ??
+
+weather.air_temperature ??
+
+null;
+
+const waterTemperature =
+
+weather.water_temperature ??
+
+null;
+
+const windDirection =
+
+weather.wind_direction ??
+
+weather.wind_dir ??
+
+"取得不可";
+
+const windSpeed =
+
+weather.wind_speed ??
+
+null;
+
+const waveHeight =
+
+weather.wave_height ??
+
+weather.wave ??
+
+null;
+
+element.innerHTML = `
+
+<div class="row">
+
+<span class="left">
+
+天候
+
+</span>
+
+<span class="right">
+
+${weatherName}
+
+</span>
+
+</div>
+
+<div class="row">
+
+<span class="left">
+
+気温
+
+</span>
+
+<span class="right">
+
+${temperature != null ? temperature+"℃" : "取得不可"}
+
+</span>
+
+</div>
+
+<div class="row">
+
+<span class="left">
+
+水温
+
+</span>
+
+<span class="right">
+
+${waterTemperature != null ? waterTemperature+"℃" : "取得不可"}
+
+</span>
+
+</div>
+
+<div class="row">
+
+<span class="left">
+
+風向
+
+</span>
+
+<span class="right">
+
+${windDirection}
+
+</span>
+
+</div>
+
+<div class="row">
+
+<span class="left">
+
+風速
+
+</span>
+
+<span class="right">
+
+${windSpeed != null ? windSpeed+"m" : "取得不可"}
+
+</span>
+
+</div>
+
+<div class="row">
+
+<span class="left">
+
+波高
+
+</span>
+
+<span class="right">
+
+${waveHeight != null ? waveHeight+"cm" : "取得不可"}
+
+</span>
+
+</div>
+
+`;
+
+}
+
+/* ================================
+
+級別
+
+================================ */
 
 function getRank(rank){
 
@@ -1132,13 +1510,21 @@ return map[rank] || "-";
 
 }
 
+/* ================================
+
+数値
+
+================================ */
+
 function format(value){
 
 if(
 
 value===null ||
 
-value===undefined
+value===undefined ||
+
+value===""
 
 ){
 
@@ -1149,6 +1535,12 @@ return "-";
 return Number(value).toFixed(2);
 
 }
+
+/* ================================
+
+進入ボタン
+
+================================ */
 
 function createEntryButtons(){
 
@@ -1200,6 +1592,12 @@ container.appendChild(button);
 
 }
 
+/* ================================
+
+進入選択
+
+================================ */
+
 function selectEntry(boat){
 
 if(
@@ -1246,6 +1644,12 @@ analyzeEntry();
 
 }
 
+/* ================================
+
+ボタン状態
+
+================================ */
+
 function updateEntryButtons(){
 
 const buttons =
@@ -1277,6 +1681,12 @@ selectedEntry.includes(boat)
 );
 
 }
+
+/* ================================
+
+進入リセット
+
+================================ */
 
 function clearEntry(){
 
@@ -1338,21 +1748,23 @@ document.getElementById(
 
 }
 
+/* ================================
+
+進入解析
+
+================================ */
+
 function analyzeEntry(){
 
 const entry =
 
 selectedEntry;
 
-let maezuke =
+let maezuke = false;
 
-false;
+let maezukeBoat = null;
 
-let maezukeBoat =
-
-null;
-
-if(entry[0]!==1){
+if(entry[0] !== 1){
 
 maezuke = true;
 
@@ -1361,6 +1773,8 @@ maezukeBoat =
 entry[0];
 
 }
+
+/* 前付け */
 
 document.getElementById(
 
@@ -1394,7 +1808,15 @@ ${entry.join("-")}
 
 <span class="right ${
 
-maezuke ? "yellow":"green"
+maezuke
+
+?
+
+"yellow"
+
+:
+
+"green"
 
 }">
 
@@ -1419,6 +1841,8 @@ maezukeBoat+
 </div>
 
 `;
+
+/* 展開 */
 
 const first =
 
@@ -1490,19 +1914,21 @@ ${third}号艇
 
 <span class="left">
 
-展開
+展開中心
 
 </span>
 
 <span class="right yellow">
 
-${first}号艇中心
+${first}号艇
 
 </span>
 
 </div>
 
 `;
+
+/* AIランキング */
 
 const racers =
 
@@ -1512,7 +1938,7 @@ const ranking =
 
 Object.keys(racers)
 
-.map(key=>{
+.map(function(key){
 
 const r =
 
@@ -1566,11 +1992,13 @@ div.className =
 
 div.innerHTML = `
 
-<strong>
+<div>
 
 ${index+1}位
 
-　
+</div>
+
+<strong>
 
 ${r.number}号艇
 
@@ -1599,6 +2027,8 @@ ${r.score}pt
 rankingElement.appendChild(div);
 
 });
+
+/* 最終評価 */
 
 if(ranking.length>=3){
 
@@ -1677,6 +2107,8 @@ ${escapeHtml(third.name)}
 `;
 
 }
+
+/* 買い目 */
 
 const budget =
 
@@ -1768,37 +2200,69 @@ document.getElementById(
 
 }
 
+/* ================================
+
+AIスコア
+
+================================ */
+
 function calcScore(r){
 
 let score = 0;
 
 score +=
 
-Number(r.national_win_rate||0)*10;
+Number(
+
+r.national_win_rate || 0
+
+)*10;
 
 score +=
 
-Number(r.local_win_rate||0)*5;
+Number(
+
+r.local_win_rate || 0
+
+)*5;
 
 score +=
 
-Number(r.motor_top_2_percent||0)*0.15;
+Number(
+
+r.motor_top_2_percent || 0
+
+)*0.15;
 
 score +=
 
-Number(r.motor_top_3_percent||0)*0.08;
+Number(
+
+r.motor_top_3_percent || 0
+
+)*0.08;
 
 score -=
 
-Number(r.average_start_timing||0)*10;
+Number(
+
+r.average_start_timing || 0
+
+)*10;
 
 return Math.round(score);
 
 }
 
+/* ================================
+
+HTMLエスケープ
+
+================================ */
+
 function escapeHtml(text){
 
-return String(text??"")
+return String(text ?? "")
 
 .replace(/&/g,"&amp;")
 
