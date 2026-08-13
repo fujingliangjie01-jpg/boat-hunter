@@ -1717,7 +1717,161 @@ result.innerHTML=`
 `;
 
 }
+/* =====================================
 
+   期待値分析
+
+===================================== */
+
+function calculateExpectedValue(){
+
+    const ranking = makeRanking();
+
+    if(!ranking || ranking.length < 4){
+
+        alert("先に出走表を取得してAI解析してください。");
+
+        return;
+
+    }
+
+    const combinations = [
+
+        [ranking[0],ranking[1],ranking[2]],
+
+        [ranking[0],ranking[2],ranking[1]],
+
+        [ranking[0],ranking[1],ranking[3]],
+
+        [ranking[1],ranking[0],ranking[2]],
+
+        [ranking[1],ranking[2],ranking[0]],
+
+        [ranking[2],ranking[0],ranking[1]]
+
+    ];
+
+    let html = "";
+
+    html += `
+
+        <div class="status">
+
+        <span class="gold">
+
+        💎 AI期待値分析
+
+        </span>
+
+        <br><br>
+
+        各買い目のAIスコアを確率化して評価します。
+
+        <br>
+
+        ※実オッズ未入力の場合はAI相対期待値です。
+
+        </div>
+
+    `;
+
+    combinations.forEach(function(c){
+
+        const totalScore =
+
+            c[0].score +
+
+            c[1].score +
+
+            c[2].score;
+
+        const probability =
+
+            totalScore /
+
+            (
+
+                ranking[0].score +
+
+                ranking[1].score +
+
+                ranking[2].score +
+
+                ranking[3].score
+
+            ) * 100;
+
+        const expected =
+
+            probability / 100;
+
+        let judgement = "見送り";
+
+        if(expected >= 1.20){
+
+            judgement = "🔥 強く買い";
+
+        }
+
+        else if(expected >= 1.00){
+
+            judgement = "💰 買い";
+
+        }
+
+        else if(expected >= 0.80){
+
+            judgement = "△ 抑え";
+
+        }
+
+        html += `
+
+        <div class="bet">
+
+            <b>
+
+            ${c[0].boat}-${c[1].boat}-${c[2].boat}
+
+            </b>
+
+            <br><br>
+
+            AI推定確率：
+
+            ${probability.toFixed(2)}%
+
+            <br>
+
+            相対期待値：
+
+            ${expected.toFixed(2)}
+
+            <br><br>
+
+            <span class="gold">
+
+            判定：${judgement}
+
+            </span>
+
+        </div>
+
+        `;
+
+    });
+
+    const box =
+
+        document.getElementById("expectedValue");
+
+    if(box){
+
+        box.innerHTML = html;
+
+    }
+
+}
 </script>
 
 </body>
