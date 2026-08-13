@@ -146,8 +146,6 @@ font-size:16px;
 
 font-weight:900;
 
-cursor:pointer;
-
 }
 
 .status{
@@ -218,6 +216,66 @@ margin-top:5px;
 
 }
 
+.entry-grid{
+
+display:grid;
+
+grid-template-columns:repeat(6,1fr);
+
+gap:8px;
+
+}
+
+.entry-btn{
+
+padding:15px 5px;
+
+background:#0d0d0d;
+
+color:#fff;
+
+border:1px solid #444;
+
+border-radius:9px;
+
+font-size:18px;
+
+font-weight:900;
+
+}
+
+.entry-btn.selected{
+
+background:#d4af37;
+
+color:#000;
+
+border-color:#d4af37;
+
+}
+
+.entry-result{
+
+margin-top:15px;
+
+padding:18px;
+
+text-align:center;
+
+background:#0b0b0b;
+
+border:1px solid #333;
+
+border-radius:10px;
+
+font-size:27px;
+
+font-weight:900;
+
+color:#d4af37;
+
+}
+
 .row{
 
 display:flex;
@@ -229,12 +287,6 @@ gap:10px;
 padding:12px 0;
 
 border-bottom:1px solid #292929;
-
-}
-
-.row:last-child{
-
-border-bottom:none;
 
 }
 
@@ -276,23 +328,29 @@ color:#ffd34d;
 
 }
 
-.entry-box{
+.rank{
 
-font-size:27px;
+background:#0c0c0c;
+
+border:1px solid #292929;
+
+border-radius:10px;
+
+padding:14px;
+
+margin-bottom:9px;
+
+}
+
+.pick{
+
+font-size:24px;
 
 font-weight:900;
 
 color:#d4af37;
 
-text-align:center;
-
-padding:18px;
-
-background:#0b0b0b;
-
-border:1px solid #333;
-
-border-radius:10px;
+margin-top:8px;
 
 }
 
@@ -322,47 +380,31 @@ line-height:1.7;
 
 }
 
-.rank{
+.error{
 
-background:#0c0c0c;
+background:#260d0d;
 
-border:1px solid #292929;
+border:1px solid #8d3030;
+
+padding:15px;
 
 border-radius:10px;
 
-padding:14px;
+color:#ff8c8c;
 
-margin-bottom:9px;
-
-}
-
-.pick{
-
-font-size:24px;
-
-font-weight:900;
-
-color:#d4af37;
-
-margin-top:8px;
-
-}
-
-footer{
-
-text-align:center;
-
-color:#444;
-
-font-size:11px;
-
-padding:25px;
+line-height:1.6;
 
 }
 
 @media(max-width:600px){
 
 .boats{
+
+grid-template-columns:repeat(3,1fr);
+
+}
+
+.entry-grid{
 
 grid-template-columns:repeat(3,1fr);
 
@@ -412,53 +454,53 @@ BOAT HUNTER
 
 <select id="venue">
 
-<option value="1">桐生</option>
+<option value="桐生">桐生</option>
 
-<option value="2">戸田</option>
+<option value="戸田">戸田</option>
 
-<option value="3">江戸川</option>
+<option value="江戸川">江戸川</option>
 
-<option value="4">平和島</option>
+<option value="平和島">平和島</option>
 
-<option value="5">多摩川</option>
+<option value="多摩川">多摩川</option>
 
-<option value="6">浜名湖</option>
+<option value="浜名湖">浜名湖</option>
 
-<option value="7">蒲郡</option>
+<option value="蒲郡">蒲郡</option>
 
-<option value="8">常滑</option>
+<option value="常滑">常滑</option>
 
-<option value="9">津</option>
+<option value="津">津</option>
 
-<option value="10">三国</option>
+<option value="三国">三国</option>
 
-<option value="11">びわこ</option>
+<option value="びわこ">びわこ</option>
 
-<option value="12">住之江</option>
+<option value="住之江">住之江</option>
 
-<option value="13">尼崎</option>
+<option value="尼崎">尼崎</option>
 
-<option value="14">鳴門</option>
+<option value="鳴門">鳴門</option>
 
-<option value="15">丸亀</option>
+<option value="丸亀">丸亀</option>
 
-<option value="16">児島</option>
+<option value="児島">児島</option>
 
-<option value="17">宮島</option>
+<option value="宮島">宮島</option>
 
-<option value="18">徳山</option>
+<option value="徳山">徳山</option>
 
-<option value="19">下関</option>
+<option value="下関">下関</option>
 
-<option value="20">若松</option>
+<option value="若松">若松</option>
 
-<option value="21">芦屋</option>
+<option value="芦屋">芦屋</option>
 
-<option value="22">福岡</option>
+<option value="福岡">福岡</option>
 
-<option value="23">唐津</option>
+<option value="唐津">唐津</option>
 
-<option value="24">大村</option>
+<option value="大村">大村</option>
 
 </select>
 
@@ -494,9 +536,7 @@ BOAT HUNTER
 
 <label>予算</label>
 
-<input
-
-id="budget"
+<input id="budget"
 
 type="number"
 
@@ -504,13 +544,11 @@ value="3000"
 
 min="100"
 
-step="100"
+step="100">
 
->
+<button onclick="loadRace()">
 
-<button onclick="loadRaceData()">
-
-🔥 AI解析開始
+🔥 出走表を取得
 
 </button>
 
@@ -536,35 +574,39 @@ step="100"
 
 <div class="title">
 
-⚠️ 前付け解析
+🚦 本番進入を手動入力
 
 </div>
 
 <div class="warning">
 
-現在取得できる出走表データだけでは、
+展示・ピット離れを見て、
 
-前付けの確定判定はできません。
+<strong>本番での進入を自分で入力</strong>してください。
 
 <br><br>
 
-今後、
+外枠の前付けも、
 
-・過去進入
-
-・当地進入
-
-・展示進入
-
-・ピット離れ
-
-・選手の前付け傾向
-
-を追加して判定します。
+ここで自由に設定できます。
 
 </div>
 
-<div id="maezuke"></div>
+<br>
+
+<div id="entryButtons"
+
+class="entry-grid">
+
+</div>
+
+<div id="entryResult"
+
+class="entry-result">
+
+進入を選択してください
+
+</div>
 
 </section>
 
@@ -572,21 +614,19 @@ step="100"
 
 <div class="title">
 
-🚦 本番進入予想
+⚠️ 前付け解析
 
 </div>
 
-<div id="entry" class="entry-box">
+<div id="maezuke">
 
--
+<div class="note">
+
+本番進入を入力すると、
+
+その進入を前提に解析します。
 
 </div>
-
-<div id="entryReason" class="note"
-
-style="text-align:center">
-
--
 
 </div>
 
@@ -600,7 +640,15 @@ style="text-align:center">
 
 </div>
 
-<div id="development"></div>
+<div id="development">
+
+<div class="note">
+
+進入を入力してください。
+
+</div>
+
+</div>
 
 </section>
 
@@ -638,21 +686,45 @@ style="text-align:center">
 
 <div class="rank">
 
-<strong>的中率重視</strong>
+<strong>
 
-<div id="hitPick" class="pick">-</div>
+的中率重視
 
-<div id="hitMoney" class="note">-</div>
+</strong>
+
+<div id="hitPick" class="pick">
+
+-
+
+</div>
+
+<div id="hitMoney" class="note">
+
+-
+
+</div>
 
 </div>
 
 <div class="rank">
 
-<strong>回収率重視</strong>
+<strong>
 
-<div id="roiPick" class="pick">-</div>
+回収率重視
 
-<div id="roiMoney" class="note">-</div>
+</strong>
+
+<div id="roiPick" class="pick">
+
+-
+
+</div>
+
+<div id="roiMoney" class="note">
+
+-
+
+</div>
 
 </div>
 
@@ -676,13 +748,25 @@ BOAT HUNTER © 2026
 
 BOAT HUNTER
 
-実データ取得
+========================================
+
+*/
+
+let raceData = null;
+
+let selectedEntry = [];
+
+/*
+
+========================================
+
+出走表取得
 
 ========================================
 
 */
 
-async function loadRaceData(){
+async function loadRace(){
 
 const venue =
 
@@ -691,10 +775,6 @@ document.getElementById("venue").value;
 const race =
 
 Number(document.getElementById("race").value);
-
-const budget =
-
-Number(document.getElementById("budget").value);
 
 const status =
 
@@ -714,149 +794,53 @@ try{
 
 /*
 
-今日の日付をJSTで作成
+ここは後で実際のAPIに接続する部分。
+
+今は存在しないURLを使用しない。
 
 */
 
-const now = new Date();
+const API_URL = "";
 
-const year =
+if(!API_URL){
 
-now.getFullYear();
+throw new Error(
 
-const month =
+"API接続設定が必要です"
 
-String(now.getMonth()+1)
+);
 
-.padStart(2,"0");
-
-const day =
-
-String(now.getDate())
-
-.padStart(2,"0");
-
-const date =
-
-year + month + day;
-
-/*
-
-Boatrace Open API v1
-
-*/
-
-const url =
-
-"https://boatraceopenapi.github.io/api/v1/"
-
-+
-
-year +
-
-"/"
-
-+
-
-date +
-
-".json";
+}
 
 const response =
 
-await fetch(url);
+await fetch(API_URL);
 
 if(!response.ok){
 
 throw new Error(
 
-"API HTTP " +
-
-response.status
+"API取得エラー"
 
 );
 
 }
 
-const data =
+raceData =
 
 await response.json();
 
-console.log(
+renderRace(
 
-"BOATRACE API DATA",
-
-data
-
-);
-
-/*
-
-データから対象レースを探す
-
-*/
-
-const target =
-
-findRace(
-
-data,
-
-Number(venue),
+venue,
 
 race
 
 );
 
-if(!target){
+status.innerText =
 
-throw new Error(
-
-"対象レースが見つかりません"
-
-);
-
-}
-
-/*
-
-出走表表示
-
-*/
-
-displayRace(
-
-target
-
-);
-
-/*
-
-現時点の進入表示
-
-※まだ前付け判定ではない
-
-*/
-
-displayEntry(
-
-target
-
-);
-
-/*
-
-AI表示
-
-*/
-
-displayAnalysis(
-
-target,
-
-budget
-
-);
+"✅ 出走表取得完了";
 
 document
 
@@ -864,23 +848,29 @@ document
 
 .classList.remove("hidden");
 
-status.innerText =
-
-"✅ 実データ取得完了";
-
-}
-
-catch(error){
+}catch(error){
 
 console.error(error);
 
-status.innerText =
+status.innerHTML = `
 
-"❌ データ取得エラー："
+<div class="error">
 
-+
+❌ 実データを取得できませんでした。
 
-error.message;
+<br><br>
+
+原因：
+
+${error.message}
+
+<br><br>
+
+現在、API接続部分を確認中です。
+
+</div>
+
+`;
 
 }
 
@@ -890,15 +880,13 @@ error.message;
 
 ========================================
 
-対象レース検索
+出走表表示
 
 ========================================
 
 */
 
-function findRace(
-
-data,
+function renderRace(
 
 venue,
 
@@ -908,111 +896,11 @@ race
 
 /*
 
-APIの構造差に対応するため、
+APIのデータ形式が確定したら
 
-再帰的にレース候補を探す。
+ここで選手を抽出する。
 
 */
-
-let found = null;
-
-function walk(obj){
-
-if(found){
-
-return;
-
-}
-
-if(!obj || typeof obj !== "object"){
-
-return;
-
-}
-
-if(
-
-obj.race_stadium_number != null &&
-
-obj.race_number != null
-
-){
-
-const stadium =
-
-Number(
-
-obj.race_stadium_number
-
-);
-
-const number =
-
-Number(
-
-obj.race_number
-
-);
-
-if(
-
-stadium === venue &&
-
-number === race
-
-){
-
-found = obj;
-
-return;
-
-}
-
-}
-
-if(Array.isArray(obj)){
-
-for(
-
-const item of obj
-
-){
-
-walk(item);
-
-if(found){
-
-return;
-
-}
-
-}
-
-}else{
-
-for(
-
-const key in obj
-
-){
-
-walk(obj[key]);
-
-if(found){
-
-return;
-
-}
-
-}
-
-}
-
-}
-
-walk(data);
-
-return found;
 
 }
 
@@ -1020,87 +908,65 @@ return found;
 
 ========================================
 
-出走表表示
+手動進入ボタン
 
 ========================================
 
 */
 
-function displayRace(
+function createEntryButtons(){
 
-race
-
-){
-
-const boats =
-
-getBoats(race);
-
-const element =
+const container =
 
 document.getElementById(
 
-"boats"
+"entryButtons"
 
 );
 
-element.innerHTML =
+container.innerHTML = "";
 
-"";
+for(
 
-boats.forEach(
+let i=1;
 
-function(boat){
+i<=6;
 
-const div =
+i++
+
+){
+
+const button =
 
 document.createElement(
 
-"div"
+"button"
 
 );
 
-div.className =
+button.className =
 
-"boat";
+"entry-btn";
 
-div.innerHTML = `
+button.innerText =
 
-<div class="boat-number">
+i + "号艇";
 
-${boat.number}
+button.onclick =
 
-</div>
+function(){
 
-<div class="boat-name">
+selectEntry(i);
 
-${escapeHtml(
+};
 
-boat.name || "選手不明"
+container.appendChild(
 
-)}
-
-</div>
-
-<div class="boat-class">
-
-${escapeHtml(
-
-boat.class || "-"
-
-)}
-
-</div>
-
-`;
-
-element.appendChild(
-
-div
+button
 
 );
 
-});
+}
 
 }
 
@@ -1108,137 +974,93 @@ div
 
 ========================================
 
-boats抽出
+進入選択
 
 ========================================
 
 */
 
-function getBoats(
-
-race
-
-){
-
-if(
-
-Array.isArray(race.boats)
-
-){
-
-return race.boats
-
-.map(
-
-normalizeBoat
-
-)
-
-.sort(
-
-(a,b)=>
-
-a.number-b.number
-
-);
-
-}
-
-/*
-
-別名対応
-
-*/
-
-if(
-
-Array.isArray(race.entries)
-
-){
-
-return race.entries
-
-.map(
-
-normalizeBoat
-
-)
-
-.sort(
-
-(a,b)=>
-
-a.number-b.number
-
-);
-
-}
-
-return [];
-
-}
-
-/*
-
-========================================
-
-選手データ正規化
-
-========================================
-
-*/
-
-function normalizeBoat(
+function selectEntry(
 
 boat
 
 ){
 
-const number =
+if(
 
-Number(
+selectedEntry.includes(boat)
 
-boat.racer_boat_number ??
+){
 
-boat.boat_number ??
+return;
 
-boat.number ??
+}
 
-boat.racer_course_number ??
+if(
 
-0
+selectedEntry.length >= 6
+
+){
+
+return;
+
+}
+
+selectedEntry.push(
+
+boat
 
 );
 
-const name =
+const buttons =
 
-boat.racer_name ??
+document.querySelectorAll(
 
-boat.name ??
+".entry-btn"
 
-boat.racer?.name ??
+);
 
-"選手不明";
+buttons.forEach(
 
-const racerClass =
+function(button,index){
 
-boat.racer_class ??
+if(
 
-boat.class ??
+selectedEntry.includes(
 
-boat.racer_grade ??
+index+1
 
-"";
+)
 
-return {
+){
 
-number:number,
+button.classList.add(
 
-name:name,
+"selected"
 
-class:racerClass
+);
 
-};
+}
+
+});
+
+document.getElementById(
+
+"entryResult"
+
+).innerText =
+
+selectedEntry.join("-");
+
+if(
+
+selectedEntry.length === 6
+
+){
+
+runAI();
+
+}
 
 }
 
@@ -1246,71 +1068,37 @@ class:racerClass
 
 ========================================
 
-進入表示
+AI解析
 
 ========================================
 
 */
 
-function displayEntry(
+function runAI(){
 
-race
+const budget =
 
-){
+Number(
 
-const boats =
+document.getElementById(
 
-getBoats(race);
+"budget"
 
-const courses =
-
-boats
-
-.map(
-
-boat =>
-
-boat.number
-
-)
-
-.filter(
-
-x =>
-
-x>=1 &&
-
-x<=6
+).value
 
 );
 
-const entry =
+const first =
 
-courses.length === 6
+selectedEntry[0];
 
-?
+const second =
 
-courses.join("-")
+selectedEntry[1];
 
-:
+const third =
 
-"1-2-3-4-5-6";
-
-document.getElementById(
-
-"entry"
-
-).innerText =
-
-entry;
-
-document.getElementById(
-
-"entryReason"
-
-).innerText =
-
-"出走表データから基本進入を表示。前付け判定は追加データ接続後に実装。";
+selectedEntry[2];
 
 document.getElementById(
 
@@ -1322,171 +1110,35 @@ document.getElementById(
 
 <span class="left">
 
-前付け判定
+進入
+
+</span>
+
+<span class="right gold">
+
+${selectedEntry.join("-")}
+
+</span>
+
+</div>
+
+<div class="row">
+
+<span class="left">
+
+前付け
 
 </span>
 
 <span class="right yellow">
 
-データ分析準備中
+手動入力を採用
 
 </span>
 
 </div>
 
 `;
-
-}
-
-/*
-
-========================================
-
-AI分析表示
-
-========================================
-
-*/
-
-function displayAnalysis(
-
-race,
-
-budget
-
-){
-
-const boats =
-
-getBoats(race);
-
-const ranking =
-
-boats.map(
-
-(boat,index)=>({
-
-...boat,
-
-score:
-
-100-index*7
-
-})
-
-);
-
-const rankingElement =
-
-document.getElementById(
-
-"ranking"
-
-);
-
-rankingElement.innerHTML =
-
-"";
-
-ranking.forEach(
-
-function(
-
-boat,
-
-index
-
-){
-
-const div =
-
-document.createElement(
-
-"div"
-
-);
-
-div.className =
-
-"rank";
-
-div.innerHTML = `
-
-<div class="gold">
-
-${index+1}位
-
-</div>
-
-<strong>
-
-${boat.number}号艇
-
-${escapeHtml(boat.name)}
-
-</strong>
-
-<div class="pick">
-
-${boat.score}pt
-
-</div>
-
-<div class="note">
-
-現段階では出走表のみを使用。
-
-選手・モーター・展示・STを追加後、
-
-期待値計算を強化します。
-
-</div>
-
-`;
-
-rankingElement.appendChild(
-
-div
-
-);
-
-});
-
-const first =
-
-boats[0]
-
-?
-
-boats[0].number
-
-:
-
-1;
-
-const second =
-
-boats[1]
-
-?
-
-boats[1].number
-
-:
-
-2;
-
-const third =
-
-boats[2]
-
-?
-
-boats[2].number
-
-:
-
-3;
 
 document.getElementById(
 
@@ -1498,7 +1150,7 @@ document.getElementById(
 
 <span class="left">
 
-本命候補
+先頭想定
 
 </span>
 
@@ -1514,7 +1166,7 @@ ${first}号艇
 
 <span class="left">
 
-対抗候補
+相手筆頭
 
 </span>
 
@@ -1530,7 +1182,7 @@ ${second}号艇
 
 <span class="left">
 
-穴候補
+展開穴
 
 </span>
 
@@ -1539,6 +1191,62 @@ ${second}号艇
 ${third}号艇
 
 </span>
+
+</div>
+
+`;
+
+document.getElementById(
+
+"ranking"
+
+).innerHTML = `
+
+<div class="rank">
+
+<strong>
+
+1位
+
+</strong>
+
+<div class="pick">
+
+${first}号艇
+
+</div>
+
+</div>
+
+<div class="rank">
+
+<strong>
+
+2位
+
+</strong>
+
+<div class="pick">
+
+${second}号艇
+
+</div>
+
+</div>
+
+<div class="rank">
+
+<strong>
+
+3位
+
+</strong>
+
+<div class="pick">
+
+${third}号艇
+
+</div>
 
 </div>
 
@@ -1626,7 +1334,7 @@ document.getElementById(
 
 ).innerText =
 
-"予算：" +
+"予算 " +
 
 hitMoney +
 
@@ -1646,7 +1354,7 @@ document.getElementById(
 
 ).innerText =
 
-"予算：" +
+"予算 " +
 
 roiMoney +
 
@@ -1654,65 +1362,7 @@ roiMoney +
 
 }
 
-/*
-
-========================================
-
-HTMLエスケープ
-
-========================================
-
-*/
-
-function escapeHtml(
-
-text
-
-){
-
-return String(text)
-
-.replace(
-
-/&/g,
-
-"&amp;"
-
-)
-
-.replace(
-
-/</g,
-
-"&lt;"
-
-)
-
-.replace(
-
-/>/g,
-
-"&gt;"
-
-)
-
-.replace(
-
-/"/g,
-
-"&quot;"
-
-)
-
-.replace(
-
-/'/g,
-
-"&#039;"
-
-);
-
-}
+createEntryButtons();
 
 </script>
 
