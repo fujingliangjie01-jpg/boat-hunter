@@ -2150,6 +2150,105 @@ function analyze(){
     enhancedAI();
 
 }
+
+/* =========================================
+
+   BOAT HUNTER 期待値エンジン
+
+========================================= */
+
+function calculateExpectedValue(){
+
+    const odds = prompt(
+
+        "3連単オッズを入力してください\n例：12.5"
+
+    );
+
+    if(!odds) return;
+
+    const odd = Number(odds);
+
+    if(!Number.isFinite(odd) || odd <= 0){
+
+        alert("正しいオッズを入力してください");
+
+        return;
+
+    }
+
+    const probability = prompt(
+
+        "AI推定的中率を入力してください（％）\n例：12"
+
+    );
+
+    if(!probability) return;
+
+    const prob = Number(probability);
+
+    if(!Number.isFinite(prob) || prob <= 0){
+
+        alert("正しい確率を入力してください");
+
+        return;
+
+    }
+
+    const expectedValue =
+
+        (prob / 100) * odd;
+
+    let judgement = "";
+
+    if(expectedValue >= 1.20){
+
+        judgement =
+
+            "🔥 強く買い候補";
+
+    }else if(expectedValue >= 1.00){
+
+        judgement =
+
+            "🟡 買い候補";
+
+    }else{
+
+        judgement =
+
+            "🔴 見送り";
+
+    }
+
+    alert(
+
+        "BOAT HUNTER 期待値分析\n\n" +
+
+        "AI確率：" +
+
+        prob.toFixed(1) +
+
+        "%\n" +
+
+        "オッズ：" +
+
+        odd.toFixed(1) +
+
+        "倍\n\n" +
+
+        "期待値：" +
+
+        expectedValue.toFixed(2) +
+
+        "\n\n" +
+
+        judgement
+
+    );
+
+}
+
 </script>
 
 </body>
