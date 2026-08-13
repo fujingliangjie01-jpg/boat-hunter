@@ -2248,7 +2248,555 @@ function calculateExpectedValue(){
     );
 
 }
+/* =========================================
 
+   BOAT HUNTER 3連単自動買い目生成
+
+========================================= */
+
+function generateBettingLines(){
+
+    if(!selectedProgram ||
+
+       !selectedProgram.boats ||
+
+       selectedProgram.boats.length < 6){
+
+        alert("先に出走表を取得してください。");
+
+        return;
+
+    }
+
+    const boats =
+
+        selectedProgram.boats
+
+        .slice()
+
+        .sort(function(a,b){
+
+            return Number(a.racer_boat_number)
+
+                 - Number(b.racer_boat_number);
+
+        });
+
+    /*
+
+    AIスコアを再計算
+
+    */
+
+    let ranking = boats.map(function(b,index){
+
+        const national3 =
+
+            Number(b.racer_national_top_3_percent) || 0;
+
+        const local3 =
+
+            Number(b.racer_local_top_3_percent) || 0;
+
+        const motor2 =
+
+            Number(b.racer_assigned_motor_top_2_percent) || 0;
+
+        const motor3 =
+
+            Number(b.racer_assigned_motor_top_3_percent) || 0;
+
+        const st =
+
+            Number(b.racer_average_start_timing) || 0.20;
+
+        const cls =
+
+            Number(b.racer_class_number) || 3;
+
+        let score = 0;
+
+        score += national3 * 0.55;
+
+        score += local3 * 0.35;
+
+        score += motor2 * 0.40;
+
+        score += motor3 * 0.20;
+
+        score +=
+
+            Math.max(0,(0.23-st)*100);
+
+        if(cls === 1) score += 6;
+
+        if(cls === 2) score += 4;
+
+        if(cls === 3) score += 2;
+
+        const courseBonus =
+
+            [22,13,10,7,4,2];
+
+        score += courseBonus[index];
+
+        return {
+
+            boat:Number(b.racer_boat_number),
+
+            name:b.racer_name || "不明",
+
+            score:score
+
+        };
+
+    });
+
+    ranking.sort(function(a,b){
+
+        return b.score-a.score;
+
+    });
+
+    /*
+
+    上位4艇を中心に買い目生成
+
+    */
+
+    const top =
+
+        ranking.slice(0,4);
+
+    let combinations = [];
+
+    /*
+
+    1着候補
+
+    */
+
+    top.forEach(function(a){
+
+        top.forEach(function(b){
+
+            top.forEach(function(c){
+
+                if(
+
+                    a.boat === b.boat ||
+
+                    a.boat === c.boat ||
+
+                    b.boat === c.boat
+
+                ){
+
+                    return;
+
+                }
+
+                /*
+
+                3艇のスコアから
+
+                仮想的な組み合わせ確率を作る
+
+                */
+
+                const raw =
+
+                    Math.max(a.score,1) *
+
+                    Math.max(b.score,1) *
+
+                    Math.max(c.score,1);
+
+                combinations.push({
+
+                    bet:
+
+                        a.boat+"-"+b.boat+"-"+c.boat,
+
+                    score:raw,
+
+                    first:a.boat,
+
+                    second:b.boat,
+
+                    third:c.boat
+
+                });
+
+            });
+
+        });
+
+    });
+
+    /*
+
+    スコア順
+
+    */
+
+    combinations.sort(function(a,b){
+
+        return b.score-a.score;
+
+    });
+
+    /*
+
+    上位10点
+
+    */
+
+    combinations =
+
+        combinations.slice(0,10);
+
+    /*
+
+    正規化
+
+    */
+
+    let total = 0;
+
+    combinations.forEach(function(x){
+
+        total += x.score;
+
+    });
+
+    combinations.forEach(function(x){
+
+        x.probability =
+
+            x.score / total * 100;
+
+    });
+
+    /*
+
+    結果表示
+
+    */
+
+    let html = "";
+
+    combinations.forEach(function(x,i){
+
+        html += `
+
+        <div class="bet">
+
+            <b>
+
+            ${i+1}位　${x.bet}
+
+            </b>
+
+            <br>
+
+            AI推定確率：
+
+            ${x.probability.toFixed(2)}%
+
+            <br>
+
+            AIスコア：
+
+            ${x.score.toFixed(1)}
+
+        </div>
+
+        `;
+
+    });
+
+    /*
+
+    期待値入力欄
+
+    */
+
+    html += `
+
+        <div style="
+
+            margin-top:15px;
+
+            padding:15px;
+
+            background:#111;
+
+            border:1px solid #d4af37;
+
+            border-radius:10px;
+
+        ">
+
+        <b style="color:#d4af37;">
+
+        💎 オッズを入力して期待値判定
+
+        </b>
+
+        <br><br>
+
+        <input
+
+            id="betOdds"
+
+            type="number"
+
+            step="0.1"
+
+            placeholder="例：12.5"
+
+        >
+
+        <button
+
+            onclick="evaluateTopBet()"
+
+        >
+
+            💎 1位買い目の期待値を計算
+
+        </button>
+
+        <div
+
+            id="evResult"
+
+            class="status"
+
+        >
+
+        </div>
+
+        </div>
+
+    `;
+
+    /*
+
+    期待値カードを追加
+
+    */
+
+    let resultPage =
+
+        document.getElementById("resultPage");
+
+    let old =
+
+        document.getElementById(
+
+            "autoBetCard"
+
+        );
+
+    if(old){
+
+        old.remove();
+
+    }
+
+    const card =
+
+        document.createElement("div");
+
+    card.id =
+
+        "autoBetCard";
+
+    card.className =
+
+        "card";
+
+    card.innerHTML = `
+
+        <div class="title">
+
+        🚤 AI自動買い目
+
+        </div>
+
+        <div class="status">
+
+        上位4艇を中心に
+
+        3連単を自動生成しています。
+
+        </div>
+
+        ${html}
+
+    `;
+
+    resultPage.appendChild(card);
+
+}
+
+/* =========================================
+
+   1位買い目の期待値
+
+========================================= */
+
+function evaluateTopBet(){
+
+    const odds =
+
+        Number(
+
+            document.getElementById(
+
+                "betOdds"
+
+            ).value
+
+        );
+
+    if(!odds || odds <= 0){
+
+        alert(
+
+            "オッズを入力してください。"
+
+        );
+
+        return;
+
+    }
+
+    const probability =
+
+        getTopBetProbability();
+
+    const expectedValue =
+
+        (probability / 100) * odds;
+
+    let judgement;
+
+    if(expectedValue >= 1.30){
+
+        judgement =
+
+            "🔥 強く買いたい";
+
+    }else if(expectedValue >= 1.10){
+
+        judgement =
+
+            "🟢 買い候補";
+
+    }else if(expectedValue >= 1.00){
+
+        judgement =
+
+            "🟡 条件付き";
+
+    }else{
+
+        judgement =
+
+            "🔴 見送り";
+
+    }
+
+    document.getElementById(
+
+        "evResult"
+
+    ).innerHTML =
+
+        "<b>買い目：</b> AIランキング1位"+
+
+        "<br>"+
+
+        "<b>AI確率：</b>"+
+
+        probability.toFixed(2)+"%"+
+
+        "<br>"+
+
+        "<b>オッズ：</b>"+
+
+        odds.toFixed(1)+"倍"+
+
+        "<br><br>"+
+
+        "<span class='big'>"+
+
+        "期待値 "+
+
+        expectedValue.toFixed(2)+
+
+        "</span>"+
+
+        "<br><br>"+
+
+        judgement;
+
+}
+
+/* =========================================
+
+   生成した買い目の1位確率
+
+========================================= */
+
+function getTopBetProbability(){
+
+    /*
+
+    現在表示されている
+
+    AI自動買い目の1位を取得
+
+    */
+
+    const cards =
+
+        document.querySelectorAll(
+
+            "#autoBetCard .bet"
+
+        );
+
+    if(!cards.length){
+
+        return 5;
+
+    }
+
+    const text =
+
+        cards[0].innerText;
+
+    const match =
+
+        text.match(
+
+            /AI推定確率：\s*([0-9.]+)%/
+
+        );
+
+    if(match){
+
+        return Number(match[1]);
+
+    }
+
+    return 5;
+
+}
 </script>
 <div class="card">
 
