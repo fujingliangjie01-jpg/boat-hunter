@@ -426,43 +426,45 @@ function showInput(){
 
     <div class="boat">
 
-    <h3>${i}号艇</h3>
+      <h3>${i}号艇</h3>
 
-    <label>選手名</label>
+      <label>選手名</label>
 
-    <input id="name${i}" placeholder="選手名">
+      <input id="name${i}" placeholder="選手名">
 
-    <label>級別</label>
+      <label>級別</label>
 
-    <select id="class${i}">
+      <select id="class${i}">
 
-      <option>A1</option>
+        <option>A1</option>
 
-      <option>A2</option>
+        <option>A2</option>
 
-      <option>B1</option>
+        <option>B1</option>
 
-      <option>B2</option>
+        <option>B2</option>
 
-    </select>
+      </select>
 
-    <label>全国勝率</label>
+      <label>全国勝率</label>
 
-<input id="win${i}" type="number" step="0.01" placeholder="例 6.50">
+      <input id="win${i}" type="number" step="0.01">
 
-<label>当地勝率</label>
+      <label>当地勝率</label>
 
-<input id="local${i}" type="number" step="0.01" placeholder="例 6.80">
+      <input id="local${i}" type="number" step="0.01">
 
-<label>モーター2連率（%）</label>
+      <label>モーター2連率（%）</label>
 
-    <input id="motor${i}" type="number" step="0.1" placeholder="例 40.0">
+      <input id="motor${i}" type="number" step="0.1">
 
-    <label>平均ST</label>
+      <label>平均ST</label>
 
-    <input id="st${i}" type="number" step="0.01" placeholder="例 0.15"><label>展示タイム</label>
+      <input id="st${i}" type="number" step="0.01">
 
-<input id="exhibit${i}" type="number" step="0.01" placeholder="例 6.80">
+      <label>展示タイム</label>
+
+      <input id="exhibit${i}" type="number" step="0.01">
 
     </div>`;
 
@@ -504,83 +506,23 @@ function analyze(){
 
     }[cls];
 
-    /*
+    let score =
 
-      BOAT HUNTER SCORE
+      Math.min(win/8*15,15) +
 
-      100点満点
+      Math.min(local/8*15,15) +
 
-    */
+      Math.min(motor/50*15,15) +
 
-    let winScore=Math.min(win/8*15,15);
+      Math.max(0,Math.min((0.20-st)*50,10)) +
 
-    let localScore=Math.min(local/8*15,15);
+      (exhibit>0 ? Math.max(0,Math.min((7.0-exhibit)*10,10)) : 0) +
 
-    let motorScore=Math.min(motor/50*15,15);
+      classPoint +
 
-    let stScore=Math.max(0,Math.min((0.20-st)*50,10));
+      (i===1 ? 20 : i===2 ? 15 : i===3 ? 13 : i===4 ? 10 : i===5 ? 7 : 5) +
 
-    let exhibitScore=0;
-
-    if(exhibit>0){
-
-      exhibitScore=Math.max(0,Math.min((7.0-exhibit)*10,10));
-
-    }
-
-    /*
-
-      1号艇のコース優位を簡易評価
-
-    */
-
-    let courseScore=20;
-
-    if(i===1){
-
-      courseScore=20;
-
-    }else if(i===2){
-
-      courseScore=15;
-
-    }else if(i===3){
-
-      courseScore=13;
-
-    }else if(i===4){
-
-      courseScore=10;
-
-    }else if(i===5){
-
-      courseScore=7;
-
-    }else{
-
-      courseScore=5;
-
-    }
-
-    let waterScore=5;
-
-    let score=
-
-      winScore+
-
-      localScore+
-
-      motorScore+
-
-      stScore+
-
-      exhibitScore+
-
-      classPoint+
-
-      courseScore+
-
-      waterScore;
+      5;
 
     data.push({
 
@@ -594,245 +536,53 @@ function analyze(){
 
   }
 
-  /*
-
-    スコア順
-
-  */
-
   data.sort((a,b)=>b.score-a.score);
-
-  /*
-
-    結果画面
-
-  */
 
   document.getElementById("inputPage").classList.add("hidden");
 
   document.getElementById("resultPage").classList.remove("hidden");
 
-  /*
-
-    ランキング
-
-  */
-
   let ranking="";
 
   data.forEach((x,index)=>{
 
-    ranking+=`
+    ranking += `
 
     <div class="result">
 
-      <span>
+      <span>${index+1}位　${x.boat}号艇　${x.name}</span>
 
-      ${index+1}位　
+      <strong>${x.score.toFixed(1)}点</strong>
 
-      ${x.boat}号艇　
-
-      ${x.name}
-
-      </span>
-
-      <strong>
-
-      ${x.score.toFixed(1)}点
-
-      </strong>
-
-    </div>
-
-    `;
+    </div>`;
 
   });
 
   document.getElementById("ranking").innerHTML=ranking;
 
-  /*
-
-    本命・対抗・穴
-
-  */
-
-  document.getElementById("judgement").innerHTML=`
-
-<p>
-
-◎ 本命：<strong>${a}号艇</strong>
-
-<br>
-
-推定確率：${(probFavorite*100).toFixed(1)}%
-
-<br>
-
-想定オッズ：${oddsFavorite || "-"}倍
-
-<br>
-
-期待値：<strong>${evFavorite.toFixed(2)}</strong>
-
-</p>
-
-<p>
-
-○ 対抗：<strong>${b}号艇</strong>
-
-<br>
-
-推定確率：${(probCounter*100).toFixed(1)}%
-
-<br>
-
-想定オッズ：${oddsCounter || "-"}倍
-
-<br>
-
-期待値：<strong>${evCounter.toFixed(2)}</strong>
-
-</p>
-
-<p>
-
-▲ 穴：<strong>${c}号艇</strong>
-
-<br>
-
-推定確率：${(probDark*100).toFixed(1)}%
-
-<br>
-
-想定オッズ：${oddsDark || "-"}倍
-
-<br>
-
-期待値：<strong>${evDark.toFixed(2)}</strong>
-
-</p>
-
-`;
-
-    <p>
-
-    ◎ 本命：
-
-    <strong>${data[0].boat}号艇</strong>
-
-    </p>
-
-    <p>
-
-    ○ 対抗：
-
-    <strong>${data[1].boat}号艇</strong>
-
-    </p>
-
-    <p>
-
-    ▲ 穴：
-
-    <strong>${data[2].boat}号艇</strong>
-
-    </p>
-
-  `;
-
-  /*
-
-    展開予想
-
-  */
-
-  let entry=document.getElementById("entry").value;
-
-  let wind=parseFloat(document.getElementById("wind").value)||0;
-
-  let wave=parseFloat(document.getElementById("wave").value)||0;
-
-  document.getElementById("development").innerHTML=`
-
-    進入予想：${entry || "未入力"}<br>
-
-    風速：${wind}m<br>
-
-    波高：${wave}cm<br><br>
-
-    ${data[0].boat}号艇を中心に評価。<br>
-
-    上位艇の選手力・モーター・ST・展示タイムを
-
-    総合して判定しています。
-
-  `;
-
-  /*
-
-    買い目
-
-  */
-
   let a=data[0].boat;
 
   let b=data[1].boat;
 
-  let c=data[2].boat;let oddsFavorite =
+  let c=data[2].boat;
 
-  parseFloat(document.getElementById("odds1").value) || 0;
+  document.getElementById("judgement").innerHTML=`
 
-let oddsCounter =
+    <p>◎ 本命：<strong>${a}号艇</strong></p>
 
-  parseFloat(document.getElementById("odds2").value) || 0;
+    <p>○ 対抗：<strong>${b}号艇</strong></p>
 
-let oddsDark =
+    <p>▲ 穴：<strong>${c}号艇</strong></p>
 
-  parseFloat(document.getElementById("odds3").value) || 0;
+  `;
 
-/*
+  document.getElementById("development").innerHTML=`
 
-  スコアから簡易推定確率を作る
+    ${a}号艇を中心に展開予想。<br>
 
-*/
+    ST・選手力・モーター・展示タイムを総合評価。
 
-let totalScore =
-
-  data[0].score +
-
-  data[1].score +
-
-  data[2].score;
-
-let probFavorite =
-
-  data[0].score / totalScore;
-
-let probCounter =
-
-  data[1].score / totalScore;
-
-let probDark =
-
-  data[2].score / totalScore;
-
-/*
-
-  期待値
-
-*/
-
-let evFavorite =
-
-  probFavorite * oddsFavorite;
-
-let evCounter =
-
-  probCounter * oddsCounter;
-
-let evDark =
-
-  probDark * oddsDark;
+  `;
 
   document.getElementById("safe").innerHTML=`
 
@@ -854,6 +604,7 @@ let evDark =
 
   `;
 
+}
 </script>
 
 </body>
