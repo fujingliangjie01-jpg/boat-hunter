@@ -658,6 +658,62 @@ function analyze(){
 
   document.getElementById("judgement").innerHTML=`
 
+<p>
+
+◎ 本命：<strong>${a}号艇</strong>
+
+<br>
+
+推定確率：${(probFavorite*100).toFixed(1)}%
+
+<br>
+
+想定オッズ：${oddsFavorite || "-"}倍
+
+<br>
+
+期待値：<strong>${evFavorite.toFixed(2)}</strong>
+
+</p>
+
+<p>
+
+○ 対抗：<strong>${b}号艇</strong>
+
+<br>
+
+推定確率：${(probCounter*100).toFixed(1)}%
+
+<br>
+
+想定オッズ：${oddsCounter || "-"}倍
+
+<br>
+
+期待値：<strong>${evCounter.toFixed(2)}</strong>
+
+</p>
+
+<p>
+
+▲ 穴：<strong>${c}号艇</strong>
+
+<br>
+
+推定確率：${(probDark*100).toFixed(1)}%
+
+<br>
+
+想定オッズ：${oddsDark || "-"}倍
+
+<br>
+
+期待値：<strong>${evDark.toFixed(2)}</strong>
+
+</p>
+
+`;
+
     <p>
 
     ◎ 本命：
@@ -722,7 +778,61 @@ function analyze(){
 
   let b=data[1].boat;
 
-  let c=data[2].boat;
+  let c=data[2].boat;let oddsFavorite =
+
+  parseFloat(document.getElementById("odds1").value) || 0;
+
+let oddsCounter =
+
+  parseFloat(document.getElementById("odds2").value) || 0;
+
+let oddsDark =
+
+  parseFloat(document.getElementById("odds3").value) || 0;
+
+/*
+
+  スコアから簡易推定確率を作る
+
+*/
+
+let totalScore =
+
+  data[0].score +
+
+  data[1].score +
+
+  data[2].score;
+
+let probFavorite =
+
+  data[0].score / totalScore;
+
+let probCounter =
+
+  data[1].score / totalScore;
+
+let probDark =
+
+  data[2].score / totalScore;
+
+/*
+
+  期待値
+
+*/
+
+let evFavorite =
+
+  probFavorite * oddsFavorite;
+
+let evCounter =
+
+  probCounter * oddsCounter;
+
+let evDark =
+
+  probDark * oddsDark;
 
   document.getElementById("safe").innerHTML=`
 
