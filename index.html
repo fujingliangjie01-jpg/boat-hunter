@@ -1452,36 +1452,275 @@ return Number(value).toFixed(2)+"%";
 
 ===================================== */
 
+/* =====================================
+
+風・水面情報
+
+===================================== */
+
 function displayWeather(race){
 
-const w =
+    const w =
 
-race.weather ||
+        race.weather_information ||
 
-race.weather_information ||
+        race.weatherInformation ||
 
-race.water ||
+        race.weather ||
 
-{};
+        race.water ||
 
-setText(
+        {};
 
-"weather",
+    console.log("BOAT HUNTER 天候データ:", w);
 
-w.weather ??
+    /* 天候 */
 
-w.condition ??
+    setText(
 
-"--"
+        "weather",
 
-);
+        w.weather ??
 
-setText(
+        w.condition ??
 
-"temperature",
+        w.weather_name ??
 
-valueWithUnit(
+        "--"
 
+    );
+
+    /* 気温 */
+
+    setText(
+
+        "temperature",
+
+        valueWithUnit(
+
+            w.temperature ??
+
+            w.air_temperature ??
+
+            w.temp,
+
+            "℃"
+
+        )
+
+    );
+
+    /* 水温 */
+
+    setText(
+
+        "waterTemperature",
+
+        valueWithUnit(
+
+            w.water_temperature ??
+
+            w.waterTemperature ??
+
+            w.water_temp,
+
+            "℃"
+
+        )
+
+    );
+
+    /* 風向 */
+
+    setText(
+
+        "windDirection",
+
+        formatWindDirection(
+
+            w.wind_direction ??
+
+            w.windDirection ??
+
+            w.direction
+
+        )
+
+    );
+
+    /* 風速 */
+
+    setText(
+
+        "windSpeed",
+
+        valueWithUnit(
+
+            w.wind_speed ??
+
+            w.windSpeed ??
+
+            w.wind,
+
+            "m"
+
+        )
+
+    );
+
+    /* 波高 */
+
+    setText(
+
+        "wave",
+
+        valueWithUnit(
+
+            w.wave_height ??
+
+            w.waveHeight ??
+
+            w.wave,
+
+            "cm"
+
+        )
+
+    );
+
+}
+
+/* =====================================
+
+風向変換
+
+===================================== */
+
+function formatWindDirection(value){
+
+    if(
+
+        value === null ||
+
+        value === undefined ||
+
+        value === ""
+
+    ){
+
+        return "--";
+
+    }
+
+    /*
+
+       APIによって
+
+       文字列・数値の両方があるため
+
+       そのまま表示できるようにする
+
+    */
+
+    const directionMap = {
+
+        0:"無風",
+
+        1:"東",
+
+        2:"西",
+
+        3:"南",
+
+        4:"北",
+
+        5:"南東",
+
+        6:"南西",
+
+        7:"北東",
+
+        8:"北西"
+
+    };
+
+    if(
+
+        directionMap[
+
+            String(value)
+
+        ]
+
+    ){
+
+        return directionMap[
+
+            String(value)
+
+        ];
+
+    }
+
+    return String(value);
+
+}
+
+/* =====================================
+
+画面へ表示
+
+===================================== */
+
+function setText(id,value){
+
+    const el =
+
+        document.getElementById(id);
+
+    if(el){
+
+        el.innerText =
+
+            value ??
+
+            "--";
+
+    }
+
+}
+
+/* =====================================
+
+単位付き表示
+
+===================================== */
+
+function valueWithUnit(
+
+    value,
+
+    unit
+
+){
+
+    if(
+
+        value === null ||
+
+        value === undefined ||
+
+        value === ""
+
+    ){
+
+        return "--";
+
+    }
+
+    return value + " " + unit;
+
+}
 w.temperature,
 
 "℃"
