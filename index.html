@@ -2024,89 +2024,67 @@ AIスコア
 
 function calcScore(r,entry){
 
-let score = 0;
+let score=0;
 
-const national =
+const national=num(r.national_win_rate);
 
-num(r.national_win_rate);
+const local=num(r.local_win_rate);
 
-const local =
+const motor2=num(r.motor_top_2_percent);
 
-num(r.local_win_rate);
+const motor3=num(r.motor_top_3_percent);
 
-const motor2 =
+const national2=num(r.national_top_2_percent);
 
-num(r.motor_top_2_percent);
+const local2=num(r.local_top_2_percent);
 
-const motor3 =
+const st=num(r.average_start_timing);
 
-num(r.motor_top_3_percent);
+const rank=num(r.rank_number);
 
-const national2 =
+const boat=getBoatNumber(r);
 
-num(r.national_top_2_percent);
+const course=entry.indexOf(boat)+1;
 
-const local2 =
+/* =========================
 
-num(r.local_top_2_percent);
+基本能力
 
-const st =
+========================= */
 
-num(r.average_start_timing);
+score += national*7;
 
-const rank =
+score += local*4;
 
-num(r.rank_number);
+score += national2*0.08;
 
-const boat =
+score += local2*0.06;
 
-getBoatNumber(r);
+score += motor2*0.15;
 
-const course =
+score += motor3*0.05;
 
-entry.indexOf(boat) + 1;
+/* =========================
 
-/* 全国勝率 */
+ST
 
-score += national * 7;
+========================= */
 
-/* 当地勝率 */
-
-score += local * 4;
-
-/* 全国2連率 */
-
-score += national2 * 0.08;
-
-/* 当地2連率 */
-
-score += local2 * 0.06;
-
-/* モーター */
-
-score += motor2 * 0.15;
-
-score += motor3 * 0.05;
-
-/* ST */
-
-if(st > 0){
+if(st>0){
 
 score +=
 
-Math.max(
-
-0,
-
-0.30 - st
-
-) * 20;
+Math.max(0,0.30-st)*20;
 
 }
 
-/* コース */
+/* =========================
 
-const courseBonus = {
+コース
+
+========================= */
+
+const courseBonus={
 
 1:10,
 
@@ -2126,41 +2104,183 @@ score +=
 
 courseBonus[course] || 0;
 
-/* 級別 */
+/* =========================
 
-if(rank === 1){
+級別
 
-score += 5;
+========================= */
 
-}
+if(rank===1) score+=5;
 
-if(rank === 2){
+if(rank===2) score+=2;
 
-score += 2;
+if(rank===4) score-=2;
 
-}
+/* =========================
 
-if(rank === 4){
+イン補正
 
-score -= 2;
+========================= */
 
-}
+if(course===1){
 
-/* イン */
-
-if(course === 1){
-
-score += 3;
+score+=3;
 
 }
 
-/* 6コース */
+/* =========================
 
-if(course === 6){
+6コース
 
-score -= 1;
+========================= */
+
+if(course===6){
+
+score-=1;
 
 }
+
+/* =========================
+
+風・波補正
+
+========================= */
+
+const preview =
+
+raceData && raceData.preview
+
+?
+
+raceData.preview
+
+:
+
+null;
+
+if(preview){
+
+const wind=
+
+num(preview.wind_speed);
+
+const wave=
+
+num(preview.wave_height);
+
+/*
+
+風が強いほど
+
+コース取り・ST能力を重視。
+
+1コースの基本優位は
+
+少しだけ維持する。
+
+*/
+
+if(wind>=5){
+
+if(course===1){
+
+score+=2;
+
+}
+
+if(course===2){
+
+score+=2;
+
+}
+
+if(course===3){
+
+score+=1;
+
+}
+
+if(course>=5){
+
+score-=1;
+
+}
+
+}
+
+/*
+
+強風＋高波では
+
+外枠を少し割り引く。
+
+*/
+
+if(wind>=6 && wave>=4){
+
+if(course===1){
+
+score+=2;
+
+}
+
+if(course===2){
+
+score+=2;
+
+}
+
+if(course===3){
+
+score+=1;
+
+}
+
+if(course>=4){
+
+score-=2;
+
+}
+
+}
+
+/*
+
+波高だけでも
+
+高波なら内寄りを少し評価。
+
+*/
+
+if(wave>=5){
+
+if(course===1){
+
+score+=2;
+
+}
+
+if(course===2){
+
+score+=1;
+
+}
+
+if(course>=5){
+
+score-=1;
+
+}
+
+}
+
+}
+
+/* =========================
+
+最終
+
+========================= */
 
 return Math.round(score);
 
