@@ -2022,69 +2022,61 @@ AIスコア
 
 ========================================= */
 
+/* =========================================
+
+AIスコア
+
+========================================= */
+
 function calcScore(r,entry){
 
-let score=0;
+let score = 0;
 
-const national=num(r.national_win_rate);
+const national = num(r.national_win_rate);
 
-const local=num(r.local_win_rate);
+const local = num(r.local_win_rate);
 
-const motor2=num(r.motor_top_2_percent);
+const motor2 = num(r.motor_top_2_percent);
 
-const motor3=num(r.motor_top_3_percent);
+const motor3 = num(r.motor_top_3_percent);
 
-const national2=num(r.national_top_2_percent);
+const national2 = num(r.national_top_2_percent);
 
-const local2=num(r.local_top_2_percent);
+const local2 = num(r.local_top_2_percent);
 
-const st=num(r.average_start_timing);
+const st = num(r.average_start_timing);
 
-const rank=num(r.rank_number);
+const rank = num(r.rank_number);
 
-const boat=getBoatNumber(r);
+const boat = getBoatNumber(r);
 
-const course=entry.indexOf(boat)+1;
+const course = entry.indexOf(boat) + 1;
 
-/* =========================
+/* 基本能力 */
 
-基本能力
+score += national * 7;
 
-========================= */
+score += local * 4;
 
-score += national*7;
+score += national2 * 0.08;
 
-score += local*4;
+score += local2 * 0.06;
 
-score += national2*0.08;
+score += motor2 * 0.15;
 
-score += local2*0.06;
+score += motor3 * 0.05;
 
-score += motor2*0.15;
+/* ST */
 
-score += motor3*0.05;
+if(st > 0){
 
-/* =========================
-
-ST
-
-========================= */
-
-if(st>0){
-
-score +=
-
-Math.max(0,0.30-st)*20;
+score += Math.max(0,0.30 - st) * 20;
 
 }
 
-/* =========================
+/* コース */
 
-コース
-
-========================= */
-
-const courseBonus={
+const courseBonus = {
 
 1:10,
 
@@ -2100,51 +2092,33 @@ const courseBonus={
 
 };
 
-score +=
+score += courseBonus[course] || 0;
 
-courseBonus[course] || 0;
+/* 級別 */
 
-/* =========================
+if(rank === 1) score += 5;
 
-級別
+if(rank === 2) score += 2;
 
-========================= */
+if(rank === 4) score -= 2;
 
-if(rank===1) score+=5;
+/* イン補正 */
 
-if(rank===2) score+=2;
+if(course === 1){
 
-if(rank===4) score-=2;
-
-/* =========================
-
-イン補正
-
-========================= */
-
-if(course===1){
-
-score+=3;
+score += 3;
 
 }
 
-/* =========================
+/* 6コース */
 
-6コース
+if(course === 6){
 
-========================= */
-
-if(course===6){
-
-score-=1;
+score -= 1;
 
 }
 
-/* =========================
-
-風・波補正
-
-========================= */
+/* 風・波 */
 
 const preview =
 
@@ -2160,135 +2134,439 @@ null;
 
 if(preview){
 
-const wind=
+const wind = num(preview.wind_speed);
 
-num(preview.wind_speed);
+const wave = num(preview.wave_height);
 
-const wave=
+/* 強風 */
 
-num(preview.wave_height);
+if(wind >= 5){
 
-/*
+if(course === 1) score += 2;
 
-風が強いほど
+if(course === 2) score += 2;
 
-コース取り・ST能力を重視。
+if(course === 3) score += 1;
 
-1コースの基本優位は
-
-少しだけ維持する。
-
-*/
-
-if(wind>=5){
-
-if(course===1){
-
-score+=2;
+if(course >= 5) score -= 1;
 
 }
 
-if(course===2){
+/* 強風＋高波 */
 
-score+=2;
+if(wind >= 6 && wave >= 4){
 
-}
+if(course === 1) score += 2;
 
-if(course===3){
+if(course === 2) score += 2;
 
-score+=1;
+if(course === 3) score += 1;
 
-}
-
-if(course>=5){
-
-score-=1;
+if(course >= 4) score -= 2;
 
 }
 
-}
+/* 高波 */
 
-/*
+if(wave >= 5){
 
-強風＋高波では
+if(course === 1) score += 2;
 
-外枠を少し割り引く。
+if(course === 2) score += 1;
 
-*/
-
-if(wind>=6 && wave>=4){
-
-if(course===1){
-
-score+=2;
-
-}
-
-if(course===2){
-
-score+=2;
-
-}
-
-if(course===3){
-
-score+=1;
-
-}
-
-if(course>=4){
-
-score-=2;
+if(course >= 5) score -= 1;
 
 }
 
 }
-
-/*
-
-波高だけでも
-
-高波なら内寄りを少し評価。
-
-*/
-
-if(wave>=5){
-
-if(course===1){
-
-score+=2;
-
-}
-
-if(course===2){
-
-score+=1;
-
-}
-
-if(course>=5){
-
-score-=1;
-
-}
-
-}
-
-}
-
-/* =========================
-
-最終
-
-========================= */
 
 return Math.round(score);
 
 }
 
+/* =========================================
 
+確率計算
 
-}* =========================================
+========================================= */
+
+function calculateProbabilities(ranking){
+
+if(!ranking || ranking.length !== 6){
+
+return [];
+
+}
+
+const values = ranking.map(function(r){
+
+return Math.exp(r.score / 12);
+
+});
+
+const total = values.reduce(
+
+function(a,b){
+
+return a + b;
+
+},
+
+0
+
+);
+
+if(total <= 0){
+
+return ranking.map(function(r){
+
+return {
+
+number:r.number,
+
+name:r.name,
+
+score:r.score,
+
+first:0,
+
+second:0,
+
+third:0
+
+};
+
+});
+
+}
+
+/* 1着確率 */
+
+const firstProb = values.map(function(v){
+
+return v / total;
+
+});
+
+/*
+
+簡易2連対・3連対確率
+
+各艇のスコアを使って
+
+順位期待値を算出
+
+*/
+
+const secondProb = [];
+
+const thirdProb = [];
+
+for(let i=0;i<ranking.length;i++){
+
+let pSecond = 0;
+
+let pThird = 0;
+
+/* 2着 */
+
+for(let j=0;j<ranking.length;j++){
+
+if(i === j) continue;
+
+const pFirstJ = values[j] / total;
+
+const remain =
+
+total - values[j];
+
+if(remain > 0){
+
+pSecond +=
+
+pFirstJ *
+
+(values[i] / remain);
+
+}
+
+}
+
+/* 3着 */
+
+for(let j=0;j<ranking.length;j++){
+
+if(i === j) continue;
+
+for(let k=0;k<ranking.length;k++){
+
+if(
+
+k === i ||
+
+k === j
+
+){
+
+continue;
+
+}
+
+const remain1 =
+
+total - values[j];
+
+const remain2 =
+
+total - values[j] - values[k];
+
+if(
+
+remain1 <= 0 ||
+
+remain2 <= 0
+
+){
+
+continue;
+
+}
+
+pThird +=
+
+(values[j] / total) *
+
+(values[k] / remain1) *
+
+(values[i] / remain2);
+
+}
+
+}
+
+secondProb.push(pSecond);
+
+thirdProb.push(pThird);
+
+}
+
+return ranking.map(function(r,i){
+
+return {
+
+number:r.number,
+
+name:r.name,
+
+score:r.score,
+
+first:Math.round(
+
+firstProb[i] * 100
+
+),
+
+second:Math.round(
+
+secondProb[i] * 100
+
+),
+
+third:Math.round(
+
+thirdProb[i] * 100
+
+)
+
+};
+
+});
+
+}
+
+/* =========================================
+
+穴理由
+
+========================================= */
+
+function getHoleReason(r){
+
+const racer =
+
+getRacers(raceData).find(function(x){
+
+return getBoatNumber(x) === r.number;
+
+});
+
+if(!racer){
+
+return "総合AI評価から穴候補として選出。";
+
+}
+
+const reasons = [];
+
+const motor2 =
+
+num(racer.motor_top_2_percent);
+
+const motor3 =
+
+num(racer.motor_top_3_percent);
+
+const st =
+
+num(racer.average_start_timing);
+
+const national =
+
+num(racer.national_win_rate);
+
+const local =
+
+num(racer.local_win_rate);
+
+const course =
+
+selectedEntry.indexOf(r.number) + 1;
+
+/* モーター */
+
+if(motor2 >= 40){
+
+reasons.push(
+
+"モーター2連率が高い"
+
+);
+
+}
+
+if(motor3 >= 60){
+
+reasons.push(
+
+"モーター3連率が高い"
+
+);
+
+}
+
+/* ST */
+
+if(st > 0 && st <= 0.15){
+
+reasons.push(
+
+"平均STがメンバー上位"
+
+);
+
+}
+
+/* 全国勝率 */
+
+if(national >= 6){
+
+reasons.push(
+
+"全国勝率が高い"
+
+);
+
+}
+
+/* 当地 */
+
+if(local >= 6){
+
+reasons.push(
+
+"当地勝率が高い"
+
+);
+
+}
+
+/* コース */
+
+if(course <= 3){
+
+reasons.push(
+
+course + "コース取得で展開利"
+
+);
+
+}
+
+/* 風・波 */
+
+if(raceData && raceData.preview){
+
+const wind =
+
+num(raceData.preview.wind_speed);
+
+const wave =
+
+num(raceData.preview.wave_height);
+
+if(
+
+wind >= 5 &&
+
+course <= 3
+
+){
+
+reasons.push(
+
+"強風下で内寄りコースの利"
+
+);
+
+}
+
+if(
+
+wave >= 4 &&
+
+course <= 3
+
+){
+
+reasons.push(
+
+"高波で内側の立ち回りが有利"
+
+);
+
+}
+
+}
+
+if(reasons.length === 0){
+
+reasons.push(
+
+"総合AIスコアが人気上位以外で高い"
+
+);
+
+}
+
+return reasons
+
+.slice(0,4)
+
+.join("・");
+
+}
+
+/* =========================================
 
 AI解析
 
@@ -2336,6 +2614,8 @@ return;
 
 }
 
+/* AIランキング */
+
 const ranking =
 
 getRacers(raceData)
@@ -2344,414 +2624,13 @@ getRacers(raceData)
 
 return {
 
-number:
+number:getBoatNumber(r),
 
-getBoatNumber(r),
+name:getName(r),
 
-name:
+score:calcScore(
 
-getName(r),
-
-score:
-
-calcScore(
-/* =========================================
-
-確率計算
-
-========================================= */
-
-function calculateProbabilities(ranking){
-
-if(!ranking || ranking.length!==6){
-
-return [];
-
-}
-
-/*
-
-スコアを確率へ変換
-
-*/
-
-const values=ranking.map(function(r){
-
-return Math.exp(r.score/12);
-
-});
-
-const total=
-
-values.reduce(
-
-(a,b)=>a+b,
-
-0
-
-);
-
-/*
-
-1着確率
-
-*/
-
-const firstProb=values.map(function(v){
-
-return v/total;
-
-});
-
-/*
-
-2連対・3連対の推定
-
-Plackett-Luce型で
-
-順位確率を近似
-
-*/
-
-const secondProb=[];
-
-const thirdProb=[];
-
-for(let i=0;i<ranking.length;i++){
-
-let p2=0;
-
-let p3=0;
-
-for(let j=0;j<ranking.length;j++){
-
-if(i===j){
-
-continue;
-
-}
-
-const remainTotal=
-
-total-values[i];
-
-const pFirstOther=
-
-values[j]/total;
-
-const pSecond=
-
-values[i]/remainTotal;
-
-p2 +=
-
-pFirstOther*pSecond;
-
-/*
-
-3着までの近似
-
-*/
-
-for(let k=0;k<ranking.length;k++){
-
-if(
-
-k===i ||
-
-k===j
-
-){
-
-continue;
-
-}
-
-const remain2=
-
-total-values[j]-values[k];
-
-if(remain2<=0){
-
-continue;
-
-}
-
-const pThird=
-
-values[i]/
-
-(
-
-total-values[j]
-
-);
-
-p3 +=
-
-pFirstOther*
-
-(
-
-values[j]/
-
-(total-values[j])
-
-)*
-
-(
-
-values[i]/
-
-(total-values[j]-values[k])
-
-);
-
-}
-
-}
-
-secondProb.push(p2);
-
-thirdProb.push(p3);
-
-}
-
-/*
-
-表示用に整形
-
-*/
-
-return ranking.map(function(r,i){
-
-return {
-
-number:r.number,
-
-name:r.name,
-
-score:r.score,
-
-first:Math.round(firstProb[i]*100),
-
-second:Math.round(secondProb[i]*100),
-
-third:Math.round(thirdProb[i]*100)
-
-};
-
-});
-
-}
-/* =========================================
-
-穴理由
-
-========================================= */
-
-function getHoleReason(r){
-
-const racer=
-
-getRacers(raceData)
-
-.find(function(x){
-
-return getBoatNumber(x)===r.number;
-
-});
-
-if(!racer){
-
-return "総合AI評価から穴候補として選出。";
-
-}
-
-const reasons=[];
-
-const motor2=
-
-num(racer.motor_top_2_percent);
-
-const motor3=
-
-num(racer.motor_top_3_percent);
-
-const st=
-
-num(racer.average_start_timing);
-
-const national=
-
-num(racer.national_win_rate);
-
-const local=
-
-num(racer.local_win_rate);
-
-const course=
-
-selectedEntry.indexOf(r.number)+1;
-
-/*
-
-モーター
-
-*/
-
-if(motor2>=40){
-
-reasons.push(
-
-"モーター2連率が高い"
-
-);
-
-}
-
-/*
-
-ST
-
-*/
-
-if(st>0 && st<=0.15){
-
-reasons.push(
-
-"平均STがメンバー上位"
-
-);
-
-}
-
-/*
-
-全国勝率
-
-*/
-
-if(national>=6){
-
-reasons.push(
-
-"全国勝率が高い"
-
-);
-
-}
-
-/*
-
-当地
-
-*/
-
-if(local>=6){
-
-reasons.push(
-
-"当地勝率が高い"
-
-);
-
-}
-
-/*
-
-3連率
-
-*/
-
-if(motor3>=60){
-
-reasons.push(
-
-"モーター3連率が高い"
-
-);
-
-}
-
-/*
-
-コース
-
-*/
-
-if(course<=3){
-
-reasons.push(
-
-course+"コース取得で展開利"
-
-);
-
-}
-
-/*
-
-風・波
-
-*/
-
-if(raceData && raceData.preview){
-
-const wind=
-
-num(raceData.preview.wind_speed);
-
-const wave=
-
-num(raceData.preview.wave_height);
-
-if(wind>=5 && course<=3){
-
-reasons.push(
-
-"強風下で内寄りコースの利"
-
-);
-
-}
-
-if(wave>=4 && course<=3){
-
-reasons.push(
-
-"高波で内側の立ち回りが有利"
-
-);
-
-}
-
-}
-
-/*
-
-何もない場合
-
-*/
-
-if(reasons.length===0){
-
-reasons.push(
-
-"総合AIスコアが人気上位以外で高い"
-
-);
-
-}
-
-return reasons
-
-.slice(0,4)
-
-.join("・");
-
-}
-  r,
+r,
 
 selectedEntry
 
@@ -2761,13 +2640,11 @@ selectedEntry
 
 })
 
-.sort(
+.sort(function(a,b){
 
-(a,b)=>
+return b.score - a.score;
 
-b.score - a.score
-
-);
+});
 
 if(ranking.length < 6){
 
@@ -2781,6 +2658,8 @@ return;
 
 }
 
+/* 表示 */
+
 showAnalysis(
 
 ranking,
@@ -2793,7 +2672,7 @@ selectedEntry
 
 /* =========================================
 
-展開
+展開予想
 
 ========================================= */
 
@@ -2833,7 +2712,7 @@ ${third}号艇の攻めを警戒。
 
 <br><br>
 
-前付けによってスタート隊形が変わるため、
+前付けによってスタート隊形が変化。
 
 <strong>
 
@@ -2941,7 +2820,15 @@ ${entry.join("-")}
 
 <span class="right ${
 
-maezuke ? "yellow" : "green"
+maezuke
+
+?
+
+"yellow"
+
+:
+
+"green"
 
 }">
 
@@ -3045,18 +2932,18 @@ entry
 
 `;
 
+/* 確率 */
+
+const probabilityRanking =
+
+calculateProbabilities(ranking);
+
 /* ランキング */
 
 const rankingElement =
 
-document.getElementById(
+document.getElementById("ranking");
 
-"ranking"
-
-);
-const probabilityRanking =
-
-calculateProbabilities(ranking);
 rankingElement.innerHTML = "";
 
 probabilityRanking.forEach(
@@ -3069,11 +2956,11 @@ document.createElement("div");
 
 div.className = "rank";
 
-div.innerHTML=`
+div.innerHTML = `
 
 <div class="rank-number">
 
-${index+1}位
+${index + 1}位
 
 </div>
 
@@ -3264,6 +3151,7 @@ ${entry.join("-")}
 </span>
 
 </div>
+
 <div class="ai-box">
 
 <strong>
@@ -3279,6 +3167,7 @@ ${getHoleReason(c)}
 </div>
 
 </div>
+
 `;
 
 /* 買い目 */
@@ -3311,35 +3200,21 @@ const budget =
 
 num(
 
-document.getElementById(
-
-"budget"
-
-).value
+document.getElementById("budget").value
 
 ) || 3000;
 
-const a =
+const a = ranking[0].number;
 
-ranking[0].number;
+const b = ranking[1].number;
 
-const b =
+const c = ranking[2].number;
 
-ranking[1].number;
+const d = ranking[3].number;
 
-const c =
+const e = ranking[4].number;
 
-ranking[2].number;
-
-const d =
-
-ranking[3].number;
-
-const e =
-
-ranking[4].number;
-
-/* 的中率 */
+/* 的中率重視 */
 
 const hitPicks = [
 
@@ -3357,7 +3232,7 @@ const hitPicks = [
 
 ];
 
-/* 回収率 */
+/* 回収率重視 */
 
 const roiPicks = [
 
@@ -3383,7 +3258,7 @@ const roiPicks = [
 
 ];
 
-/* 予算 */
+/* 予算配分 */
 
 const hitBudget =
 
@@ -3439,7 +3314,7 @@ roiPicks.length /
 
 );
 
-/* HTML */
+/* 表示 */
 
 function makeHtml(
 
@@ -3457,7 +3332,7 @@ return `
 
 <div class="pick-line">
 
-${i+1}.
+${i + 1}.
 
 ${p}
 
@@ -3471,9 +3346,7 @@ ${unit}円
 
 `;
 
-}
-
-).join("");
+}).join("");
 
 }
 
@@ -3558,7 +3431,6 @@ roiUnit
 `;
 
 }
-
 /* =========================================
 
 イベント登録
