@@ -2353,8 +2353,403 @@ getName(r),
 score:
 
 calcScore(
+/* =========================================
 
-r,
+確率計算
+
+========================================= */
+
+function calculateProbabilities(ranking){
+
+if(!ranking || ranking.length!==6){
+
+return [];
+
+}
+
+/*
+
+スコアを確率へ変換
+
+*/
+
+const values=ranking.map(function(r){
+
+return Math.exp(r.score/12);
+
+});
+
+const total=
+
+values.reduce(
+
+(a,b)=>a+b,
+
+0
+
+);
+
+/*
+
+1着確率
+
+*/
+
+const firstProb=values.map(function(v){
+
+return v/total;
+
+});
+
+/*
+
+2連対・3連対の推定
+
+Plackett-Luce型で
+
+順位確率を近似
+
+*/
+
+const secondProb=[];
+
+const thirdProb=[];
+
+for(let i=0;i<ranking.length;i++){
+
+let p2=0;
+
+let p3=0;
+
+for(let j=0;j<ranking.length;j++){
+
+if(i===j){
+
+continue;
+
+}
+
+const remainTotal=
+
+total-values[i];
+
+const pFirstOther=
+
+values[j]/total;
+
+const pSecond=
+
+values[i]/remainTotal;
+
+p2 +=
+
+pFirstOther*pSecond;
+
+/*
+
+3着までの近似
+
+*/
+
+for(let k=0;k<ranking.length;k++){
+
+if(
+
+k===i ||
+
+k===j
+
+){
+
+continue;
+
+}
+
+const remain2=
+
+total-values[j]-values[k];
+
+if(remain2<=0){
+
+continue;
+
+}
+
+const pThird=
+
+values[i]/
+
+(
+
+total-values[j]
+
+);
+
+p3 +=
+
+pFirstOther*
+
+(
+
+values[j]/
+
+(total-values[j])
+
+)*
+
+(
+
+values[i]/
+
+(total-values[j]-values[k])
+
+);
+
+}
+
+}
+
+secondProb.push(p2);
+
+thirdProb.push(p3);
+
+}
+
+/*
+
+表示用に整形
+
+*/
+
+return ranking.map(function(r,i){
+
+return {
+
+number:r.number,
+
+name:r.name,
+
+score:r.score,
+
+first:Math.round(firstProb[i]*100),
+
+second:Math.round(secondProb[i]*100),
+
+third:Math.round(thirdProb[i]*100)
+
+};
+
+});
+
+}
+/* =========================================
+
+穴理由
+
+========================================= */
+
+function getHoleReason(r){
+
+const racer=
+
+getRacers(raceData)
+
+.find(function(x){
+
+return getBoatNumber(x)===r.number;
+
+});
+
+if(!racer){
+
+return "総合AI評価から穴候補として選出。";
+
+}
+
+const reasons=[];
+
+const motor2=
+
+num(racer.motor_top_2_percent);
+
+const motor3=
+
+num(racer.motor_top_3_percent);
+
+const st=
+
+num(racer.average_start_timing);
+
+const national=
+
+num(racer.national_win_rate);
+
+const local=
+
+num(racer.local_win_rate);
+
+const course=
+
+selectedEntry.indexOf(r.number)+1;
+
+/*
+
+モーター
+
+*/
+
+if(motor2>=40){
+
+reasons.push(
+
+"モーター2連率が高い"
+
+);
+
+}
+
+/*
+
+ST
+
+*/
+
+if(st>0 && st<=0.15){
+
+reasons.push(
+
+"平均STがメンバー上位"
+
+);
+
+}
+
+/*
+
+全国勝率
+
+*/
+
+if(national>=6){
+
+reasons.push(
+
+"全国勝率が高い"
+
+);
+
+}
+
+/*
+
+当地
+
+*/
+
+if(local>=6){
+
+reasons.push(
+
+"当地勝率が高い"
+
+);
+
+}
+
+/*
+
+3連率
+
+*/
+
+if(motor3>=60){
+
+reasons.push(
+
+"モーター3連率が高い"
+
+);
+
+}
+
+/*
+
+コース
+
+*/
+
+if(course<=3){
+
+reasons.push(
+
+course+"コース取得で展開利"
+
+);
+
+}
+
+/*
+
+風・波
+
+*/
+
+if(raceData && raceData.preview){
+
+const wind=
+
+num(raceData.preview.wind_speed);
+
+const wave=
+
+num(raceData.preview.wave_height);
+
+if(wind>=5 && course<=3){
+
+reasons.push(
+
+"強風下で内寄りコースの利"
+
+);
+
+}
+
+if(wave>=4 && course<=3){
+
+reasons.push(
+
+"高波で内側の立ち回りが有利"
+
+);
+
+}
+
+}
+
+/*
+
+何もない場合
+
+*/
+
+if(reasons.length===0){
+
+reasons.push(
+
+"総合AIスコアが人気上位以外で高い"
+
+);
+
+}
+
+return reasons
+
+.slice(0,4)
+
+.join("・");
+
+}
+  r,
 
 selectedEntry
 
@@ -2657,10 +3052,12 @@ document.getElementById(
 "ranking"
 
 );
+const probabilityRanking =
 
+calculateProbabilities(ranking);
 rankingElement.innerHTML = "";
 
-ranking.forEach(
+probabilityRanking.forEach(
 
 function(r,index){
 
@@ -2670,7 +3067,7 @@ document.createElement("div");
 
 div.className = "rank";
 
-div.innerHTML = `
+div.innerHTML=`
 
 <div class="rank-number">
 
@@ -2692,6 +3089,58 @@ ${r.score} pt
 
 </div>
 
+<div class="info-grid">
+
+<div class="info-item">
+
+<div class="info-label">
+
+1着確率
+
+</div>
+
+<div class="info-value gold">
+
+${r.first}%
+
+</div>
+
+</div>
+
+<div class="info-item">
+
+<div class="info-label">
+
+2連対確率
+
+</div>
+
+<div class="info-value">
+
+${r.second}%
+
+</div>
+
+</div>
+
+<div class="info-item">
+
+<div class="info-label">
+
+3連対確率
+
+</div>
+
+<div class="info-value">
+
+${r.third}%
+
+</div>
+
+</div>
+
+</div>
+
 <div class="score-bar">
 
 <div
@@ -2702,7 +3151,7 @@ style="width:${Math.min(
 
 100,
 
-Math.max(0,r.score)
+Math.max(0,r.first)
 
 )}%"
 
