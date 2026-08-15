@@ -8,6 +8,12 @@
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<meta name="theme-color" content="#080808">
+
 <title>BOAT HUNTER</title>
 
 <style>
@@ -108,7 +114,9 @@ margin-bottom:6px
 
 }
 
-select,input{
+select,
+
+input{
 
 width:100%;
 
@@ -146,7 +154,9 @@ font-size:16px;
 
 font-weight:900;
 
-cursor:pointer
+cursor:pointer;
+
+-webkit-tap-highlight-color:transparent
 
 }
 
@@ -170,7 +180,11 @@ line-height:1.8
 
 }
 
-.hidden{display:none}
+.hidden{
+
+display:none
+
+}
 
 .boats{
 
@@ -324,9 +338,17 @@ border-bottom:1px solid #292929
 
 }
 
-.row:last-child{border-bottom:none}
+.row:last-child{
 
-.left{color:#999}
+border-bottom:none
+
+}
+
+.left{
+
+color:#999
+
+}
 
 .right{
 
@@ -336,13 +358,29 @@ text-align:right
 
 }
 
-.gold{color:#d4af37}
+.gold{
 
-.green{color:#65df8b}
+color:#d4af37
 
-.yellow{color:#ffd34d}
+}
 
-.red{color:#ff6b6b}
+.green{
+
+color:#65df8b
+
+}
+
+.yellow{
+
+color:#ffd34d
+
+}
+
+.red{
+
+color:#ff6b6b
+
+}
 
 .rank{
 
@@ -476,7 +514,11 @@ font-weight:900
 
 }
 
-.pick-line:last-child{border-bottom:none}
+.pick-line:last-child{
+
+border-bottom:none
+
+}
 
 .pick-money{
 
@@ -686,7 +728,7 @@ step="100"
 
 >
 
-<button onclick="loadRace()">
+<button id="loadButton" type="button">
 
 🔥 出走表を取得
 
@@ -766,25 +808,13 @@ API確認中...
 
 </div>
 
-<button
-
-class="entry-clear"
-
-onclick="clearEntry()"
-
->
+<button id="clearButton" class="entry-clear" type="button">
 
 ↩ 進入をリセット
 
 </button>
 
-<button
-
-class="analyze-btn"
-
-onclick="analyzeRace()"
-
->
+<button id="analyzeButton" class="analyze-btn" type="button">
 
 🔥 AI解析開始
 
@@ -872,15 +902,23 @@ BOAT HUNTER © 2026
 
 <script>
 
+"use strict";
+
 /* =========================================
 
 設定
 
 ========================================= */
 
-const API_BASE =
+const API_URLS = [
 
-"https://boatraceopenapi.github.io/api/v1";
+"https://boatraceopenapi.github.io/api/v1/today.json",
+
+"https://boatraceopenapi.github.io/programs/v3/today.json",
+
+"https://boatraceopenapi.github.io/programs/v2/today.json"
+
+];
 
 let raceData = null;
 
@@ -996,77 +1034,27 @@ return map[num(value)] || "-";
 
 /* =========================================
 
-JST日付
-
-========================================= */
-
-function getJstDate(){
-
-const now = new Date();
-
-const parts =
-
-new Intl.DateTimeFormat(
-
-"ja-JP",
-
-{
-
-timeZone:"Asia/Tokyo",
-
-year:"numeric",
-
-month:"2-digit",
-
-day:"2-digit"
-
-}
-
-).formatToParts(now);
-
-const year =
-
-parts.find(x=>x.type==="year").value;
-
-const month =
-
-parts.find(x=>x.type==="month").value;
-
-const day =
-
-parts.find(x=>x.type==="day").value;
-
-return {
-
-year:year,
-
-date:year+month+day,
-
-display:
-
-year+"-"+month+"-"+day
-
-};
-
-}
-
-/* =========================================
-
 API取得
 
 ========================================= */
 
 async function fetchJson(url){
 
-const response =
+const response = await fetch(
 
-await fetch(
-
-url+"?t="+Date.now(),
+url + "?t=" + Date.now(),
 
 {
 
-cache:"no-store"
+method:"GET",
+
+cache:"no-store",
+
+headers:{
+
+"Accept":"application/json"
+
+}
 
 }
 
@@ -1076,7 +1064,7 @@ if(!response.ok){
 
 throw new Error(
 
-"HTTP "+response.status
+"HTTP " + response.status
 
 );
 
@@ -1088,25 +1076,27 @@ return await response.json();
 
 /* =========================================
 
-対象レース取得
+深い検索
 
 ========================================= */
 
-function findRace(data,stadium,raceNumber){
+function findRace(data,stadiumNumber,raceNumber){
 
-if(
-
-!data ||
-
-!data.programs ||
-
-!data.programs.stadiums
-
-){
+if(!data){
 
 return null;
 
 }
+
+/* 正規形式 */
+
+if(
+
+data.programs &&
+
+data.programs.stadiums
+
+){
 
 const stadiums =
 
@@ -1114,21 +1104,85 @@ data.programs.stadiums;
 
 const stadium =
 
-stadiums[String(stadium)];
+stadiums[String(stadiumNumber)];
 
 if(
 
-!stadium ||
+stadium &&
 
-!stadium.races
+stadium.races
 
 ){
 
-return null;
+const race =
+
+stadium.races[String(raceNumber)];
+
+if(race){
+
+return race;
 
 }
 
-return stadium.races[String(raceNumber)] || null;
+}
+
+}
+
+/* 念のため全体を探索 */
+
+let found = null;
+
+function walk(obj){
+
+if(
+
+found ||
+
+!obj ||
+
+typeof obj !== "object"
+
+){
+
+return;
+
+}
+
+if(
+
+obj.stadium_number !== undefined &&
+
+num(obj.stadium_number) === stadiumNumber &&
+
+obj.race_number !== undefined &&
+
+num(obj.race_number) === raceNumber &&
+
+obj.racers
+
+){
+
+found = obj;
+
+return;
+
+}
+
+Object.keys(obj).forEach(function(key){
+
+if(!found){
+
+walk(obj[key]);
+
+}
+
+});
+
+}
+
+walk(data);
+
+return found;
 
 }
 
@@ -1140,13 +1194,7 @@ return stadium.races[String(raceNumber)] || null;
 
 function getRacers(race){
 
-if(
-
-!race ||
-
-!race.racers
-
-){
+if(!race){
 
 return [];
 
@@ -1158,7 +1206,19 @@ return race.racers;
 
 }
 
+if(
+
+race.racers &&
+
+typeof race.racers === "object"
+
+){
+
 return Object.values(race.racers);
+
+}
+
+return [];
 
 }
 
@@ -1172,7 +1232,9 @@ function getBoatNumber(r){
 
 return num(
 
-r.entry_number
+r.entry_number ??
+
+r.boat_number
 
 );
 
@@ -1186,7 +1248,15 @@ r.entry_number
 
 function getName(r){
 
-return r.name || "選手名不明";
+return (
+
+r.name ||
+
+r.racer_name ||
+
+"選手名不明"
+
+);
 
 }
 
@@ -1212,29 +1282,31 @@ getRacers(race)
 
 (a,b)=>
 
-getBoatNumber(a)-
+getBoatNumber(a) -
 
 getBoatNumber(b)
 
 );
 
-if(racers.length !== 6){
+if(racers.length < 6){
 
 boats.innerHTML = `
 
 <div class="warning">
 
-⚠️ 選手データが6艇取得できていません。
+⚠️ 6艇の選手データを取得できませんでした。
 
 <br><br>
 
-取得数：${racers.length}艇
+取得数：
+
+<strong>${racers.length}艇</strong>
 
 </div>
 
 `;
 
-return;
+return false;
 
 }
 
@@ -1248,9 +1320,9 @@ const div =
 
 document.createElement("div");
 
-div.className="boat";
+div.className = "boat";
 
-div.innerHTML=`
+div.innerHTML = `
 
 <div class="boat-number">
 
@@ -1312,6 +1384,8 @@ boats.appendChild(div);
 
 });
 
+return true;
+
 }
 
 /* =========================================
@@ -1332,7 +1406,7 @@ race.preview;
 
 if(!preview){
 
-box.innerHTML=`
+box.innerHTML = `
 
 <div class="warning">
 
@@ -1350,13 +1424,17 @@ return;
 
 }
 
-let html=`
+let html = `
 
 <div class="info-grid">
 
 <div class="info-item">
 
-<div class="info-label">風速</div>
+<div class="info-label">
+
+風速
+
+</div>
 
 <div class="info-value">
 
@@ -1368,7 +1446,11 @@ ${preview.wind_speed ?? "-"} m
 
 <div class="info-item">
 
-<div class="info-label">波高</div>
+<div class="info-label">
+
+波高
+
+</div>
 
 <div class="info-value">
 
@@ -1380,7 +1462,11 @@ ${preview.wave_height ?? "-"} cm
 
 <div class="info-item">
 
-<div class="info-label">気温</div>
+<div class="info-label">
+
+気温
+
+</div>
 
 <div class="info-value">
 
@@ -1392,7 +1478,11 @@ ${preview.air_temperature ?? "-"} ℃
 
 <div class="info-item">
 
-<div class="info-label">水温</div>
+<div class="info-label">
+
+水温
+
+</div>
 
 <div class="info-value">
 
@@ -1414,7 +1504,9 @@ preview.racers
 
 Object.values(preview.racers)
 
-:[ ];
+:
+
+[];
 
 if(previewRacers.length){
 
@@ -1422,23 +1514,27 @@ previewRacers.sort(
 
 (a,b)=>
 
-num(a.entry_number)-
+num(a.entry_number) -
 
 num(b.entry_number)
 
 );
 
-html+=`
+html += `
 
 <div class="ai-box">
 
-<strong>📊 展示・直前情報</strong>
+<strong>
+
+📊 展示・直前情報
+
+</strong>
 
 `;
 
 previewRacers.forEach(function(r){
 
-html+=`
+html += `
 
 <div class="row">
 
@@ -1470,11 +1566,11 @@ ${format(r.start_timing)}
 
 });
 
-html+=`</div>`;
+html += `</div>`;
 
 }
 
-box.innerHTML=html;
+box.innerHTML = html;
 
 }
 
@@ -1510,11 +1606,15 @@ const apiInfo =
 
 document.getElementById("apiInfo");
 
-status.innerText =
+const loadButton =
 
-"⏳ 今日のレースデータを取得中...";
+document.getElementById("loadButton");
 
-apiInfo.innerText =
+status.innerHTML =
+
+"⏳ レースデータを取得中...";
+
+apiInfo.innerHTML =
 
 "API接続中...";
 
@@ -1524,45 +1624,25 @@ document
 
 .classList.add("hidden");
 
+loadButton.disabled = true;
+
+loadButton.innerText = "⏳ 取得中...";
+
+let lastError = null;
+
 try{
 
-/*
+for(let i=0;i<API_URLS.length;i++){
 
-今日の日付をJSTで取得
+const url = API_URLS[i];
 
-*/
+status.innerHTML =
 
-const today =
+"⏳ API "+(i+1)+"/"+API_URLS.length+
 
-getJstDate();
+" を確認中...";
 
-/*
-
-v1正式エンドポイント
-
-*/
-
-const url =
-
-API_BASE+
-
-"/"+
-
-today.year+
-
-"/"+
-
-today.date+
-
-".json";
-
-status.innerText =
-
-"⏳ "+
-
-today.display+
-
-" の出走表を取得中...";
+try{
 
 const data =
 
@@ -1571,6 +1651,8 @@ await fetchJson(url);
 console.log(
 
 "BOAT HUNTER API",
+
+url,
 
 data
 
@@ -1590,29 +1672,15 @@ raceNumber
 
 if(!race){
 
-throw new Error(
+lastError =
 
-"指定したレースが見つかりません。"+
+new Error(
 
-"\n\n"+
-
-"取得日："+today.display+
-
-"\n"+
-
-"会場番号："+stadium+
-
-"\n"+
-
-"レース："+raceNumber+"R"+
-
-"\n\n"+
-
-"本日その会場で開催されていない、"+
-
-"またはAPIにまだデータが反映されていない可能性があります。"
+"指定レースがデータ内にありません"
 
 );
+
+continue;
 
 }
 
@@ -1622,17 +1690,23 @@ getRacers(race);
 
 if(racers.length < 6){
 
-throw new Error(
+lastError =
 
-"レースは見つかりましたが、6艇の選手データを取得できませんでした。"
+new Error(
+
+"選手データが6艇ありません"
 
 );
 
+continue;
+
 }
 
-raceData=race;
+/* 成功 */
 
-selectedEntry=[];
+raceData = race;
+
+selectedEntry = [];
 
 displayRace(race);
 
@@ -1646,15 +1720,15 @@ document
 
 .classList.remove("hidden");
 
-status.innerText =
+status.innerHTML =
 
 "✅ 出走表取得成功";
 
-apiInfo.innerHTML=`
+apiInfo.innerHTML = `
 
-取得日：
+取得元：
 
-<strong>${today.display}</strong>
+<strong>${escapeHtml(url)}</strong>
 
 <br>
 
@@ -1678,7 +1752,7 @@ ${racers.length}名
 
 API：
 
-<strong>Boatrace Open API v1</strong>
+<strong>Boatrace Open API</strong>
 
 <br>
 
@@ -1694,6 +1768,40 @@ ${escapeHtml(race.title || "-")}
 
 `;
 
+loadButton.disabled = false;
+
+loadButton.innerText = "🔥 出走表を取得";
+
+return;
+
+}catch(error){
+
+console.error(
+
+"API ERROR",
+
+url,
+
+error
+
+);
+
+lastError = error;
+
+}
+
+}
+
+/* 全API失敗 */
+
+throw lastError ||
+
+new Error(
+
+"利用可能なAPIからデータを取得できませんでした。"
+
+);
+
 }catch(error){
 
 console.error(
@@ -1704,7 +1812,7 @@ error
 
 );
 
-status.innerHTML=`
+status.innerHTML = `
 
 <span class="red">
 
@@ -1718,17 +1826,39 @@ ${escapeHtml(error.message)}
 
 `;
 
-apiInfo.innerHTML=`
+apiInfo.innerHTML = `
 
 <div class="warning">
 
-API接続または対象レース取得に失敗しました。
+<strong>
+
+APIからデータを取得できませんでした。
+
+</strong>
 
 <br><br>
 
-エラー：
-
 ${escapeHtml(error.message)}
+
+<br><br>
+
+📌 考えられる原因
+
+<br>
+
+・本日その競艇場が開催されていない
+
+<br>
+
+・API更新前
+
+<br>
+
+・通信環境
+
+<br>
+
+・API側の一時的なエラー
 
 </div>
 
@@ -1739,6 +1869,10 @@ document
 .getElementById("result")
 
 .classList.add("hidden");
+
+loadButton.disabled = false;
+
+loadButton.innerText = "🔥 出走表を取得";
 
 }
 
@@ -1760,7 +1894,7 @@ document.getElementById(
 
 );
 
-container.innerHTML="";
+container.innerHTML = "";
 
 for(let i=1;i<=6;i++){
 
@@ -1768,17 +1902,23 @@ const button =
 
 document.createElement("button");
 
-button.className="entry-btn";
+button.type = "button";
 
-button.innerText=
+button.className = "entry-btn";
 
-i+"号艇";
+button.innerText = i+"号艇";
 
-button.onclick=function(){
+button.addEventListener(
+
+"click",
+
+function(){
 
 selectEntry(i);
 
-};
+}
+
+);
 
 container.appendChild(button);
 
@@ -1800,7 +1940,7 @@ return;
 
 }
 
-if(selectedEntry.length>=6){
+if(selectedEntry.length >= 6){
 
 return;
 
@@ -1814,7 +1954,7 @@ document
 
 .getElementById("entryResult")
 
-.innerText=
+.innerText =
 
 selectedEntry.join("-");
 
@@ -1836,7 +1976,9 @@ document
 
 function(button,index){
 
-const boat=index+1;
+const boat =
+
+index + 1;
 
 button.classList.toggle(
 
@@ -1846,7 +1988,9 @@ selectedEntry.includes(boat)
 
 );
 
-});
+}
+
+);
 
 }
 
@@ -1858,7 +2002,7 @@ selectedEntry.includes(boat)
 
 function clearEntry(){
 
-selectedEntry=[];
+selectedEntry = [];
 
 updateEntryButtons();
 
@@ -1866,7 +2010,7 @@ document
 
 .getElementById("entryResult")
 
-.innerText=
+.innerText =
 
 "進入を入力してください";
 
@@ -1880,7 +2024,7 @@ AIスコア
 
 function calcScore(r,entry){
 
-let score=0;
+let score = 0;
 
 const national =
 
@@ -1920,75 +2064,33 @@ getBoatNumber(r);
 
 const course =
 
-entry.indexOf(boat)+1;
+entry.indexOf(boat) + 1;
 
-/*
+/* 全国勝率 */
 
-全国勝率
+score += national * 7;
 
-*/
+/* 当地勝率 */
 
-score +=
+score += local * 4;
 
-national*7;
+/* 全国2連率 */
 
-/*
+score += national2 * 0.08;
 
-当地勝率
+/* 当地2連率 */
 
-*/
+score += local2 * 0.06;
 
-score +=
+/* モーター */
 
-local*4;
+score += motor2 * 0.15;
 
-/*
+score += motor3 * 0.05;
 
-全国2連率
+/* ST */
 
-*/
-
-score +=
-
-national2*0.08;
-
-/*
-
-当地2連率
-
-*/
-
-score +=
-
-local2*0.06;
-
-/*
-
-モーター2連率
-
-*/
-
-score +=
-
-motor2*0.15;
-
-/*
-
-モーター3連率
-
-*/
-
-score +=
-
-motor3*0.05;
-
-/*
-
-平均ST
-
-*/
-
-if(st>0){
+if(st > 0){
 
 score +=
 
@@ -1996,19 +2098,15 @@ Math.max(
 
 0,
 
-0.30-st
+0.30 - st
 
-)*20;
+) * 20;
 
 }
 
-/*
+/* コース */
 
-進入コース
-
-*/
-
-const courseBonus={
+const courseBonus = {
 
 1:10,
 
@@ -2028,51 +2126,39 @@ score +=
 
 courseBonus[course] || 0;
 
-/*
+/* 級別 */
 
-級別
+if(rank === 1){
 
-*/
-
-if(rank===1){
-
-score+=5;
+score += 5;
 
 }
 
-if(rank===2){
+if(rank === 2){
 
-score+=2;
-
-}
-
-if(rank===4){
-
-score-=2;
+score += 2;
 
 }
 
-/*
+if(rank === 4){
 
-イン補正
-
-*/
-
-if(course===1){
-
-score+=3;
+score -= 2;
 
 }
 
-/*
+/* イン */
 
-6コース減点
+if(course === 1){
 
-*/
+score += 3;
 
-if(course===6){
+}
 
-score-=1;
+/* 6コース */
+
+if(course === 6){
+
+score -= 1;
 
 }
 
@@ -2100,7 +2186,7 @@ return;
 
 }
 
-if(selectedEntry.length!==6){
+if(selectedEntry.length !== 6){
 
 alert(
 
@@ -2114,7 +2200,7 @@ return;
 
 if(
 
-new Set(selectedEntry).size!==6
+new Set(selectedEntry).size !== 6
 
 ){
 
@@ -2134,13 +2220,19 @@ getRacers(raceData)
 
 .map(function(r){
 
-return{
+return {
 
-number:getBoatNumber(r),
+number:
 
-name:getName(r),
+getBoatNumber(r),
 
-score:calcScore(
+name:
+
+getName(r),
+
+score:
+
+calcScore(
 
 r,
 
@@ -2156,11 +2248,11 @@ selectedEntry
 
 (a,b)=>
 
-b.score-a.score
+b.score - a.score
 
 );
 
-if(ranking.length<6){
+if(ranking.length < 6){
 
 alert(
 
@@ -2196,13 +2288,13 @@ entry
 
 ){
 
-const first=entry[0];
+const first = entry[0];
 
-const second=entry[1];
+const second = entry[1];
 
-const third=entry[2];
+const third = entry[2];
 
-if(first!==1){
+if(first !== 1){
 
 return `
 
@@ -2286,29 +2378,25 @@ entry
 
 ){
 
-const a=ranking[0];
+const a = ranking[0];
 
-const b=ranking[1];
+const b = ranking[1];
 
-const c=ranking[2];
+const c = ranking[2];
 
-const d=ranking[3];
+const d = ranking[3];
 
 const maezuke =
 
-entry.join("")!=="123456";
+entry.join("") !== "123456";
 
-/*
-
-前付け
-
-*/
+/* 前付け */
 
 document.getElementById(
 
 "maezuke"
 
-).innerHTML=`
+).innerHTML = `
 
 <div class="row">
 
@@ -2336,7 +2424,7 @@ ${entry.join("-")}
 
 <span class="right ${
 
-maezuke?"yellow":"green"
+maezuke ? "yellow" : "green"
 
 }">
 
@@ -2360,17 +2448,13 @@ maezuke
 
 `;
 
-/*
-
-展開
-
-*/
+/* 展開 */
 
 document.getElementById(
 
 "development"
 
-).innerHTML=`
+).innerHTML = `
 
 <div class="row">
 
@@ -2444,11 +2528,7 @@ entry
 
 `;
 
-/*
-
-ランキング
-
-*/
+/* ランキング */
 
 const rankingElement =
 
@@ -2458,7 +2538,7 @@ document.getElementById(
 
 );
 
-rankingElement.innerHTML="";
+rankingElement.innerHTML = "";
 
 ranking.forEach(
 
@@ -2468,9 +2548,9 @@ const div =
 
 document.createElement("div");
 
-div.className="rank";
+div.className = "rank";
 
-div.innerHTML=`
+div.innerHTML = `
 
 <div class="rank-number">
 
@@ -2514,19 +2594,17 @@ Math.max(0,r.score)
 
 rankingElement.appendChild(div);
 
-});
+}
 
-/*
+);
 
-最終評価
-
-*/
+/* 最終評価 */
 
 document.getElementById(
 
 "final"
 
-).innerHTML=`
+).innerHTML = `
 
 <div class="row">
 
@@ -2618,11 +2696,7 @@ ${entry.join("-")}
 
 `;
 
-/*
-
-買い目
-
-*/
+/* 買い目 */
 
 createPicks(
 
@@ -2660,23 +2734,29 @@ document.getElementById(
 
 ) || 3000;
 
-const a=ranking[0].number;
+const a =
 
-const b=ranking[1].number;
+ranking[0].number;
 
-const c=ranking[2].number;
+const b =
 
-const d=ranking[3].number;
+ranking[1].number;
 
-const e=ranking[4].number;
+const c =
 
-/*
+ranking[2].number;
 
-的中率重視
+const d =
 
-*/
+ranking[3].number;
 
-const hitPicks=[
+const e =
+
+ranking[4].number;
+
+/* 的中率 */
+
+const hitPicks = [
 
 `${a}-${b}-${c}`,
 
@@ -2692,15 +2772,9 @@ const hitPicks=[
 
 ];
 
-/*
+/* 回収率 */
 
-回収率重視
-
-上位5艇を必ず使用
-
-*/
-
-const roiPicks=[
+const roiPicks = [
 
 `${a}-${b}-${c}`,
 
@@ -2724,23 +2798,25 @@ const roiPicks=[
 
 ];
 
-/*
-
-予算配分
-
-*/
+/* 予算 */
 
 const hitBudget =
 
 Math.floor(
 
-budget*0.45/100
+budget * 0.45 / 100
 
-)*100;
+) * 100;
 
 const roiBudget =
 
-budget-hitBudget;
+Math.max(
+
+100,
+
+budget - hitBudget
+
+);
 
 const hitUnit =
 
@@ -2750,13 +2826,13 @@ Math.max(
 
 Math.floor(
 
-hitBudget/
+hitBudget /
 
-hitPicks.length/
+hitPicks.length /
 
 100
 
-)*100
+) * 100
 
 );
 
@@ -2768,21 +2844,17 @@ Math.max(
 
 Math.floor(
 
-roiBudget/
+roiBudget /
 
-roiPicks.length/
+roiPicks.length /
 
 100
 
-)*100
+) * 100
 
 );
 
-/*
-
-HTML
-
-*/
+/* HTML */
 
 function makeHtml(
 
@@ -2792,9 +2864,7 @@ unit
 
 ){
 
-return picks
-
-.map(
+return picks.map(
 
 function(p,i){
 
@@ -2818,9 +2888,7 @@ ${unit}円
 
 }
 
-)
-
-.join("");
+).join("");
 
 }
 
@@ -2828,7 +2896,7 @@ document.getElementById(
 
 "pickArea"
 
-).innerHTML=`
+).innerHTML = `
 
 <div class="pick-box">
 
@@ -2886,15 +2954,17 @@ roiUnit
 
 <br><br>
 
-※現在のOpen APIには
+※現在のAPIには
 
-オッズ情報が含まれていないため、
+オッズ情報が含まれないため、
 
-「回収率重視」は
+<strong>
 
-<strong>AI評価順位＋穴艇を組み合わせた構成</strong>
+回収率重視＝AI評価順位＋穴艇
 
-です。
+</strong>
+
+として構成しています。
 
 </div>
 
@@ -2903,6 +2973,58 @@ roiUnit
 `;
 
 }
+
+/* =========================================
+
+イベント登録
+
+========================================= */
+
+document.addEventListener(
+
+"DOMContentLoaded",
+
+function(){
+
+document
+
+.getElementById("loadButton")
+
+.addEventListener(
+
+"click",
+
+loadRace
+
+);
+
+document
+
+.getElementById("clearButton")
+
+.addEventListener(
+
+"click",
+
+clearEntry
+
+);
+
+document
+
+.getElementById("analyzeButton")
+
+.addEventListener(
+
+"click",
+
+analyzeRace
+
+);
+
+}
+
+);
 
 </script>
 
