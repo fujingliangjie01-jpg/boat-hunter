@@ -410,7 +410,7 @@ footer{text-align:center;color:#444;font-size:11px;padding:25px}
 
 <div id="entryResult" class="entry-result">
 
-進入を入力してください
+1-2-3-4-5-6
 
 </div>
 
@@ -482,7 +482,9 @@ const API_URLS=[
 
 let raceData=null;
 
-let selectedEntry=[];
+/* ★初期状態を枠なりにする */
+
+let selectedEntry=[1,2,3,4,5,6];
 
 function num(v){
 
@@ -618,7 +620,9 @@ function getCourseST(r,c){
 
  for(const k of keys){
 
-  if(r[k]!==undefined&&r[k]!==null&&r[k]!=="")return num(r[k]);
+  if(r[k]!==undefined&&r[k]!==null&&r[k]!=="")
+
+   return num(r[k]);
 
  }
 
@@ -926,7 +930,9 @@ async function loadRace(){
 
     raceData=race;
 
-    selectedEntry=[];
+    /* ★出走表取得時も枠なりを初期設定 */
+
+    selectedEntry=[1,2,3,4,5,6];
 
     displayRace(race);
 
@@ -1004,6 +1010,16 @@ function createEntryButtons(){
 
  }
 
+ /* ★初期状態は枠なり */
+
+ selectedEntry=[1,2,3,4,5,6];
+
+ updateEntryButtons();
+
+ document.getElementById("entryResult").innerText=
+
+ selectedEntry.join("-");
+
 }
 
 function selectEntry(boat){
@@ -1030,13 +1046,17 @@ function updateEntryButtons(){
 
 }
 
+/* ★リセットも枠なりに戻す */
+
 function clearEntry(){
 
- selectedEntry=[];
+ selectedEntry=[1,2,3,4,5,6];
 
  updateEntryButtons();
 
- document.getElementById("entryResult").innerText="進入を入力してください";
+ document.getElementById("entryResult").innerText=
+
+ selectedEntry.join("-");
 
 }
 
@@ -1436,8 +1456,6 @@ function valueCandidates(ranking,dev){
 
   const reasons=[];
 
-  /* ポイント差 */
-
   if(gap<=3){
 
    value+=12;
@@ -1455,8 +1473,6 @@ function valueCandidates(ranking,dev){
    value+=4;
 
   }
-
-  /* 4位以下でもここから評価 */
 
   if(i>=3&&gap<=8){
 
@@ -1590,9 +1606,7 @@ function afterCandidates(dev,ranking){
 
   return{...x,afterScore:s};
 
- })
-
- .sort((a,b)=>b.afterScore-a.afterScore);
+ }).sort((a,b)=>b.afterScore-a.afterScore);
 
 }
 
@@ -1788,14 +1802,6 @@ function buildROI(ranking,dev,trend,hit){
 
  };
 
- /*
-
-   まずAI評価差が小さい艇を拾う。
-
-   4位以下でもポイント差が小さければ対象。
-
- */
-
  const top=values.slice(0,5);
 
  for(const h of top){
@@ -1807,14 +1813,6 @@ function buildROI(ranking,dev,trend,hit){
    for(const t of top){
 
     if(t.number===h.number||t.number===s.number)continue;
-
-    /*
-
-      回収重視は1着に人気馬だけを置かない。
-
-      ただし評価根拠がない組み合わせは避ける。
-
-    */
 
     const firstValue=h.value;
 
@@ -1840,12 +1838,6 @@ function buildROI(ranking,dev,trend,hit){
 
  }
 
- /*
-
-   展開パターンを追加
-
- */
-
  const after=afterCandidates(dev,ranking);
 
  if(arr.length<7&&after[0]){
@@ -1861,12 +1853,6 @@ function buildROI(ranking,dev,trend,hit){
   add(`${x}-${b}-${a}`);
 
  }
-
- /*
-
-   さらに4位以下の評価差小を3着へ
-
- */
 
  for(const h of values){
 
@@ -1885,14 +1871,6 @@ function buildROI(ranking,dev,trend,hit){
   }
 
  }
-
- /*
-
-   それでも足りなければ
-
-   展開・機力を優先して追加。
-
- */
 
  for(const h of values){
 
@@ -1985,12 +1963,6 @@ function buildHole(ranking,dev,trend,hit,roi){
   ...roi.map(x=>x.combo)
 
  ];
-
- /*
-
-   AI1〜3位は大穴候補から完全除外。
-
- */
 
  const candidates=ranking
 
@@ -2113,12 +2085,6 @@ function buildHole(ranking,dev,trend,hit,roi){
   `${head.number}-${second.number}-${t}`
 
  );
-
- /*
-
-   大穴が既存買い目と同じなら表示しない。
-
- */
 
  const unique=combos.filter(x=>!used.includes(x));
 
@@ -2647,6 +2613,14 @@ document.addEventListener("DOMContentLoaded",()=>{
  document.getElementById("loadButton").onclick=loadRace;
 
  document.getElementById("clearButton").onclick=clearEntry;
+
+ /* ★画面を開いた時点でも枠なり */
+
+ selectedEntry=[1,2,3,4,5,6];
+
+ document.getElementById("entryResult").innerText=
+
+  selectedEntry.join("-");
 
  document.getElementById("analyzeButton").onclick=()=>{
 
