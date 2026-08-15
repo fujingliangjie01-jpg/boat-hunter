@@ -508,6 +508,38 @@ button:disabled{opacity:.5}
 
 }
 
+.pick-recommend{
+
+ color:#65df8b;
+
+ background:#0c1d14;
+
+ border:1px solid #286b47;
+
+ border-radius:8px;
+
+ padding:10px;
+
+ margin:5px 0
+
+}
+
+.pick-hole{
+
+ color:#ffd34d;
+
+ background:#211b08;
+
+ border:1px solid #8d6c16;
+
+ border-radius:8px;
+
+ padding:10px;
+
+ margin:5px 0
+
+}
+
 .roi-main{
 
  border:1px solid #d4af37;
@@ -906,7 +938,7 @@ footer{
 
 /* =========================================================
 
- API
+API
 
 ========================================================= */
 
@@ -926,7 +958,7 @@ let selectedEntry=[];
 
 /* =========================================================
 
- 基本
+基本
 
 ========================================================= */
 
@@ -1008,7 +1040,7 @@ function firstValue(obj,keys){
 
 /* =========================================================
 
- API
+API
 
 ========================================================= */
 
@@ -1042,7 +1074,7 @@ async function fetchJson(url){
 
 /* =========================================================
 
- レース検索
+レース検索
 
 ========================================================= */
 
@@ -1204,7 +1236,7 @@ function getName(r){
 
 /* =========================================================
 
- 決まり手
+決まり手
 
 ========================================================= */
 
@@ -1284,7 +1316,7 @@ function styleScore(r,type){
 
 /* =========================================================
 
- ST
+ST
 
 ========================================================= */
 
@@ -1368,7 +1400,7 @@ function getCourseST(r,course){
 
 /* =========================================================
 
- 一周タイム
+一周タイム
 
 ========================================================= */
 
@@ -1466,7 +1498,7 @@ function getOneLapTime(r){
 
 /* =========================================================
 
- 展示
+展示
 
 ========================================================= */
 
@@ -1524,7 +1556,7 @@ function getStartTiming(r){
 
 /* =========================================================
 
- 出走表
+出走表
 
 ========================================================= */
 
@@ -1650,7 +1682,7 @@ function displayRace(race){
 
 /* =========================================================
 
- 直前情報
+直前情報
 
 ========================================================= */
 
@@ -1828,7 +1860,7 @@ function displayPreview(race){
 
 /* =========================================================
 
- 一周タイム表
+一周タイム表
 
 ========================================================= */
 
@@ -1994,7 +2026,7 @@ function displayLapTable(race){
 
 /* =========================================================
 
- 出走表取得
+出走表取得
 
 ========================================================= */
 
@@ -2202,7 +2234,7 @@ async function loadRace(){
 
 /* =========================================================
 
- 進入
+進入
 
 ========================================================= */
 
@@ -2298,7 +2330,7 @@ function clearEntry(){
 
 /* =========================================================
 
- 一周タイムAI評価
+一周タイムAI評価
 
 ========================================================= */
 
@@ -2374,7 +2406,7 @@ function getLapScore(r,course){
 
 /* =========================================================
 
- AI総合スコア
+AI総合スコア
 
 ========================================================= */
 
@@ -2482,13 +2514,9 @@ function calcScore(r,entry){
 
  }
 
- /* 一周タイム */
-
  score+=
 
   getLapScore(r,course);
-
- /* 風・波 */
 
  const p=raceData?.preview;
 
@@ -2546,7 +2574,7 @@ function calcScore(r,entry){
 
 /* =========================================================
 
- 展開判定
+展開判定
 
 ========================================================= */
 
@@ -2680,7 +2708,7 @@ function determineAttack(ranking,entry){
 
 /* =========================================================
 
- 展開補正
+展開補正
 
 ========================================================= */
 
@@ -2786,7 +2814,7 @@ function applyDevelopmentScore(
 
 /* =========================================================
 
- 確率
+確率
 
 ========================================================= */
 
@@ -2904,7 +2932,7 @@ function calculateProbabilities(ranking){
 
 /* =========================================================
 
- 穴艇理由
+穴艇理由
 
 ========================================================= */
 
@@ -3014,7 +3042,7 @@ function getHoleReason(r,attack){
 
 /* =========================================================
 
- 買い目ユーティリティ
+買い目ユーティリティ
 
 ========================================================= */
 
@@ -3062,12 +3090,6 @@ function addUnique(arr,p){
 
 }
 
-/* =========================================================
-
- AI上位順位
-
-========================================================= */
-
 function getRankOfBoat(ranking,boat){
 
  const index=
@@ -3108,7 +3130,191 @@ function getTopAI(ranking,exclude=[]){
 
 /* =========================================================
 
- 買い目生成
+買い目の理由判定
+
+========================================================= */
+
+function classifyPick(
+
+ pick,
+
+ dev,
+
+ entry,
+
+ attack
+
+){
+
+ const arr=
+
+  pick.split("-").map(Number);
+
+ const first=arr[0];
+
+ const second=arr[1];
+
+ const third=arr[2];
+
+ const firstRank=
+
+  getRankOfBoat(dev,first);
+
+ const secondRank=
+
+  getRankOfBoat(dev,second);
+
+ const thirdRank=
+
+  getRankOfBoat(dev,third);
+
+ const topCount=
+
+  arr.filter(
+
+   n=>getRankOfBoat(dev,n)<=3
+
+  ).length;
+
+ /* AI上位が3着 */
+
+ if(thirdRank<=2){
+
+  return{
+
+   type:"recommend",
+
+   label:"AI上位を3着に入れることを推奨",
+
+   reason:
+
+    `AI期待値${thirdRank}位の${third}号艇を3着候補として評価`
+
+  };
+
+ }
+
+ /* 展開とAIが一致 */
+
+ if(
+
+  attack==="差し" &&
+
+  first===entry[1] &&
+
+  (second===entry[0]||third===entry[0]) &&
+
+  topCount>=2
+
+ ){
+
+  return{
+
+   type:"best",
+
+   label:"展開＋AI評価が一致",
+
+   reason:
+
+    "差し展開とAI上位評価が重なる買い目"
+
+  };
+
+ }
+
+ if(
+
+  attack==="まくり" &&
+
+  (first===entry[2]||first===entry[3]) &&
+
+  topCount>=2
+
+ ){
+
+  return{
+
+   type:"best",
+
+   label:"展開＋AI評価が一致",
+
+   reason:
+
+    "まくり展開とAI上位評価が重なる買い目"
+
+  };
+
+ }
+
+ if(
+
+  attack==="まくり差し" &&
+
+  (first===entry[2]||first===entry[3]) &&
+
+  topCount>=2
+
+ ){
+
+  return{
+
+   type:"best",
+
+   label:"展開＋AI評価が一致",
+
+   reason:
+
+    "まくり差し展開とAI上位評価が重なる買い目"
+
+  };
+
+ }
+
+ /* 穴 */
+
+ if(
+
+  firstRank>=4||
+
+  secondRank>=4||
+
+  thirdRank>=4
+
+ ){
+
+  return{
+
+   type:"hole",
+
+   label:"穴狙い",
+
+   reason:
+
+    "AI順位は低めだが展開面から妙味あり"
+
+  };
+
+ }
+
+ /* 通常の展開本線 */
+
+ return{
+
+  type:"main",
+
+  label:"展開本線",
+
+  reason:
+
+   `${attack}展開を中心に組み立てた買い目`
+
+ };
+
+}
+
+/* =========================================================
+
+買い目生成
 
 ========================================================= */
 
@@ -3148,11 +3354,11 @@ function createPicks(
 
  const b=base[1].number;
 
- /* -------------------------
+ /* =====================================================
 
-    的中率重視
+ 的中率重視
 
- ------------------------- */
+ ===================================================== */
 
  const hit=[];
 
@@ -3196,157 +3402,121 @@ function createPicks(
 
  );
 
- /* -------------------------
-
-    回収率
-
- ------------------------- */
-
- const main=[];
-
- const ai=[];
-
  /* =====================================================
 
-    差し
+ 回収率重視
 
  ===================================================== */
 
+ const roi=[];
+
+ /* -----------------------------------------------------
+
+ 差し
+
+ ----------------------------------------------------- */
+
  if(attack==="差し"){
 
-  const first=entry[1];
+  const attacker=entry[1];
 
   const inner=entry[0];
 
-  const third1=entry[2];
-
-  const third2=entry[3];
-
-  const third3=entry[4];
-
-  /* 展開本線 */
-
   addUnique(
 
-   main,
+   roi,
 
-   `${first}-${inner}-${third2}`
+   `${attacker}-${inner}-${entry[2]}`
 
   );
 
   addUnique(
 
-   main,
+   roi,
 
-   `${first}-${inner}-${third1}`
-
-  );
-
-  addUnique(
-
-   main,
-
-   `${first}-${third1}-${inner}`
+   `${attacker}-${inner}-${entry[3]}`
 
   );
 
   addUnique(
 
-   main,
+   roi,
 
-   `${first}-${inner}-${third3}`
+   `${attacker}-${entry[2]}-${inner}`
 
   );
 
-  /* AI評価との重複を確認 */
+  addUnique(
 
-  main.forEach(p=>{
+   roi,
 
-   const arr=p.split("-");
+   `${attacker}-${inner}-${entry[4]}`
 
-   const third=Number(arr[2]);
+  );
 
-   const aiRank=
+  addUnique(
 
-    getRankOfBoat(
+   roi,
 
-     dev,
+   `${attacker}-${inner}-${entry[5]}`
 
-     third
+  );
 
-    );
+  /* AI上位艇を3着候補として追加 */
 
-   if(aiRank<=3){
-
-    /* AI上位艇ならAI要素も付与 */
-
-   }
-
-  });
-
-  /* AI上位補完 */
-
-  const candidates=
+  const aiThird=
 
    getTopAI(
 
     dev,
 
-    [first,inner]
+    [attacker,inner]
 
    );
 
-  for(const x of candidates){
+  for(const x of aiThird){
 
    const p=
 
-    `${first}-${inner}-${x.number}`;
+    `${attacker}-${inner}-${x.number}`;
+
+   addUnique(roi,p);
 
    if(
 
-    !main.includes(p)
+    roi.filter(
+
+     p=>{
+
+      const arr=p.split("-");
+
+      return Number(arr[2])===x.number;
+
+     }
+
+    ).length>=1
 
    ){
 
-    addUnique(ai,p);
-
-    if(ai.length>=2)
-
-     break;
+    if(roi.length>=7)break;
 
    }
 
   }
 
-  /* AI上位の1着補完 */
-
-  if(candidates.length){
-
-   const top=candidates[0].number;
-
-   addUnique(
-
-    ai,
-
-    `${top}-${inner}-${first}`
-
-   );
-
-  }
-
  }
 
- /* =====================================================
+ /* -----------------------------------------------------
 
-    まくり
+ まくり
 
- ===================================================== */
+ ----------------------------------------------------- */
 
  else if(attack==="まくり"){
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[2]}-${entry[3]}-${entry[4]}`
 
@@ -3354,7 +3524,7 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[2]}-${entry[4]}-${entry[3]}`
 
@@ -3362,7 +3532,7 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[2]}-${entry[3]}-${entry[5]}`
 
@@ -3370,7 +3540,7 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[3]}-${entry[2]}-${entry[4]}`
 
@@ -3378,21 +3548,21 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[4]}-${entry[2]}-${entry[3]}`
 
   );
 
-  /* まくりはAI上位補完を機械的には入れない */
+  /* まくりはAIを機械的に混ぜない */
 
  }
 
- /* =====================================================
+ /* -----------------------------------------------------
 
-    まくり差し
+ まくり差し
 
- ===================================================== */
+ ----------------------------------------------------- */
 
  else if(attack==="まくり差し"){
 
@@ -3400,7 +3570,7 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${attacker}-${entry[0]}-${entry[3]}`
 
@@ -3408,7 +3578,7 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${attacker}-${entry[3]}-${entry[0]}`
 
@@ -3416,7 +3586,7 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[3]}-${attacker}-${entry[0]}`
 
@@ -3424,71 +3594,51 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${attacker}-${entry[1]}-${entry[4]}`
 
   );
 
-  /* AI上位補完 */
-
-  const candidates=
+  const aiThird=
 
    getTopAI(
 
     dev,
 
-    [attacker]
+    [attacker,entry[0]]
 
    );
 
-  for(const x of candidates){
-
-   const p=
-
-    `${attacker}-${entry[0]}-${x.number}`;
-
-   if(
-
-    !main.includes(p)
-
-   ){
-
-    addUnique(ai,p);
-
-    if(ai.length>=2)
-
-     break;
-
-   }
-
-  }
-
-  if(candidates.length){
+  for(const x of aiThird){
 
    addUnique(
 
-    ai,
+    roi,
 
-    `${candidates[0].number}-${entry[0]}-${attacker}`
+    `${attacker}-${entry[0]}-${x.number}`
 
    );
+
+   if(roi.length>=7)
+
+    break;
 
   }
 
  }
 
- /* =====================================================
+ /* -----------------------------------------------------
 
-    イン逃げ
+ イン逃げ
 
- ===================================================== */
+ ----------------------------------------------------- */
 
  else{
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[0]}-${entry[2]}-${entry[3]}`
 
@@ -3496,7 +3646,7 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[0]}-${entry[3]}-${entry[2]}`
 
@@ -3504,7 +3654,7 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[0]}-${entry[2]}-${entry[4]}`
 
@@ -3512,7 +3662,7 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[0]}-${entry[3]}-${entry[4]}`
 
@@ -3520,107 +3670,59 @@ function createPicks(
 
   addUnique(
 
-   main,
+   roi,
 
    `${entry[1]}-${entry[0]}-${entry[3]}`
 
   );
 
+  /* AI上位を3着に入れる候補 */
+
+  const aiThird=
+
+   getTopAI(
+
+    dev,
+
+    [entry[0],entry[1]]
+
+   );
+
+  for(const x of aiThird){
+
+   const p=
+
+    `${entry[0]}-${entry[1]}-${x.number}`;
+
+   addUnique(roi,p);
+
+   if(roi.length>=7)
+
+    break;
+
+  }
+
  }
 
  /* =====================================================
 
-    本線＋AI評価の重複を判定
+ 重複排除
 
  ===================================================== */
 
- const classified=[];
+ const finalRoi=[];
 
- main.forEach(p=>{
+ roi.forEach(p=>{
 
-  const arr=p.split("-");
+  if(!finalRoi.includes(p))
 
-  const aiRanks=
-
-   arr.map(
-
-    x=>
-
-     getRankOfBoat(
-
-      dev,
-
-      Number(x)
-
-     )
-
-   );
-
-  const aiTop=
-
-   aiRanks.some(
-
-    x=>x<=3
-
-   );
-
-  classified.push({
-
-   pick:p,
-
-   type:aiTop
-
-    ?"main_ai"
-
-    :"main"
-
-  });
+   finalRoi.push(p);
 
  });
-
- /* AI補完 */
-
- ai.forEach(p=>{
-
-  classified.push({
-
-   pick:p,
-
-   type:"ai"
-
-  });
-
- });
-
- /* 重複排除 */
-
- const unique=[];
-
- classified.forEach(x=>{
-
-  if(
-
-   !unique.some(
-
-    y=>y.pick===x.pick
-
-   )
-
-  ){
-
-   unique.push(x);
-
-  }
-
- });
-
- const final=
-
-  unique.slice(0,8);
 
  /* =====================================================
 
-    資金配分
+ 資金配分
 
  ===================================================== */
 
@@ -3660,89 +3762,27 @@ function createPicks(
 
   );
 
- const mainItems=
-
-  final.filter(
-
-   x=>x.type==="main"||
-
-   x.type==="main_ai"
-
-  );
-
- const aiItems=
-
-  final.filter(
-
-   x=>x.type==="ai"
-
-  );
-
- const mainBudget=
-
-  Math.floor(
-
-   roiBudget*.75/100
-
-  )*100;
-
- const aiBudget=
+ const roiUnit=
 
   Math.max(
 
-   0,
+   100,
 
-   roiBudget-mainBudget
+   Math.floor(
+
+    roiBudget/
+
+    Math.max(1,finalRoi.length)/
+
+    100
+
+   )*100
 
   );
 
- const mainUnit=
-
-  mainItems.length
-
-  ?Math.max(
-
-    100,
-
-    Math.floor(
-
-     mainBudget/
-
-     mainItems.length/
-
-     100
-
-    )*100
-
-   )
-
-  :0;
-
- const aiUnit=
-
-  aiItems.length
-
-  ?Math.max(
-
-    100,
-
-    Math.floor(
-
-     aiBudget/
-
-     aiItems.length/
-
-     100
-
-    )*100
-
-   )
-
-  :0;
-
  /* =====================================================
 
-    表示
+ HTML
 
  ===================================================== */
 
@@ -3774,67 +3814,59 @@ function createPicks(
 
   let html="";
 
-  let index=1;
+  finalRoi.forEach((p,i)=>{
 
-  mainItems.forEach(x=>{
+   const info=
 
-   const label=
+    classifyPick(
 
-    x.type==="main_ai"
+     p,
 
-    ?"【展開本線＋AI上位】"
+     dev,
 
-    :"【展開本線】";
+     entry,
 
-   const cls=
+     attack
 
-    x.type==="main_ai"
+    );
 
-    ?"pick-best"
+   let cls="pick-line";
 
-    :"pick-line pick-main";
+   if(info.type==="best")
+
+    cls="pick-best";
+
+   if(info.type==="recommend")
+
+    cls="pick-recommend";
+
+   if(info.type==="hole")
+
+    cls="pick-hole";
+
+   if(info.type==="main")
+
+    cls="pick-line pick-main";
 
    html+=`
 
    <div class="${cls}">
 
-    ${index++}. ${x.pick}
+    ${i+1}. ${p}
 
     <span class="pick-money">
 
-     ${mainUnit}円
+     ${roiUnit}円
 
     </span>
 
     <div class="note">
 
-     ${label}
+     【${info.label}】
 
-    </div>
+     <br>
 
-   </div>
-
-   `;
-
-  });
-
-  aiItems.forEach(x=>{
-
-   html+=`
-
-   <div class="pick-line pick-ai">
-
-    ${index++}. ${x.pick}
-
-    <span class="pick-money">
-
-     ${aiUnit}円
-
-    </span>
-
-    <div class="note">
-
-     【AI上位補完】
+     ${info.reason}
 
     </div>
 
@@ -3862,7 +3894,9 @@ function createPicks(
 
  <div class="note">
 
-  AI総合評価上位を中心に選定
+  AI総合評価上位と展開を合わせ、
+
+  的中しやすい買い目を中心に選定。
 
  </div>
 
@@ -3880,11 +3914,19 @@ function createPicks(
 
  <div class="note">
 
-  ${attack}展開を本線に、
+  ${attack}展開を軸に、
 
-  一周タイム・枠別ST・モーター・
+  <br>
 
-  AI評価を複合判定。
+  枠別ST・モーター・一周タイム・
+
+  AI期待値を組み合わせて、
+
+  <strong>
+
+  買い目ごとに狙い方を判定。
+
+  </strong>
 
  </div>
 
@@ -3896,49 +3938,65 @@ function createPicks(
 
  <strong>
 
-  🧠 買い目判定ルール
+  🧠 回収率重視の見方
 
  </strong>
 
  <div class="note">
 
- <strong>展開本線＋AI上位：</strong><br>
+ <strong>【展開本線】</strong><br>
 
- 展開でもAIでも評価される艇。
-
- <strong>最重要買い目として厚く購入。</strong>
+ 展開から素直に狙う買い目。
 
  <br><br>
 
- <strong>展開本線：</strong><br>
+ <strong>【展開＋AI評価が一致】</strong><br>
 
- 決まり手・進入・STなどから
+ 展開予想とAI評価の両方が高い買い目。
 
- 展開的に有力な買い目。
+ <br>
 
- <br><br>
-
- <strong>AI上位補完：</strong><br>
-
- 展開本線とは別に、
-
- AI総合評価上位を押さえる買い目。
+ <strong>回収率重視では特に注目。</strong>
 
  <br><br>
 
- <strong>まくり：</strong><br>
+ <strong>【AI上位を3着に入れることを推奨】</strong><br>
 
- まくりは展開を最優先。
+ AI評価上位艇が3着候補として
 
- 今回のAI上位補完ルールは
+ 面白い場合に表示。
 
- 機械的には適用しない。
+ <br>
+
+ 展開だけでは拾いにくい艇を
+
+ 3着に入れる狙い。
+
+ <br><br>
+
+ <strong>【穴狙い】</strong><br>
+
+ AI順位だけでは目立たないものの、
+
+ 展開面で妙味がある買い目。
+
+ <br><br>
+
+ <strong>【AI上位補完】</strong><br>
+
+ 展開本線だけでは拾えない
+
+ AI評価上位艇を補完。
 
  <br><br>
 
  <strong>
 
- 本線を厚く、AI補完を薄く。
+  同じ理由をすべての買い目に
+
+  機械的に付けるのではなく、
+
+  買い目ごとに判定します。
 
  </strong>
 
@@ -3952,7 +4010,7 @@ function createPicks(
 
 /* =========================================================
 
- 解析
+解析
 
 ========================================================= */
 
@@ -4066,7 +4124,7 @@ function analyzeRace(){
 
 /* =========================================================
 
- 展開文章
+展開文章
 
 ========================================================= */
 
@@ -4118,9 +4176,11 @@ function getDevelopmentText(
 
   <strong>
 
-  展開本線にAI評価上位艇が重なった場合は、
+  AI評価上位艇が3着候補に入る場合は、
 
-  「展開本線＋AI上位」として強化。
+  「AI上位を3着に入れることを推奨」
+
+  として買い目に反映。
 
   </strong>
 
@@ -4154,6 +4214,8 @@ function getDevelopmentText(
 
   まくりは展開を最優先。
 
+  AI上位を機械的には追加しません。
+
   </strong>
 
   `;
@@ -4180,9 +4242,9 @@ function getDevelopmentText(
 
   <strong>
 
-  3着候補が複数存在する場合、
+  AI評価上位が3着候補として有効なら、
 
-  AI評価上位艇を補完。
+  3着への組み込みを推奨。
 
   </strong>
 
@@ -4204,9 +4266,15 @@ function getDevelopmentText(
 
  <br><br>
 
- AI評価と展開の重複を
+ <strong>
 
- 3着候補に反映。
+ AI評価上位艇が3着候補として有力なら、
+
+ 「AI上位を3着に入れることを推奨」
+
+ として回収率重視側に反映。
+
+ </strong>
 
  `;
 
@@ -4214,7 +4282,7 @@ function getDevelopmentText(
 
 /* =========================================================
 
- 表示
+表示
 
 ========================================================= */
 
@@ -4264,7 +4332,11 @@ function showAnalysis(
 
  <div class="row">
 
-  <span class="left">本番進入</span>
+  <span class="left">
+
+   本番進入
+
+  </span>
 
   <span class="right gold">
 
@@ -4276,7 +4348,11 @@ function showAnalysis(
 
  <div class="row">
 
-  <span class="left">進入判定</span>
+  <span class="left">
+
+   進入判定
+
+  </span>
 
   <span class="right ${
 
@@ -4304,7 +4380,11 @@ function showAnalysis(
 
  <div class="row">
 
-  <span class="left">AI想定展開</span>
+  <span class="left">
+
+   AI想定展開
+
+  </span>
 
   <span class="right gold">
 
@@ -4602,7 +4682,7 @@ function showAnalysis(
 
 /* =========================================================
 
- イベント
+イベント
 
 ========================================================= */
 
