@@ -94,6 +94,16 @@ h2{
 
 }
 
+h3{
+
+  font-size:14px;
+
+  color:#d4af37;
+
+  margin:14px 0 8px;
+
+}
+
 label{
 
   display:block;
@@ -236,6 +246,8 @@ button{
 
   font-weight:bold;
 
+  flex-shrink:0;
+
 }
 
 .n1{background:#fff}
@@ -264,7 +276,7 @@ button{
 
   margin-top:5px;
 
-  line-height:1.6;
+  line-height:1.5;
 
 }
 
@@ -293,6 +305,8 @@ button{
 .rankTable th{
 
   color:#d4af37;
+
+  font-weight:bold;
 
 }
 
@@ -370,11 +384,17 @@ button{
 
 .pick{
 
-  padding:7px 0;
+  padding:8px 0;
 
   border-bottom:1px solid #292929;
 
   font-weight:bold;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:10px;
 
 }
 
@@ -402,6 +422,14 @@ button{
 
 }
 
+.prob{
+
+  font-size:12px;
+
+  color:#fff;
+
+}
+
 .analysisText{
 
   line-height:1.7;
@@ -426,24 +454,6 @@ button{
 
 }
 
-.infoBox{
-
-  background:#0d0d0d;
-
-  border:1px solid #292929;
-
-  border-radius:8px;
-
-  padding:10px;
-
-  margin-top:10px;
-
-  font-size:12px;
-
-  line-height:1.7;
-
-}
-
 .footer{
 
   text-align:center;
@@ -456,11 +466,143 @@ button{
 
 }
 
+.infoGrid{
+
+  display:grid;
+
+  grid-template-columns:repeat(2,1fr);
+
+  gap:8px;
+
+}
+
+.infoBox{
+
+  background:#171717;
+
+  border:1px solid #292929;
+
+  border-radius:8px;
+
+  padding:9px;
+
+  font-size:12px;
+
+}
+
+.infoBox span{
+
+  color:#aaa;
+
+  display:block;
+
+  margin-bottom:3px;
+
+}
+
+.techGrid{
+
+  display:grid;
+
+  grid-template-columns:repeat(3,1fr);
+
+  gap:6px;
+
+  margin-top:8px;
+
+}
+
+.tech{
+
+  background:#101010;
+
+  border:1px solid #292929;
+
+  border-radius:7px;
+
+  padding:7px;
+
+  font-size:11px;
+
+  text-align:center;
+
+}
+
+.tech span{
+
+  display:block;
+
+  color:#aaa;
+
+  margin-bottom:3px;
+
+}
+
+.methodGrid{
+
+  display:grid;
+
+  grid-template-columns:repeat(2,1fr);
+
+  gap:6px;
+
+}
+
+.method{
+
+  background:#101010;
+
+  border:1px solid #292929;
+
+  border-radius:7px;
+
+  padding:8px;
+
+  font-size:11px;
+
+}
+
+.method strong{
+
+  color:#d4af37;
+
+}
+
+.strategy{
+
+  background:#171717;
+
+  border-left:3px solid #d4af37;
+
+  padding:10px;
+
+  margin-top:10px;
+
+  font-size:12px;
+
+  line-height:1.7;
+
+}
+
 @media(max-width:600px){
 
-  .grid2{grid-template-columns:1fr}
+  .grid2{
 
-  .racers{grid-template-columns:1fr}
+    grid-template-columns:1fr;
+
+  }
+
+  .racers{
+
+    grid-template-columns:1fr;
+
+  }
+
+  .techGrid{
+
+    grid-template-columns:repeat(2,1fr);
+
+  }
 
 }
 
@@ -472,2191 +614,3717 @@ button{
 
 <header>
 
-<h1>BOAT HUNTER</h1>
+  <h1>BOAT HUNTER</h1>
 
-<p>人気ではなく期待値で勝つ</p>
+  <p>人気ではなく期待値で勝つ</p>
 
 </header>
 
 <div class="container">
 
-<div class="card">
+  <div class="card">
 
-<h2>🎯 レース選択</h2>
+    <h2>🎯 レース選択</h2>
 
-<div class="grid2">
+    <div class="grid2">
 
-<div>
+      <div>
 
-<label>競艇場</label>
+        <label>競艇場</label>
 
-<select id="venue">
+        <select id="venue">
 
-<option value="1">桐生</option>
+          <option value="01">桐生</option>
 
-<option value="2">戸田</option>
+          <option value="02">戸田</option>
 
-<option value="3">江戸川</option>
+          <option value="03">江戸川</option>
 
-<option value="4">平和島</option>
+          <option value="04">平和島</option>
 
-<option value="5">多摩川</option>
+          <option value="05">多摩川</option>
 
-<option value="6">浜名湖</option>
+          <option value="06">浜名湖</option>
 
-<option value="7">蒲郡</option>
+          <option value="07">蒲郡</option>
 
-<option value="8">常滑</option>
+          <option value="08">常滑</option>
 
-<option value="9">津</option>
+          <option value="09">津</option>
 
-<option value="10">三国</option>
+          <option value="10">三国</option>
 
-<option value="11">びわこ</option>
+          <option value="11">びわこ</option>
 
-<option value="12">住之江</option>
+          <option value="12">住之江</option>
 
-<option value="13">尼崎</option>
+          <option value="13">尼崎</option>
 
-<option value="14">鳴門</option>
+          <option value="14">鳴門</option>
 
-<option value="15">丸亀</option>
+          <option value="15">丸亀</option>
 
-<option value="16">児島</option>
+          <option value="16">児島</option>
 
-<option value="17">宮島</option>
+          <option value="17">宮島</option>
 
-<option value="18">徳山</option>
+          <option value="18">徳山</option>
 
-<option value="19">下関</option>
+          <option value="19">下関</option>
 
-<option value="20">若松</option>
+          <option value="20">若松</option>
 
-<option value="21">芦屋</option>
+          <option value="21">芦屋</option>
 
-<option value="22">福岡</option>
+          <option value="22">福岡</option>
 
-<option value="23">唐津</option>
+          <option value="23">唐津</option>
 
-<option value="24">大村</option>
+          <option value="24">大村</option>
 
-</select>
+        </select>
 
-</div>
+      </div>
 
-<div>
+      <div>
 
-<label>レース</label>
+        <label>レース</label>
 
-<select id="race">
+        <select id="race">
 
-<option value="1">1R</option>
+          <option value="1">1R</option>
 
-<option value="2">2R</option>
+          <option value="2">2R</option>
 
-<option value="3">3R</option>
+          <option value="3">3R</option>
 
-<option value="4">4R</option>
+          <option value="4">4R</option>
 
-<option value="5">5R</option>
+          <option value="5">5R</option>
 
-<option value="6">6R</option>
+          <option value="6">6R</option>
 
-<option value="7">7R</option>
+          <option value="7">7R</option>
 
-<option value="8">8R</option>
+          <option value="8">8R</option>
 
-<option value="9">9R</option>
+          <option value="9">9R</option>
 
-<option value="10">10R</option>
+          <option value="10">10R</option>
 
-<option value="11">11R</option>
+          <option value="11">11R</option>
 
-<option value="12">12R</option>
+          <option value="12">12R</option>
 
-</select>
+        </select>
 
-</div>
+      </div>
 
-</div>
+    </div>
 
-<div style="margin-top:10px">
+    <div style="margin-top:10px">
 
-<label>予算</label>
+      <label>予算</label>
 
-<input id="budget" type="number" value="3000" min="100">
+      <input id="budget" type="number" value="3000" min="100">
 
-</div>
+    </div>
 
-<button class="mainBtn" style="margin-top:12px" onclick="loadRaceData()">
+    <button
 
-出走表を取得
+      class="mainBtn"
 
-</button>
+      style="margin-top:12px"
 
-<button class="subBtn" onclick="runAnalysis()">
+      onclick="loadRaceData()"
 
-🤖 AI解析開始
+    >
 
-</button>
+      出走表を取得
 
-<div id="message" class="message"></div>
+    </button>
 
-</div>
+    <button
 
-<div id="raceCard" class="card" style="display:none">
+      class="subBtn"
 
-<h2>🏁 出走表</h2>
+      onclick="runAnalysis()"
 
-<div id="racers" class="racers"></div>
+    >
 
-<div id="raceInfo"></div>
+      🤖 AI解析開始
 
-</div>
+    </button>
 
-<div id="analysisCard" class="card" style="display:none">
+    <div id="message" class="message"></div>
 
-<h2>🤖 AI期待値ランキング</h2>
+  </div>
 
-<div id="ranking"></div>
+  <div
 
-</div>
+    id="raceCard"
 
-<div id="predictionCard" class="card" style="display:none">
+    class="card"
 
-<h2>🎯 AI最終予想</h2>
+    style="display:none"
 
-<div id="forecast" class="analysisText"></div>
+  >
 
-<div class="pickBox">
+    <h2>🏁 出走表</h2>
 
-<div class="pickTitle">🟢 的中率重視</div>
+    <div id="racers" class="racers"></div>
 
-<div id="hitPicks"></div>
+  </div>
 
-</div>
+  <div
 
-<div class="pickBox">
+    id="analysisCard"
 
-<div class="pickTitle">🟡 回収率重視</div>
+    class="card"
 
-<div id="recoveryPicks"></div>
+    style="display:none"
 
-</div>
+  >
 
-<div class="pickBox">
+    <h2>🤖 AI期待値ランキング</h2>
 
-<div class="pickTitle">🔥 大穴狙い</div>
+    <div id="ranking"></div>
 
-<div id="underPicks"></div>
+  </div>
 
-</div>
+  <div
 
-</div>
+    id="predictionCard"
 
-<div class="card">
+    class="card"
 
-<h2>📊 AI評価ルール</h2>
+    style="display:none"
 
-<div class="analysisText">
+  >
 
-<p>
+    <h2>🎯 AI最終予想</h2>
 
-<span class="highlight">イン逃げ判定</span><br>
+    <div
 
-55%以上 → 的中重視でイン逃げを厚く<br>
+      id="forecast"
 
-50〜55% → イン逃げと非インを半々<br>
+      class="analysisText"
 
-50%未満 → 的中重視では基本イン逃げなし<br>
+    ></div>
 
-ただし他に攻め手が弱い場合は回収側に1号艇を残す可能性あり
+    <div class="pickBox">
 
-</p>
+      <div class="pickTitle">
 
-<p>
+        🟢 的中率重視
 
-<span class="highlight">モーター2連対率</span><br>
+      </div>
 
-70%以上 → 🔥 エースモーター<br>
+      <div id="hitPicks"></div>
 
-60〜69% → ⭐ すごく良い<br>
+    </div>
 
-50〜59% → ◎ 良い<br>
+    <div class="pickBox">
 
-40〜49% → ○ 普通<br>
+      <div class="pickTitle">
 
-35〜39% → △ 悪くない<br>
+        🟡 回収率重視
 
-31〜34% → △ やや弱い<br>
+      </div>
 
-30%以下 → ❌ だめ
+      <div id="recoveryPicks"></div>
 
-</p>
+    </div>
 
-<p>
+    <div class="pickBox">
 
-<span class="highlight">回収率重視</span><br>
+      <div class="pickTitle">
 
-AI評価が拮抗 → 頭を分散<br>
+        🔥 大穴狙い
 
-イン逃げが強くない場合 → 10〜15点構成<br>
+      </div>
 
-展示・ST・選手能力・モーター・進入を総合評価
+      <div id="underPicks"></div>
 
-</p>
+    </div>
 
-</div>
+  </div>
 
-</div>
+  <div class="card">
+
+    <h2>📊 AI評価ルール</h2>
+
+    <div class="analysisText">
+
+      <p>
+
+        <span class="highlight">
+
+          イン逃げ判定
+
+        </span><br>
+
+        55%以上 → 的中重視で厚く<br>
+
+        50〜55% → イン逃げと他の決着を半々<br>
+
+        50%未満 → 的中重視では基本イン逃げなし<br>
+
+        ※ただし他に攻め手が弱い場合は回収重視側に残す
+
+      </p>
+
+      <p>
+
+        <span class="highlight">
+
+          モーター2連対率
+
+        </span><br>
+
+        70%以上 → 🔥 エースモーター<br>
+
+        60〜69% → ⭐ すごく良い<br>
+
+        50〜59% → ◎ 良い<br>
+
+        40〜49% → ○ 普通<br>
+
+        35〜39% → △ 悪くない<br>
+
+        31〜34% → △ やや弱い<br>
+
+        30%以下 → ❌ だめ
+
+      </p>
+
+      <p>
+
+        <span class="highlight">
+
+          回収率重視
+
+        </span><br>
+
+        AI評価が拮抗する場合は頭を分散。<br>
+
+        10〜15点を基本として、
+
+        展示・ST・選手特性・モーター・展開を加味。
+
+      </p>
+
+      <p>
+
+        <span class="highlight">
+
+          決まり手
+
+        </span><br>
+
+        APIから実績データを取得できる場合のみ表示。
+
+        APIに存在しないデータは架空の数字を生成しない。
+
+      </p>
+
+    </div>
+
+  </div>
 
 </div>
 
 <div class="footer">
 
-BOAT HUNTER © 2026
+  BOAT HUNTER © 2026
 
 </div>
 
 <script>
 
-/* ==================================================
+const API_V3 =
 
-   BOAT HUNTER
+  "https://boatraceopenapi.github.io/programs/v3";
 
-   現行 Boatrace Open API v1 対応版
+const API_V2 =
 
-================================================== */
+  "https://boatraceopenapi.github.io/programs/v2";
 
-const API_BASE =
+let raceData = null;
 
-"https://boatraceopenapi.github.io/api/v1";
+let racers = [];
 
-let raceData=null;
-
-let racers=[];
-
-let previewRacers={};
-
-/* ==================================================
+/* =========================
 
    基本
 
-================================================== */
+========================= */
 
 function num(v){
 
-if(v===null || v===undefined || v==="")
+  if(
 
-return 0;
+    v === null ||
 
-const n=parseFloat(
+    v === undefined ||
 
-String(v)
+    v === ""
 
-.replace("%","")
+  ){
 
-.replace("秒","")
+    return 0;
 
-.replace(",","")
+  }
 
-);
+  const n = parseFloat(
 
-return Number.isFinite(n) ? n : 0;
+    String(v)
+
+      .replace("%","")
+
+      .replace("秒","")
+
+      .replace(",","")
+
+  );
+
+  return Number.isFinite(n) ? n : 0;
 
 }
 
 function get(obj,keys,def=0){
 
-for(const key of keys){
+  for(const key of keys){
 
-if(
+    if(
 
-obj &&
+      obj &&
 
-obj[key]!==undefined &&
+      obj[key] !== undefined &&
 
-obj[key]!==null &&
+      obj[key] !== null &&
 
-obj[key]!==""
+      obj[key] !== ""
 
-){
+    ){
 
-return obj[key];
+      return obj[key];
+
+    }
+
+  }
+
+  return def;
 
 }
 
+function getObject(obj,keys){
+
+  for(const key of keys){
+
+    if(
+
+      obj &&
+
+      obj[key] !== undefined &&
+
+      obj[key] !== null
+
+    ){
+
+      return obj[key];
+
+    }
+
+  }
+
+  return null;
+
 }
 
-return def;
-
-}
-
-/* ==================================================
+/* =========================
 
    モーター評価
 
-================================================== */
+========================= */
 
 function motorGrade(rate){
 
-rate=num(rate);
+  rate=num(rate);
 
-if(rate>=70)
+  if(rate>=70)
 
-return {
+    return {
 
-text:"🔥 エースモーター",
+      text:"🔥 エースモーター",
 
-class:"ace",
+      class:"ace",
 
-score:18
+      score:18
 
-};
+    };
 
-if(rate>=60)
+  if(rate>=60)
 
-return {
+    return {
 
-text:"⭐ すごく良い",
+      text:"⭐ すごく良い",
 
-class:"good",
+      class:"good",
 
-score:14
+      score:14
 
-};
+    };
 
-if(rate>=50)
+  if(rate>=50)
 
-return {
+    return {
 
-text:"◎ 良い",
+      text:"◎ 良い",
 
-class:"good",
+      class:"good",
 
-score:10
+      score:10
 
-};
+    };
 
-if(rate>=40)
+  if(rate>=40)
 
-return {
+    return {
 
-text:"○ 普通",
+      text:"○ 普通",
 
-class:"normal",
+      class:"normal",
 
-score:6
+      score:6
 
-};
+    };
 
-if(rate>=35)
+  if(rate>=35)
 
-return {
+    return {
 
-text:"△ 悪くない",
+      text:"△ 悪くない",
 
-class:"normal",
+      class:"normal",
 
-score:3
+      score:3
 
-};
+    };
 
-if(rate>30)
+  if(rate>30)
 
-return {
+    return {
 
-text:"△ やや弱い",
+      text:"△ やや弱い",
 
-class:"bad",
+      class:"bad",
 
-score:-2
+      score:-2
 
-};
+    };
 
-return {
+  return {
 
-text:"❌ だめ",
+    text:"❌ だめ",
 
-class:"bad",
+    class:"bad",
 
-score:-7
+    score:-7
 
-};
+  };
 
 }
 
-/* ==================================================
+/* =========================
 
-   API取得
+   API
 
-================================================== */
+========================= */
 
 async function fetchJSON(url){
 
-const response=await fetch(url,{
+  const response =
 
-cache:"no-store"
+    await fetch(url);
 
-});
+  if(!response.ok)
 
-if(!response.ok)
+    throw new Error(
 
-throw new Error("HTTP "+response.status);
+      "HTTP "+response.status
 
-return await response.json();
+    );
 
-}
-
-/* ==================================================
-
-   現行APIからレースを取得
-
-================================================== */
-
-function getRaceFromAPI(data,stadium,race){
-
-const s=String(stadium);
-
-const r=String(race);
-
-try{
-
-const result=
-
-data
-
-?.programs
-
-?.stadiums
-
-?.[s]
-
-?.races
-
-?.[r];
-
-if(result)
-
-return result;
-
-}catch(e){}
-
-return null;
+  return await response.json();
 
 }
 
-/* ==================================================
+/* =========================
 
-   念のため再帰検索
+   レース検索
 
-================================================== */
+========================= */
 
-function recursiveRaceSearch(obj,stadium,race){
+function findRace(
 
-if(!obj || typeof obj!=="object")
+  data,
 
-return null;
+  stadiumNumber,
 
-if(
-
-String(obj.stadium_number)===String(stadium) &&
-
-String(obj.race_number)===String(race)
+  raceNumber
 
 ){
 
-return obj;
+  if(!data)
+
+    return null;
+
+  if(Array.isArray(data)){
+
+    for(const item of data){
+
+      const result =
+
+        findRace(
+
+          item,
+
+          stadiumNumber,
+
+          raceNumber
+
+        );
+
+      if(result)
+
+        return result;
+
+    }
+
+    return null;
+
+  }
+
+  if(typeof data!=="object")
+
+    return null;
+
+  const stadium =
+
+    String(
+
+      get(
+
+        data,
+
+        [
+
+          "stadiumNumber",
+
+          "venueNumber",
+
+          "stadium_no",
+
+          "jyo",
+
+          "placeCode",
+
+          "stadium"
+
+        ],
+
+        ""
+
+      )
+
+    );
+
+  const race =
+
+    String(
+
+      get(
+
+        data,
+
+        [
+
+          "raceNumber",
+
+          "race_no",
+
+          "rno",
+
+          "race"
+
+        ],
+
+        ""
+
+      )
+
+    );
+
+  if(
+
+    stadium &&
+
+    race &&
+
+    stadium.padStart(2,"0") ===
+
+      String(stadiumNumber).padStart(2,"0") &&
+
+    race === String(raceNumber)
+
+  ){
+
+    return data;
+
+  }
+
+  for(
+
+    const key of Object.keys(data)
+
+  ){
+
+    const result =
+
+      findRace(
+
+        data[key],
+
+        stadiumNumber,
+
+        raceNumber
+
+      );
+
+    if(result)
+
+      return result;
+
+  }
+
+  return null;
 
 }
 
-for(const key of Object.keys(obj)){
+/* =========================
 
-const found=
+   選手抽出
 
-recursiveRaceSearch(
+========================= */
 
-obj[key],
+function extractRacers(data){
 
-stadium,
+  const arr =
 
-race
+    get(
 
-);
+      data,
 
-if(found)
+      [
 
-return found;
+        "racers",
 
-}
+        "entries",
 
-return null;
+        "players",
 
-}
+        "programs",
 
-/* ==================================================
+        "racerList",
 
-   選手配列化
+        "entryList",
 
-================================================== */
+        "racer"
 
-function normalizeRacers(race){
+      ],
 
-const source=race?.racers;
+      null
 
-if(!source)
+    );
 
-return [];
+  if(Array.isArray(arr))
 
-let arr=[];
+    return arr;
 
-if(Array.isArray(source)){
+  if(Array.isArray(data))
 
-arr=source;
+    return data;
 
-}else{
-
-arr=
-
-Object.keys(source)
-
-.map(k=>source[k]);
+  return [];
 
 }
 
-return arr
-
-.filter(Boolean)
-
-.map((r,i)=>({
-
-...r,
-
-entry_number:
-
-num(
-
-get(
-
-r,
-
-["entry_number","entryNumber","boat_number"],
-
-i+1
-
-)
-
-)||i+1
-
-}))
-
-.sort(
-
-(a,b)=>
-
-num(a.entry_number)-
-
-num(b.entry_number)
-
-);
-
-}
-
-/* ==================================================
-
-   選手情報表示
-
-================================================== */
-
-function renderRacers(){
-
-const box=
-
-document.getElementById("racers");
-
-box.innerHTML="";
-
-racers.forEach((r,i)=>{
-
-const boat=
-
-num(
-
-get(
-
-r,
-
-["entry_number","entryNumber"],
-
-i+1
-
-)
-
-)||i+1;
-
-const name=
-
-get(
-
-r,
-
-["name","racerName","playerName"],
-
-"選手"+boat
-
-);
-
-const rankNumber=
-
-num(
-
-get(
-
-r,
-
-["rank_number"],
-
-0
-
-)
-
-);
-
-const rank=
-
-rankNumber===1
-
-?"A1":
-
-rankNumber===2
-
-?"A2":
-
-rankNumber===3
-
-?"B1":
-
-rankNumber===4
-
-?"B2":
-
-"";
-
-const national=
-
-num(
-
-get(
-
-r,
-
-["national_win_rate","nationalWinRate"]
-
-)
-
-);
-
-const local=
-
-num(
-
-get(
-
-r,
-
-["local_win_rate","localWinRate"]
-
-)
-
-);
-
-const motor=
-
-num(
-
-get(
-
-r,
-
-["motor_top_2_percent","motor2Rate"]
-
-)
-
-);
-
-const motorG=
-
-motorGrade(motor);
-
-const motorNo=
-
-num(
-
-get(
-
-r,
-
-["motor_number","motorNumber"]
-
-)
-
-);
-
-const preview=
-
-previewRacers[String(boat)]||{};
-
-const course=
-
-num(
-
-get(
-
-preview,
-
-["course_number","courseNumber"],
-
-boat
-
-)
-
-)||boat;
-
-const st=
-
-num(
-
-get(
-
-preview,
-
-["start_timing","startTiming"]
-
-)
-
-);
-
-const exhibition=
-
-num(
-
-get(
-
-preview,
-
-["exhibition_time","exhibitionTime"]
-
-)
-
-);
-
-box.innerHTML+=`
-
-<div class="racer">
-
-<div class="racerTop">
-
-<div class="number n${boat}">
-
-${boat}
-
-</div>
-
-<div class="racerName">
-
-${name}
-
-</div>
-
-</div>
-
-<div class="small">
-
-級別：${rank||"データなし"}<br>
-
-全国勝率：
-
-${national ? national.toFixed(2) : "データなし"}<br>
-
-当地勝率：
-
-${local ? local.toFixed(2) : "データなし"}<br>
-
-モーター：
-
-${motorNo ? motorNo+"号機" : "データなし"}<br>
-
-モーター2連対率：
-
-${motor ? motor.toFixed(1)+"%" : "データなし"}<br>
-
-進入：
-
-${course}コース<br>
-
-ST：
-
-${st ? st.toFixed(2) : "データなし"}<br>
-
-展示：
-
-${exhibition ? exhibition.toFixed(2) : "データなし"}
-
-</div>
-
-<div style="margin-top:7px">
-
-<span class="badge ${motorG.class}">
-
-${motor ? motorG.text : "モーター情報なし"}
-
-</span>
-
-</div>
-
-</div>
-
-`;
-
-});
-
-}
-
-/* ==================================================
-
-   レース情報
-
-================================================== */
-
-function renderRaceInfo(){
-
-const p=
-
-raceData?.preview||{};
-
-const wind=
-
-num(p.wind_speed);
-
-const wave=
-
-num(p.wave_height);
-
-const air=
-
-num(p.air_temperature);
-
-const water=
-
-num(p.water_temperature);
-
-document.getElementById("raceInfo").innerHTML=`
-
-<div class="infoBox">
-
-<strong>🌤 直前情報</strong><br>
-
-風速：
-
-${wind ? wind+"m" : "データなし"}
-
-　
-
-波高：
-
-${wave ? wave+"cm" : "データなし"}
-
-　
-
-気温：
-
-${air ? air+"℃" : "データなし"}
-
-　
-
-水温：
-
-${water ? water+"℃" : "データなし"}
-
-</div>
-
-`;
-
-}
-
-/* ==================================================
+/* =========================
 
    出走表取得
 
-================================================== */
+========================= */
 
 async function loadRaceData(){
 
-const venue=
+  const venue =
 
-document.getElementById("venue").value;
+    document.getElementById(
 
-const race=
+      "venue"
 
-document.getElementById("race").value;
+    ).value;
 
-const message=
+  const race =
 
-document.getElementById("message");
+    document.getElementById(
 
-message.innerHTML=
+      "race"
 
-"⏳ 現行APIから出走表を取得中...";
+    ).value;
 
-try{
+  const message =
 
-const now=
+    document.getElementById(
 
-new Date();
+      "message"
 
-const yyyy=
+    );
 
-now.getFullYear();
+  message.innerHTML =
 
-const mm=
+    "⏳ 出走表を取得中...";
 
-String(now.getMonth()+1).padStart(2,"0");
+  try{
 
-const dd=
+    let data=null;
 
-String(now.getDate()).padStart(2,"0");
+    let apiName="";
 
-const date=
+    const urls=[
 
-`${yyyy}${mm}${dd}`;
+      API_V3+
 
-const url=
+      "/"+
 
-`${API_BASE}/${yyyy}/${date}.json`;
+      venue+
 
-message.innerHTML=
+      "/"+
 
-"⏳ データ取得中...";
+      race+
 
-const data=
+      ".json",
 
-await fetchJSON(url);
+      API_V2+
 
-let found=
+      "/"+
 
-getRaceFromAPI(
+      venue+
 
-data,
+      "/"+
 
-venue,
+      race+
 
-race
+      ".json"
 
-);
+    ];
 
-if(!found){
+    let lastError=null;
 
-found=
+    for(
 
-recursiveRaceSearch(
+      const url of urls
 
-data,
+    ){
 
-venue,
+      try{
 
-race
+        data =
 
-);
+          await fetchJSON(url);
+
+        apiName =
+
+          url.includes("/v3/")
+
+          ? "V3"
+
+          : "V2";
+
+        break;
+
+      }catch(e){
+
+        lastError=e;
+
+      }
+
+    }
+
+    if(!data)
+
+      throw lastError ||
+
+        new Error(
+
+          "APIからデータを取得できませんでした"
+
+        );
+
+    const found =
+
+      findRace(
+
+        data,
+
+        venue,
+
+        race
+
+      ) || data;
+
+    raceData=found;
+
+    racers=
+
+      extractRacers(found);
+
+    if(!racers.length){
+
+      throw new Error(
+
+        "選手データを取得できませんでした"
+
+      );
+
+    }
+
+    renderRacers();
+
+    document.getElementById(
+
+      "raceCard"
+
+    ).style.display="block";
+
+    message.innerHTML=
+
+      "✅ 出走表取得成功<br>"+
+
+      "API: "+apiName+"<br>"+
+
+      "選手数: "+racers.length;
+
+  }catch(error){
+
+    console.error(error);
+
+    message.innerHTML=
+
+      "❌ 出走表取得失敗<br>"+
+
+      error.message;
+
+  }
 
 }
 
-if(!found){
+/* =========================
 
-throw new Error(
+   選手情報
 
-"指定した場・レースのデータが見つかりません"
+========================= */
 
-);
+function racerBoat(r,i){
 
-}
+  return num(
 
-raceData=found;
+    get(
 
-racers=
+      r,
 
-normalizeRacers(found);
+      [
 
-if(racers.length!==6){
+        "boatNumber",
 
-throw new Error(
+        "entryNumber",
 
-"出走選手を6人取得できませんでした（取得："+racers.length+"人）"
+        "course",
 
-);
+        "number",
 
-}
+        "lane",
 
-/* 直前情報 */
+        "boat"
 
-previewRacers={};
+      ],
 
-const previews=
+      i+1
 
-found?.preview?.racers||{};
+    )
 
-Object.keys(previews).forEach(k=>{
-
-previewRacers[k]=previews[k];
-
-});
-
-renderRacers();
-
-renderRaceInfo();
-
-document.getElementById("raceCard")
-
-.style.display="block";
-
-document.getElementById("analysisCard")
-
-.style.display="none";
-
-document.getElementById("predictionCard")
-
-.style.display="none";
-
-message.innerHTML=
-
-`✅ 出走表取得成功<br>
-
-API：現行 v1<br>
-
-日付：${yyyy}-${mm}-${dd}<br>
-
-場番号：${venue}<br>
-
-レース：${race}R<br>
-
-選手数：${racers.length}人`;
-
-}catch(error){
-
-console.error(error);
-
-message.innerHTML=
-
-`❌ 出走表取得失敗<br>
-
-${error.message}<br>
-
-<br>
-
-※非開催日・データ更新前の場合は取得できない場合があります。`;
+  ) || i+1;
 
 }
 
-}
+function racerName(r,boat){
 
-/* ==================================================
+  return get(
 
-   1号艇逃げ率
+    r,
 
-================================================== */
+    [
 
-function getInsideRate(){
+      "name",
 
-const values=[
+      "racerName",
 
-raceData?.inside_win_rate,
+      "playerName",
 
-raceData?.first_boat_win_rate,
+      "racer_name"
 
-raceData?.escape_rate,
+    ],
 
-raceData?.nige_rate,
+    "選手"+boat
 
-raceData?.stadium_inside_win_rate
-
-];
-
-for(const v of values){
-
-const n=num(v);
-
-if(n>0)
-
-return n;
+  );
 
 }
 
-/*
+function racerRank(r){
 
-APIに直接の逃げ率がない場合は
+  return get(
 
-50%を基準値にする。
+    r,
 
-*/
+    [
 
-return 50;
+      "rank",
+
+      "class",
+
+      "grade"
+
+    ],
+
+    "-"
+
+  );
 
 }
 
-/* ==================================================
+function nationalRate(r){
+
+  return num(
+
+    get(
+
+      r,
+
+      [
+
+        "nationalWinRate",
+
+        "national_win_rate",
+
+        "winRate",
+
+        "win_rate"
+
+      ]
+
+    )
+
+  );
+
+}
+
+function localRate(r){
+
+  return num(
+
+    get(
+
+      r,
+
+      [
+
+        "localWinRate",
+
+        "local_win_rate",
+
+        "localRate"
+
+      ]
+
+    )
+
+  );
+
+}
+
+function motorRate(r){
+
+  return num(
+
+    get(
+
+      r,
+
+      [
+
+        "motor2Rate",
+
+        "motorSecondRate",
+
+        "motor2",
+
+        "motor_2rate"
+
+      ]
+
+    )
+
+  );
+
+}
+
+function stValue(r){
+
+  return num(
+
+    get(
+
+      r,
+
+      [
+
+        "ST",
+
+        "st",
+
+        "averageST",
+
+        "avgST",
+
+        "startTiming"
+
+      ]
+
+    )
+
+  );
+
+}
+
+function exhibitionValue(r){
+
+  return num(
+
+    get(
+
+      r,
+
+      [
+
+        "exhibitionTime",
+
+        "exhibition",
+
+        "exhibition_time",
+
+        "tenjiTime"
+
+      ]
+
+    )
+
+  );
+
+}
+
+/* =========================
+
+   決まり手データ
+
+========================= */
+
+function methodValue(r,keys){
+
+  return num(
+
+    get(r,keys,0)
+
+  );
+
+}
+
+function getMethods(r){
+
+  return {
+
+    nige:methodValue(
+
+      r,
+
+      [
+
+        "nigeRate",
+
+        "escapeRate",
+
+        "winByNige",
+
+        "nige",
+
+        "kimariteNige"
+
+      ]
+
+    ),
+
+    sashi:methodValue(
+
+      r,
+
+      [
+
+        "sashiRate",
+
+        "winBySashi",
+
+        "sashi",
+
+        "kimariteSashi"
+
+      ]
+
+    ),
+
+    makuri:methodValue(
+
+      r,
+
+      [
+
+        "makuriRate",
+
+        "winByMakuri",
+
+        "makuri",
+
+        "kimariteMakuri"
+
+      ]
+
+    ),
+
+    makurizashi:methodValue(
+
+      r,
+
+      [
+
+        "makuriSashiRate",
+
+        "makurizashiRate",
+
+        "winByMakuriSashi",
+
+        "makuriSashi",
+
+        "kimariteMakuriSashi"
+
+      ]
+
+    ),
+
+    nuki:methodValue(
+
+      r,
+
+      [
+
+        "nukiRate",
+
+        "winByNuki",
+
+        "nuki",
+
+        "kimariteNuki"
+
+      ]
+
+    ),
+
+    megumare:methodValue(
+
+      r,
+
+      [
+
+        "megumareRate",
+
+        "winByMegumare",
+
+        "megumare",
+
+        "kimariteMegumare"
+
+      ]
+
+    )
+
+  };
+
+}
+
+function hasMethodData(r){
+
+  const m=
+
+    getMethods(r);
+
+  return Object.values(m)
+
+    .some(v=>v>0);
+
+}
+
+/* =========================
+
+   1号艇の負けパターン
+
+========================= */
+
+function getFirstLossData(){
+
+  if(!raceData)
+
+    return null;
+
+  return getObject(
+
+    raceData,
+
+    [
+
+      "firstBoatLoss",
+
+      "firstBoatDefeat",
+
+      "insideLoss",
+
+      "course1Loss",
+
+      "firstBoatDefeatPattern",
+
+      "nigeFailure"
+
+    ]
+
+  );
+
+}
+
+/* =========================
+
+   選手表示
+
+========================= */
+
+function renderRacers(){
+
+  const box =
+
+    document.getElementById(
+
+      "racers"
+
+    );
+
+  box.innerHTML="";
+
+  racers.forEach((r,i)=>{
+
+    const boat=
+
+      racerBoat(r,i);
+
+    const name=
+
+      racerName(r,boat);
+
+    const rank=
+
+      racerRank(r);
+
+    const national=
+
+      nationalRate(r);
+
+    const local=
+
+      localRate(r);
+
+    const motor=
+
+      motorRate(r);
+
+    const st=
+
+      stValue(r);
+
+    const exhibition=
+
+      exhibitionValue(r);
+
+    const motorG=
+
+      motorGrade(motor);
+
+    const methods=
+
+      getMethods(r);
+
+    const methodHTML=
+
+      hasMethodData(r)
+
+      ?
+
+      `
+
+      <h3>決まり手実績</h3>
+
+      <div class="methodGrid">
+
+        <div class="method">
+
+          逃げ
+
+          <strong>${methods.nige.toFixed(1)}%</strong>
+
+        </div>
+
+        <div class="method">
+
+          差し
+
+          <strong>${methods.sashi.toFixed(1)}%</strong>
+
+        </div>
+
+        <div class="method">
+
+          まくり
+
+          <strong>${methods.makuri.toFixed(1)}%</strong>
+
+        </div>
+
+        <div class="method">
+
+          まくり差し
+
+          <strong>${methods.makurizashi.toFixed(1)}%</strong>
+
+        </div>
+
+        <div class="method">
+
+          抜き
+
+          <strong>${methods.nuki.toFixed(1)}%</strong>
+
+        </div>
+
+        <div class="method">
+
+          恵まれ
+
+          <strong>${methods.megumare.toFixed(1)}%</strong>
+
+        </div>
+
+      </div>
+
+      `
+
+      :
+
+      `
+
+      <div class="small">
+
+        決まり手実績：APIデータなし
+
+      </div>
+
+      `;
+
+    box.innerHTML+=`
+
+      <div class="racer">
+
+        <div class="racerTop">
+
+          <div class="number n${boat}">
+
+            ${boat}
+
+          </div>
+
+          <div class="racerName">
+
+            ${name}
+
+          </div>
+
+        </div>
+
+        <div class="small">
+
+          級別：${rank}<br>
+
+          全国勝率：
+
+          ${national
+
+            ? national.toFixed(2)
+
+            : "データなし"}<br>
+
+          当地勝率：
+
+          ${local
+
+            ? local.toFixed(2)
+
+            : "データなし"}<br>
+
+          モーター2連対率：
+
+          ${motor
+
+            ? motor.toFixed(1)+"%"
+
+            : "データなし"}
+
+        </div>
+
+        <div style="margin-top:7px">
+
+          <span class="badge ${motorG.class}">
+
+            ${
+
+              motor
+
+              ? motorG.text
+
+              : "モーター情報なし"
+
+            }
+
+          </span>
+
+        </div>
+
+        <div class="techGrid">
+
+          <div class="tech">
+
+            <span>平均ST</span>
+
+            ${
+
+              st
+
+              ? st.toFixed(2)
+
+              : "-"
+
+            }
+
+          </div>
+
+          <div class="tech">
+
+            <span>展示</span>
+
+            ${
+
+              exhibition
+
+              ? exhibition.toFixed(2)
+
+              : "-"
+
+            }
+
+          </div>
+
+          <div class="tech">
+
+            <span>AI評価</span>
+
+            -
+
+          </div>
+
+        </div>
+
+        ${methodHTML}
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+/* =========================
 
    AIスコア
 
-================================================== */
+========================= */
 
-function calcScore(r){
+function calcScore(r,index){
 
-const boat=
+  const course=
 
-num(r.entry_number)||1;
+    num(
 
-const preview=
+      get(
 
-previewRacers[String(boat)]||{};
+        r,
 
-const national=
+        [
 
-num(r.national_win_rate);
+          "course",
 
-const local=
+          "entryCourse",
 
-num(r.local_win_rate);
+          "startCourse",
 
-const motor=
+          "lane"
 
-num(r.motor_top_2_percent);
+        ],
 
-const national2=
+        index+1
 
-num(r.national_top_2_percent);
+      )
 
-const local2=
+    ) || index+1;
 
-num(r.local_top_2_percent);
+  const national=
 
-const st=
+    nationalRate(r);
 
-num(
+  const local=
 
-get(
+    localRate(r);
 
-preview,
+  const motor=
 
-["start_timing"]
+    motorRate(r);
 
-)
+  const st=
 
-);
+    stValue(r);
 
-const exhibition=
+  const exhibition=
 
-num(
+    exhibitionValue(r);
 
-get(
+  const motorInfo=
 
-preview,
+    motorGrade(motor);
 
-["exhibition_time"]
+  let score=0;
 
-)
+  /*
 
-);
+    選手能力
 
-const course=
+  */
 
-num(
+  score+=national*6;
 
-get(
+  score+=local*3;
 
-preview,
+  /*
 
-["course_number"],
+    モーター
 
-boat
+  */
 
-)
+  score+=motorInfo.score;
 
-)||boat;
+  /*
 
-const motorG=
+    ST
 
-motorGrade(motor);
+  */
 
-let score=0;
+  if(st>0){
 
-/* 選手能力 */
+    if(st<=0.12)
 
-score+=national*5;
+      score+=10;
 
-score+=local*2.5;
+    else if(st<=0.15)
 
-score+=national2*0.10;
+      score+=7;
 
-score+=local2*0.08;
+    else if(st<=0.18)
 
-/* モーター */
+      score+=4;
 
-score+=motorG.score;
+    else if(st<=0.22)
 
-/* ST */
+      score+=1;
 
-if(st>0){
+    else
 
-if(st<=0.12)
+      score-=3;
 
-score+=10;
+  }
 
-else if(st<=0.15)
+  /*
 
-score+=7;
+    展示
 
-else if(st<=0.18)
+  */
 
-score+=4;
+  if(exhibition>0){
 
-else if(st<=0.22)
+    if(exhibition<=6.70)
 
-score+=1;
+      score+=8;
 
-else
+    else if(exhibition<=6.80)
 
-score-=3;
+      score+=5;
+
+    else if(exhibition<=6.90)
+
+      score+=2;
+
+    else if(exhibition>=7.10)
+
+      score-=3;
+
+  }
+
+  /*
+
+    コース
+
+  */
+
+  const courseBonus={
+
+    1:12,
+
+    2:7,
+
+    3:6,
+
+    4:5,
+
+    5:2,
+
+    6:0
+
+  };
+
+  score+=
+
+    courseBonus[course] || 0;
+
+  /*
+
+    級別
+
+  */
+
+  const rank=
+
+    String(
+
+      racerRank(r)
+
+    ).toUpperCase();
+
+  if(rank==="A1")
+
+    score+=6;
+
+  else if(rank==="A2")
+
+    score+=3;
+
+  else if(rank==="B2")
+
+    score-=2;
+
+  /*
+
+    決まり手傾向
+
+  */
+
+  const methods=
+
+    getMethods(r);
+
+  if(methods.nige>0 &&
+
+     course===1){
+
+    score+=
+
+      Math.min(
+
+        8,
+
+        methods.nige*0.08
+
+      );
+
+  }
+
+  if(
+
+    methods.makuri>0 &&
+
+    course>=3
+
+  ){
+
+    score+=
+
+      Math.min(
+
+        5,
+
+        methods.makuri*0.05
+
+      );
+
+  }
+
+  if(
+
+    methods.makurizashi>0 &&
+
+    course>=3
+
+  ){
+
+    score+=
+
+      Math.min(
+
+        5,
+
+        methods.makurizashi*0.05
+
+      );
+
+  }
+
+  return Math.round(
+
+    score*100
+
+  )/100;
 
 }
 
-/* 展示 */
-
-if(exhibition>0){
-
-if(exhibition<=6.70)
-
-score+=8;
-
-else if(exhibition<=6.80)
-
-score+=5;
-
-else if(exhibition<=6.90)
-
-score+=2;
-
-else if(exhibition>=7.10)
-
-score-=3;
-
-}
-
-/* コース */
-
-const courseBonus={
-
-1:12,
-
-2:7,
-
-3:6,
-
-4:5,
-
-5:2,
-
-6:0
-
-};
-
-score+=courseBonus[course]||0;
-
-/* 級別 */
-
-const rank=
-
-num(r.rank_number);
-
-if(rank===1)
-
-score+=6;
-
-else if(rank===2)
-
-score+=3;
-
-else if(rank===4)
-
-score-=2;
-
-return Math.round(score*100)/100;
-
-}
-
-/* ==================================================
+/* =========================
 
    ランキング
 
-================================================== */
+========================= */
 
 function createRanking(){
 
-return racers
+  return racers
 
-.map(r=>({
+    .map((r,i)=>{
 
-boat:num(r.entry_number),
+      const boat=
 
-racer:r,
+        racerBoat(r,i);
 
-score:calcScore(r)
+      return {
 
-}))
+        boat,
 
-.sort(
+        racer:r,
 
-(a,b)=>
+        score:
 
-b.score-a.score
+          calcScore(r,i)
 
-);
+      };
 
-}
+    })
 
-/* ==================================================
+    .sort(
 
-   ランキング表示
+      (a,b)=>
 
-================================================== */
+        b.score-a.score
 
-function renderRanking(ranking){
-
-let html=`
-
-<table class="rankTable">
-
-<tr>
-
-<th>順位</th>
-
-<th>艇</th>
-
-<th>選手</th>
-
-<th>AI評価</th>
-
-<th>モーター</th>
-
-</tr>
-
-`;
-
-ranking.forEach((x,i)=>{
-
-const motor=
-
-num(x.racer.motor_top_2_percent);
-
-const grade=
-
-motorGrade(motor);
-
-html+=`
-
-<tr>
-
-<td>${i+1}</td>
-
-<td>${x.boat}号艇</td>
-
-<td>${x.racer.name||"-"}</td>
-
-<td>
-
-<strong>${x.score.toFixed(1)}</strong>
-
-</td>
-
-<td>
-
-<span class="badge ${grade.class}">
-
-${motor ? motor.toFixed(1)+"%" : "-"}
-
-</span>
-
-</td>
-
-</tr>
-
-`;
-
-});
-
-html+="</table>";
-
-document.getElementById("ranking").innerHTML=
-
-html;
+    );
 
 }
 
-/* ==================================================
+/* =========================
 
-   3連単生成
+   1号艇逃げ率
 
-================================================== */
+========================= */
 
-function addPick(arr,a,b,c){
+function getInsideRate(){
 
-if(!a||!b||!c)
+  const candidates=[
 
-return;
+    raceData?.insideWinRate,
 
-if(
+    raceData?.firstBoatWinRate,
 
-a===b ||
+    raceData?.course1WinRate,
 
-a===c ||
+    raceData?.escapeRate,
 
-b===c
+    raceData?.nigeRate,
 
-)
+    raceData?.insideRate
 
-return;
+  ];
 
-const key=
+  for(
 
-`${a}-${b}-${c}`;
+    const v of candidates
 
-if(!arr.includes(key))
+  ){
 
-arr.push(key);
+    const n=num(v);
 
-}
+    if(n>0)
 
-/* ==================================================
+      return n;
 
-   的中重視
+  }
 
-================================================== */
-
-function makeHitPicks(ranking){
-
-const inside=
-
-getInsideRate();
-
-const top=
-
-ranking.slice(0,6);
-
-const result=[];
-
-/*
-
-55%以上
-
-イン逃げ厚く
-
-*/
-
-if(inside>=55){
-
-const others=
-
-top
-
-.filter(x=>x.boat!==1)
-
-.slice(0,4);
-
-for(const a of others){
-
-for(const b of others){
-
-if(a.boat===b.boat)
-
-continue;
-
-addPick(
-
-result,
-
-1,
-
-a.boat,
-
-b.boat
-
-);
+  return 50;
 
 }
 
-}
+/* =========================
 
-return result.slice(0,6);
+   買い目確率
 
-}
+========================= */
 
-/*
+function normalizeProbabilities(
 
-50〜55%
-
-インと非インを半々
-
-*/
-
-if(inside>=50){
-
-const a=
-
-top.find(x=>x.boat===1);
-
-const b=
-
-top.find(x=>x.boat!==1);
-
-const c=
-
-top.find(x=>
-
-x.boat!==1 &&
-
-x.boat!==b?.boat
-
-);
-
-if(a&&b&&c){
-
-addPick(
-
-result,
-
-1,
-
-b.boat,
-
-c.boat
-
-);
-
-addPick(
-
-result,
-
-1,
-
-c.boat,
-
-b.boat
-
-);
-
-addPick(
-
-result,
-
-b.boat,
-
-1,
-
-c.boat
-
-);
-
-addPick(
-
-result,
-
-c.boat,
-
-1,
-
-b.boat
-
-);
-
-}
-
-return result;
-
-}
-
-/*
-
-50%未満
-
-基本インなし
-
-*/
-
-const a=top[0];
-
-const b=top[1];
-
-const c=top[2];
-
-if(a&&b&&c){
-
-addPick(
-
-result,
-
-a.boat,
-
-b.boat,
-
-c.boat
-
-);
-
-addPick(
-
-result,
-
-b.boat,
-
-a.boat,
-
-c.boat
-
-);
-
-addPick(
-
-result,
-
-a.boat,
-
-c.boat,
-
-b.boat
-
-);
-
-}
-
-return result;
-
-}
-
-/* ==================================================
-
-   回収重視
-
-================================================== */
-
-function makeRecoveryPicks(ranking){
-
-const inside=
-
-getInsideRate();
-
-const result=[];
-
-const top=
-
-ranking.slice(0,5);
-
-const diff=
-
-ranking[0].score-ranking[1].score;
-
-const close=
-
-diff<=3;
-
-/*
-
-AI評価が拮抗
-
-→ 頭を分散
-
-*/
-
-if(close){
-
-const heads=
-
-top.slice(0,4);
-
-for(const h of heads){
-
-const others=
-
-top.filter(x=>
-
-x.boat!==h.boat
-
-);
-
-for(const a of others){
-
-for(const b of others){
-
-if(a.boat===b.boat)
-
-continue;
-
-addPick(
-
-result,
-
-h.boat,
-
-a.boat,
-
-b.boat
-
-);
-
-if(result.length>=15)
-
-return result;
-
-}
-
-}
-
-}
-
-return result;
-
-}
-
-/*
-
-イン逃げが強い
-
-→ 1頭中心でも
-
-相手を広げる
-
-*/
-
-if(inside>=55){
-
-const others=
-
-top.filter(x=>x.boat!==1);
-
-for(const a of others){
-
-for(const b of others){
-
-if(a.boat===b.boat)
-
-continue;
-
-addPick(
-
-result,
-
-1,
-
-a.boat,
-
-b.boat
-
-);
-
-if(result.length>=12)
-
-return result;
-
-}
-
-}
-
-return result;
-
-}
-
-/*
-
-イン逃げが弱い
-
-→ 10〜15点
-
-頭を複数化
-
-*/
-
-const heads=
-
-top
-
-.slice(0,4)
-
-.map(x=>x.boat);
-
-for(const h of heads){
-
-const others=
-
-top.filter(x=>x.boat!==h);
-
-for(const a of others){
-
-for(const b of others){
-
-if(a.boat===b.boat)
-
-continue;
-
-addPick(
-
-result,
-
-h,
-
-a.boat,
-
-b.boat
-
-);
-
-if(result.length>=15)
-
-return result;
-
-}
-
-}
-
-}
-
-return result.slice(0,15);
-
-}
-
-/* ==================================================
-
-   大穴
-
-================================================== */
-
-function makeUnderPicks(ranking){
-
-const result=[];
-
-const strong=
-
-ranking.slice(0,3);
-
-const outsiders=
-
-ranking.slice(3,6);
-
-for(const h of outsiders){
-
-for(const a of strong){
-
-for(const b of strong){
-
-if(a.boat===b.boat)
-
-continue;
-
-addPick(
-
-result,
-
-h.boat,
-
-a.boat,
-
-b.boat
-
-);
-
-addPick(
-
-result,
-
-a.boat,
-
-h.boat,
-
-b.boat
-
-);
-
-if(result.length>=8)
-
-return result;
-
-}
-
-}
-
-}
-
-return result;
-
-}
-
-/* ==================================================
-
-   展開説明
-
-================================================== */
-
-function makeForecast(ranking){
-
-const inside=
-
-getInsideRate();
-
-const first=
-
-ranking.find(x=>x.boat===1);
-
-const diff=
-
-ranking.length>=2
-
-? ranking[0].score-ranking[1].score
-
-:0;
-
-let text="";
-
-if(inside>=55){
-
-text=
-
-"1号艇のイン逃げを基本軸。AI評価・モーター・展示・STを総合して、イン残りを厚く評価。";
-
-}else if(inside>=50){
-
-text=
-
-"イン逃げだけに寄せず、1号艇残りと外からの攻めをバランス評価。";
-
-}else{
-
-text=
-
-"1号艇のイン逃げ信頼度は低め。的中重視ではイン逃げを基本的に外し、外からの攻めを優先。";
-
-if(first && ranking[1]){
-
-if(
-
-first.score>=ranking[1].score-5
+  picks
 
 ){
 
-text+=
+  if(!picks.length)
 
-"ただし1号艇のAI評価が極端に低くないため、回収重視では1号艇残りも警戒。";
+    return [];
 
-}
+  const values=
 
-}
+    picks.map(
 
-}
+      x=>Math.max(
 
-return `
+        0.1,
 
-<p>
+        x.raw
 
-<span class="highlight">1号艇逃げ率：</span>
+      )
 
-${inside.toFixed(1)}%
+    );
 
-</p>
+  const total=
 
-<p>
+    values.reduce(
 
-<span class="highlight">AI評価差：</span>
+      (a,b)=>a+b,
 
-${diff.toFixed(1)}点
+      0
 
-${diff<=3
+    );
 
-?" → 拮抗"
+  return picks.map(
 
-:" → 上位優勢"}
+    (x,i)=>({
 
-</p>
+      ...x,
 
-<p>
+      probability:
 
-<span class="highlight">本命：</span>
+        total>0
 
-${ranking[0]?.boat||"-"}号艇
+        ? values[i]/total*100
 
-${ranking[0]?.racer?.name||""}
+        : 0
 
-</p>
+    })
 
-<p>
-
-<span class="highlight">対抗：</span>
-
-${ranking[1]?.boat||"-"}号艇
-
-${ranking[1]?.racer?.name||""}
-
-</p>
-
-<p>
-
-<span class="highlight">穴：</span>
-
-${ranking[2]?.boat||"-"}号艇
-
-${ranking[2]?.racer?.name||""}
-
-</p>
-
-<p>
-
-<span class="highlight">展開：</span>
-
-${text}
-
-</p>
-
-<p>
-
-<span class="highlight">AI評価：</span>
-
-全国勝率・当地勝率・全国2連対率・当地2連対率・
-
-モーター・ST・展示・進入・級別を総合評価。
-
-</p>
-
-`;
+  );
 
 }
 
-/* ==================================================
+/*
 
-   解析
+  組み合わせ評価
 
-================================================== */
+  頭・2着・3着のAI評価を
+
+  全て加味する
+
+*/
+
+function combinationScore(
+
+  a,b,c,
+
+  ranking,
+
+  insideRate
+
+){
+
+  const ra=
+
+    ranking.find(
+
+      x=>x.boat===a
+
+    );
+
+  const rb=
+
+    ranking.find(
+
+      x=>x.boat===b
+
+    );
+
+  const rc=
+
+    ranking.find(
+
+      x=>x.boat===c
+
+    );
+
+  if(!ra || !rb || !rc)
+
+    return 0;
+
+  let score=
+
+    ra.score*1.35+
+
+    rb.score*1.0+
+
+    rc.score*0.75;
+
+  /*
+
+    1号艇逃げ率
+
+  */
+
+  if(a===1){
+
+    if(insideRate>=55)
+
+      score+=12;
+
+    else if(insideRate>=50)
+
+      score+=5;
+
+    else
+
+      score-=12;
+
+  }
+
+  /*
+
+    1号艇2着・3着
+
+    50%未満でも
+
+    逃げ切れないだけで
+
+    残る可能性は考慮
+
+  */
+
+  if(b===1 || c===1){
+
+    if(insideRate<50)
+
+      score+=2;
+
+    else
+
+      score+=5;
+
+  }
+
+  /*
+
+    モーター
+
+  */
+
+  const ma=
+
+    motorGrade(
+
+      motorRate(ra.racer)
+
+    ).score;
+
+  const mb=
+
+    motorGrade(
+
+      motorRate(rb.racer)
+
+    ).score;
+
+  const mc=
+
+    motorGrade(
+
+      motorRate(rc.racer)
+
+    ).score;
+
+  score+=
+
+    (ma+mb+mc)*0.18;
+
+  /*
+
+    ST
+
+  */
+
+  const stA=
+
+    stValue(ra.racer);
+
+  const stB=
+
+    stValue(rb.racer);
+
+  const stC=
+
+    stValue(rc.racer);
+
+  if(stA>0)
+
+    score+=
+
+      Math.max(
+
+        0,
+
+        (0.25-stA)*10
+
+      );
+
+  if(stB>0)
+
+    score+=
+
+      Math.max(
+
+        0,
+
+        (0.25-stB)*6
+
+      );
+
+  if(stC>0)
+
+    score+=
+
+      Math.max(
+
+        0,
+
+        (0.25-stC)*4
+
+      );
+
+  /*
+
+    展示
+
+  */
+
+  const exA=
+
+    exhibitionValue(
+
+      ra.racer
+
+    );
+
+  if(exA>0){
+
+    if(exA<=6.70)
+
+      score+=5;
+
+    else if(exA<=6.80)
+
+      score+=3;
+
+    else if(exA>=7.10)
+
+      score-=2;
+
+  }
+
+  return Math.max(
+
+    0.1,
+
+    score
+
+  );
+
+}
+
+/* =========================
+
+   予想生成
+
+========================= */
+
+function generatePickPool(
+
+  ranking,
+
+  insideRate
+
+){
+
+  const pool=[];
+
+  /*
+
+    上位5艇を候補
+
+  */
+
+  const boats=
+
+    ranking
+
+      .slice(0,5)
+
+      .map(x=>x.boat);
+
+  /*
+
+    1号艇を候補に残すか
+
+  */
+
+  for(
+
+    const a of boats
+
+  ){
+
+    for(
+
+      const b of boats
+
+    ){
+
+      if(a===b)
+
+        continue;
+
+      for(
+
+        const c of boats
+
+      ){
+
+        if(
+
+          a===c ||
+
+          b===c
+
+        )
+
+          continue;
+
+        const raw=
+
+          combinationScore(
+
+            a,
+
+            b,
+
+            c,
+
+            ranking,
+
+            insideRate
+
+          );
+
+        pool.push({
+
+          key:
+
+            `${a}-${b}-${c}`,
+
+          a,
+
+          b,
+
+          c,
+
+          raw
+
+        });
+
+      }
+
+    }
+
+  }
+
+  return pool.sort(
+
+    (x,y)=>y.raw-x.raw
+
+  );
+
+}
+
+/* =========================
+
+   的中重視
+
+========================= */
+
+function createHitPicks(
+
+  ranking,
+
+  insideRate
+
+){
+
+  const pool=
+
+    generatePickPool(
+
+      ranking,
+
+      insideRate
+
+    );
+
+  let picks=[];
+
+  if(insideRate>=55){
+
+    picks=
+
+      pool
+
+        .filter(
+
+          x=>x.a===1
+
+        )
+
+        .slice(0,5);
+
+  }else if(
+
+    insideRate>=50
+
+  ){
+
+    const inside=
+
+      pool
+
+        .filter(
+
+          x=>x.a===1
+
+        )
+
+        .slice(0,3);
+
+    const outside=
+
+      pool
+
+        .filter(
+
+          x=>x.a!==1
+
+        )
+
+        .slice(0,3);
+
+    picks=[
+
+      ...inside,
+
+      ...outside
+
+    ];
+
+  }else{
+
+    /*
+
+      50%未満は
+
+      的中重視で
+
+      基本イン逃げを除外
+
+    */
+
+    picks=
+
+      pool
+
+        .filter(
+
+          x=>x.a!==1
+
+        )
+
+        .slice(0,5);
+
+  }
+
+  return normalizeProbabilities(
+
+    picks
+
+  );
+
+}
+
+/* =========================
+
+   回収重視
+
+========================= */
+
+function createRecoveryPicks(
+
+  ranking,
+
+  insideRate
+
+){
+
+  const pool=
+
+    generatePickPool(
+
+      ranking,
+
+      insideRate
+
+    );
+
+  const diff=
+
+    ranking.length>=2
+
+    ? ranking[0].score-
+
+      ranking[1].score
+
+    : 99;
+
+  const close=
+
+    diff<=3;
+
+  let picks=[];
+
+  /*
+
+    AI評価が拮抗
+
+    → 頭を分散
+
+  */
+
+  if(close){
+
+    const heads=
+
+      ranking
+
+        .slice(0,4)
+
+        .map(x=>x.boat);
+
+    for(
+
+      const head of heads
+
+    ){
+
+      const candidates=
+
+        pool
+
+          .filter(
+
+            x=>x.a===head
+
+          )
+
+          .slice(0,4);
+
+      picks.push(
+
+        ...candidates
+
+      );
+
+      if(
+
+        picks.length>=15
+
+      )
+
+        break;
+
+    }
+
+  }else{
+
+    /*
+
+      イン逃げが強い
+
+      → 1頭に寄せすぎない
+
+      1号艇を軸にしつつ
+
+      AI上位の別頭も残す
+
+    */
+
+    if(insideRate>=55){
+
+      const heads=[
+
+        1,
+
+        ranking[0]?.boat,
+
+        ranking[1]?.boat
+
+      ];
+
+      for(
+
+        const head of
+
+        [...new Set(heads)]
+
+      ){
+
+        const candidates=
+
+          pool
+
+            .filter(
+
+              x=>x.a===head
+
+            )
+
+            .slice(0,5);
+
+        picks.push(
+
+          ...candidates
+
+        );
+
+      }
+
+    }else{
+
+      /*
+
+        イン逃げ50%未満
+
+        → 頭を積極的に分散
+
+      */
+
+      const heads=
+
+        ranking
+
+          .slice(0,4)
+
+          .map(x=>x.boat);
+
+      for(
+
+        const head of heads
+
+      ){
+
+        picks.push(
+
+          ...pool
+
+            .filter(
+
+              x=>x.a===head
+
+            )
+
+            .slice(0,4)
+
+        );
+
+      }
+
+    }
+
+  }
+
+  /*
+
+    重複除去
+
+  */
+
+  const map=
+
+    new Map();
+
+  for(
+
+    const p of picks
+
+  ){
+
+    if(!map.has(p.key))
+
+      map.set(p.key,p);
+
+  }
+
+  picks=
+
+    [...map.values()]
+
+      .sort(
+
+        (a,b)=>b.raw-a.raw
+
+      )
+
+      .slice(0,15);
+
+  /*
+
+    10点未満なら
+
+    追加候補を補充
+
+  */
+
+  if(picks.length<10){
+
+    for(
+
+      const p of pool
+
+    ){
+
+      if(
+
+        !picks.some(
+
+          x=>x.key===p.key
+
+        )
+
+      ){
+
+        picks.push(p);
+
+      }
+
+      if(picks.length>=10)
+
+        break;
+
+    }
+
+  }
+
+  return normalizeProbabilities(
+
+    picks
+
+  );
+
+}
+
+/* =========================
+
+   大穴
+
+========================= */
+
+function createUnderPicks(
+
+  ranking,
+
+  insideRate
+
+){
+
+  const pool=
+
+    generatePickPool(
+
+      ranking,
+
+      insideRate
+
+    );
+
+  const top3=
+
+    ranking
+
+      .slice(0,3)
+
+      .map(x=>x.boat);
+
+  /*
+
+    AI4〜6位を穴候補
+
+  */
+
+  const outsiders=
+
+    ranking
+
+      .slice(3,6);
+
+  let result=[];
+
+  for(
+
+    const outsider
+
+    of outsiders
+
+  ){
+
+    const candidates=
+
+      pool.filter(
+
+        x=>
+
+          x.a===outsider.boat ||
+
+          x.b===outsider.boat ||
+
+          x.c===outsider.boat
+
+      );
+
+    result.push(
+
+      ...candidates
+
+        .slice(0,3)
+
+    );
+
+  }
+
+  /*
+
+    AI上位＋穴艇
+
+  */
+
+  for(
+
+    const outsider
+
+    of outsiders
+
+  ){
+
+    if(
+
+      top3.length>=2
+
+    ){
+
+      const a=
+
+        outsider.boat;
+
+      const b=
+
+        top3[0];
+
+      const c=
+
+        top3[1];
+
+      if(
+
+        a!==b &&
+
+        a!==c &&
+
+        b!==c
+
+      ){
+
+        result.push({
+
+          key:
+
+            `${a}-${b}-${c}`,
+
+          a,
+
+          b,
+
+          c,
+
+          raw:
+
+            combinationScore(
+
+              a,
+
+              b,
+
+              c,
+
+              ranking,
+
+              insideRate
+
+            )
+
+        });
+
+      }
+
+    }
+
+  }
+
+  const map=
+
+    new Map();
+
+  result
+
+    .sort(
+
+      (a,b)=>b.raw-a.raw
+
+    )
+
+    .forEach(
+
+      x=>{
+
+        if(!map.has(x.key))
+
+          map.set(x.key,x);
+
+      }
+
+    );
+
+  result=
+
+    [...map.values()]
+
+      .slice(0,5);
+
+  return normalizeProbabilities(
+
+    result
+
+  );
+
+}
+
+/* =========================
+
+   ランキング表示
+
+========================= */
+
+function renderRanking(
+
+  ranking
+
+){
+
+  let html=`
+
+    <table class="rankTable">
+
+      <tr>
+
+        <th>順位</th>
+
+        <th>艇</th>
+
+        <th>選手</th>
+
+        <th>AI評価</th>
+
+        <th>モーター</th>
+
+      </tr>
+
+  `;
+
+  ranking.forEach(
+
+    (x,i)=>{
+
+      const motor=
+
+        motorRate(
+
+          x.racer
+
+        );
+
+      const grade=
+
+        motorGrade(
+
+          motor
+
+        );
+
+      const name=
+
+        racerName(
+
+          x.racer,
+
+          x.boat
+
+        );
+
+      html+=`
+
+        <tr>
+
+          <td>${i+1}</td>
+
+          <td>
+
+            ${x.boat}号艇
+
+          </td>
+
+          <td>
+
+            ${name}
+
+          </td>
+
+          <td>
+
+            <strong>
+
+              ${x.score.toFixed(1)}
+
+            </strong>
+
+          </td>
+
+          <td>
+
+            <span
+
+              class="badge ${grade.class}"
+
+            >
+
+              ${
+
+                motor
+
+                ? motor.toFixed(1)+"%"
+
+                : "-"
+
+              }
+
+            </span>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }
+
+  );
+
+  html+="</table>";
+
+  document.getElementById(
+
+    "ranking"
+
+  ).innerHTML=html;
+
+}
+
+/* =========================
+
+   買い目表示
+
+========================= */
+
+function renderPicks(
+
+  elementId,
+
+  picks,
+
+  className
+
+){
+
+  const el=
+
+    document.getElementById(
+
+      elementId
+
+    );
+
+  if(!picks.length){
+
+    el.innerHTML=
+
+      `<div class="warning">
+
+        該当買い目なし
+
+       </div>`;
+
+    return;
+
+  }
+
+  el.innerHTML=
+
+    picks
+
+      .map(
+
+        x=>`
+
+          <div class="pick ${className}">
+
+            <span>
+
+              ${x.key}
+
+            </span>
+
+            <span class="prob">
+
+              AI ${x.probability.toFixed(1)}%
+
+            </span>
+
+          </div>
+
+        `
+
+      )
+
+      .join("");
+
+}
+
+/* =========================
+
+   決まり手全体表示
+
+========================= */
+
+function renderMethodSummary(){
+
+  const card=
+
+    document.getElementById(
+
+      "raceCard"
+
+    );
+
+  /*
+
+    追加情報を出走表の
+
+    最後に追加
+
+  */
+
+  let old=
+
+    document.getElementById(
+
+      "methodSummary"
+
+    );
+
+  if(old)
+
+    old.remove();
+
+  let html=`
+
+    <div
+
+      id="methodSummary"
+
+      class="strategy"
+
+    >
+
+      <strong>
+
+        📊 選手別・過去の決まり手
+
+      </strong>
+
+  `;
+
+  let hasAny=false;
+
+  racers.forEach(
+
+    (r,i)=>{
+
+      if(!hasMethodData(r))
+
+        return;
+
+      hasAny=true;
+
+      const boat=
+
+        racerBoat(r,i);
+
+      const name=
+
+        racerName(r,boat);
+
+      const m=
+
+        getMethods(r);
+
+      html+=`
+
+        <div
+
+          style="margin-top:10px"
+
+        >
+
+          <strong>
+
+            ${boat}号艇 ${name}
+
+          </strong>
+
+          <br>
+
+          逃げ ${m.nige.toFixed(1)}%
+
+          ／
+
+          差し ${m.sashi.toFixed(1)}%
+
+          ／
+
+          まくり ${m.makuri.toFixed(1)}%
+
+          ／
+
+          まくり差し
+
+          ${m.makurizashi.toFixed(1)}%
+
+        </div>
+
+      `;
+
+    }
+
+  );
+
+  if(!hasAny){
+
+    html+=`
+
+      <div
+
+        class="small"
+
+        style="margin-top:8px"
+
+      >
+
+        APIから決まり手実績を
+
+        取得できませんでした。
+
+      </div>
+
+    `;
+
+  }
+
+  html+=`</div>`;
+
+  card.insertAdjacentHTML(
+
+    "beforeend",
+
+    html
+
+  );
+
+}
+
+/* =========================
+
+   AI解析
+
+========================= */
 
 function runAnalysis(){
 
-if(!racers.length){
+  if(!racers.length){
 
-alert("先に出走表を取得してください");
+    alert(
 
-return;
+      "先に出走表を取得してください"
+
+    );
+
+    return;
+
+  }
+
+  const ranking=
+
+    createRanking();
+
+  renderRanking(
+
+    ranking
+
+  );
+
+  createPredictions(
+
+    ranking
+
+  );
+
+  document.getElementById(
+
+    "analysisCard"
+
+  ).style.display="block";
+
+  document.getElementById(
+
+    "predictionCard"
+
+  ).style.display="block";
 
 }
 
-const ranking=
+/* =========================
 
-createRanking();
+   最終予想
 
-renderRanking(ranking);
+========================= */
 
-const hit=
+function createPredictions(
 
-makeHitPicks(ranking);
+  ranking
 
-const recovery=
+){
 
-makeRecoveryPicks(ranking);
+  const insideRate=
 
-const under=
+    getInsideRate();
 
-makeUnderPicks(ranking);
+  const first=
 
-document.getElementById("forecast").innerHTML=
+    ranking.find(
 
-makeForecast(ranking);
+      x=>x.boat===1
 
-/* 的中 */
+    );
 
-document.getElementById("hitPicks").innerHTML=
+  const top=
 
-hit.length
+    ranking.slice(0,5);
 
-? hit.map(x=>`
+  const scoreDiff=
 
-<div class="pick hit">
+    ranking.length>=2
 
-${x}
+    ?
 
-</div>
+    ranking[0].score-
 
-`).join("")
+    ranking[1].score
 
-:`
+    :
 
-<div class="warning">
+    99;
 
-的中重視の強い買い目なし
+  const close=
 
-</div>
+    scoreDiff<=3;
 
-`;
+  /*
 
-/* 回収 */
+    逃げ判定
 
-document.getElementById("recoveryPicks").innerHTML=
+  */
 
-recovery.length
+  let insideJudgement="";
 
-? recovery.map(x=>`
+  if(insideRate>=55){
 
-<div class="pick recovery">
+    insideJudgement=
 
-${x}
+      "イン逃げを厚く評価";
 
-</div>
+  }else if(
 
-`).join("")
+    insideRate>=50
 
-:`
+  ){
 
-<div class="warning">
+    insideJudgement=
 
-回収重視の買い目なし
+      "イン逃げと他の決着を半々で評価";
 
-</div>
+  }else{
 
-`;
+    insideJudgement=
 
-/* 大穴 */
+      "イン逃げを基本的に軽視";
 
-document.getElementById("underPicks").innerHTML=
+  }
 
-under.length
+  /*
 
-? under.map(x=>`
+    買い目
 
-<div class="pick under">
+  */
 
-${x}
+  const hit=
 
-</div>
+    createHitPicks(
 
-`).join("")
+      ranking,
 
-:`
+      insideRate
 
-<div class="warning">
+    );
 
-現時点で強い大穴根拠なし
+  const recovery=
 
-</div>
+    createRecoveryPicks(
 
-`;
+      ranking,
 
-document.getElementById("analysisCard")
+      insideRate
 
-.style.display="block";
+    );
 
-document.getElementById("predictionCard")
+  const under=
 
-.style.display="block";
+    createUnderPicks(
+
+      ranking,
+
+      insideRate
+
+    );
+
+  /*
+
+    1号艇評価
+
+  */
+
+  const firstScore=
+
+    first
+
+    ? first.score
+
+    : 0;
+
+  /*
+
+    他の攻め手
+
+  */
+
+  const attackCandidates=
+
+    ranking
+
+      .filter(
+
+        x=>x.boat!==1
+
+      )
+
+      .slice(0,3);
+
+  const attackText=
+
+    attackCandidates.length
+
+    ?
+
+    attackCandidates
+
+      .map(
+
+        x=>
+
+          `${x.boat}号艇`
+
+      )
+
+      .join("・")
+
+    :
+
+    "なし";
+
+  /*
+
+    1号艇負けパターン
+
+  */
+
+  const lossData=
+
+    getFirstLossData();
+
+  let lossText=
+
+    "APIデータなし";
+
+  if(lossData){
+
+    if(
+
+      typeof lossData==="object"
+
+    ){
+
+      lossText=
+
+        JSON.stringify(
+
+          lossData
+
+        );
+
+    }else{
+
+      lossText=
+
+        String(lossData);
+
+    }
+
+  }
+
+  /*
+
+    予想文章
+
+  */
+
+  const forecast=`
+
+    <p>
+
+      <span class="highlight">
+
+        1号艇逃げ率：
+
+      </span>
+
+      ${insideRate.toFixed(1)}%
+
+      → ${insideJudgement}
+
+    </p>
+
+    <p>
+
+      <span class="highlight">
+
+        AI評価差：
+
+      </span>
+
+      ${scoreDiff.toFixed(1)}点
+
+      ${
+
+        close
+
+        ? "→ 評価拮抗"
+
+        : "→ 上位優勢"
+
+      }
+
+    </p>
+
+    <p>
+
+      <span class="highlight">
+
+        本命：
+
+      </span>
+
+      ${
+
+        top[0]
+
+        ? top[0].boat+"号艇 "+
+
+          racerName(
+
+            top[0].racer,
+
+            top[0].boat
+
+          )
+
+        : "-"
+
+      }
+
+    </p>
+
+    <p>
+
+      <span class="highlight">
+
+        1号艇AI評価：
+
+      </span>
+
+      ${firstScore.toFixed(1)}
+
+    </p>
+
+    <p>
+
+      <span class="highlight">
+
+        攻め手候補：
+
+      </span>
+
+      ${attackText}
+
+    </p>
+
+    <p>
+
+      <span class="highlight">
+
+        1号艇負けパターン：
+
+      </span>
+
+      ${lossText}
+
+    </p>
+
+    <p>
+
+      <span class="highlight">
+
+        回収戦略：
+
+      </span>
+
+      ${
+
+        close
+
+        ? "AI評価が拮抗。頭を分散して10〜15点構成。"
+
+        : insideRate<50
+
+        ? "イン逃げを過信せず、外の攻め手を含めて頭を分散。"
+
+        : "AI上位を中心に複数頭を採用。"
+
+      }
+
+    </p>
+
+    <div class="strategy">
+
+      <strong>
+
+        🧠 AI判断
+
+      </strong>
+
+      <br>
+
+      展開・展示・ST・選手能力・
+
+      モーター・コース・決まり手傾向を
+
+      総合評価。
+
+      <br>
+
+      買い目確率は、
+
+      各艇のAI評価から算出した
+
+      「この買い目が相対的にどれだけ有力か」
+
+      を示す指標。
+
+      <br>
+
+      ※実オッズを取得していない場合、
+
+      この数値は払戻期待値ではありません。
+
+    </div>
+
+  `;
+
+  document.getElementById(
+
+    "forecast"
+
+  ).innerHTML=
+
+    forecast;
+
+  renderPicks(
+
+    "hitPicks",
+
+    hit,
+
+    "hit"
+
+  );
+
+  renderPicks(
+
+    "recoveryPicks",
+
+    recovery,
+
+    "recovery"
+
+  );
+
+  renderPicks(
+
+    "underPicks",
+
+    under,
+
+    "under"
+
+  );
+
+  renderMethodSummary();
 
 }
 
