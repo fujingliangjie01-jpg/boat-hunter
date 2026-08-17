@@ -2264,14 +2264,6 @@ sashi:n(r.sashi_rate||r.win_by_sashi_rate||r.by_sashi_rate),
 
 maki:n(r.maki_rate||r.makuri_rate||r.win_by_maki_rate||r.by_maki_rate),
 
-/*
-
-  まくり差しは
-
-  3コース以降でのみ評価する
-
-*/
-
 makiSashi:n(
 
 r.maki_sashi_rate||
@@ -2333,14 +2325,6 @@ value+=d.maki*1.5;
 }
 
 if(type==="makiSashi"){
-
-/*
-
-  3コース未満では
-
-  まくり差しを完全に無効化
-
-*/
 
 if(course<3)return 0;
 
@@ -2421,18 +2405,6 @@ return result;
 }
 
 function dominantType(overview){
-
-/*
-
-  イン逃げは50%以上で中心
-
-  60%以上なら鉄板扱い
-
-  その他は20%以上なら
-
-  その決まり手を中心候補にする
-
-*/
 
 if(overview.escape>=50)
 
@@ -2730,6 +2702,24 @@ const dominant=dominantType(overview);
 
 const candidates=[];
 
+/*
+
+  3着までならありの条件
+
+  ① AI期待値差が15ポイント以内
+
+  ② モーター2連率35%以上
+
+  ③ モーター3連率55%以上
+
+  ④ 今回の中心展開に対する適性が15以上
+
+  ただし、能力差が大きすぎる艇は
+
+  モーター・展開だけで無理に残さない。
+
+*/
+
 rankings.forEach((x,index)=>{
 
 if(index===0)return;
@@ -2750,27 +2740,43 @@ dominant
 
 );
 
+const closeScore=diff<=15;
+
+const motorGood=motor>=35||motor3>=55;
+
+const attackGood=attack>=15;
+
 /*
 
-  15ポイント以内なら
+  AI差15以内なら基本的に3着候補。
 
-  3着候補として残す。
+  15を超える場合は
 
-  モーター・展開が良い場合も残す。
+  モーター＋展開のどちらかが明確に強い時だけ。
 
 */
 
 if(
 
-diff<=15 ||
+closeScore ||
 
-motor>=35 ||
-
-motor3>=55 ||
-
-attack>=15
+(diff<=25&&(motorGood||attackGood))
 
 ){
+
+let reason=[];
+
+if(closeScore)
+
+reason.push("AI期待値差15ポイント以内");
+
+if(motorGood)
+
+reason.push("モーター性能");
+
+if(attackGood)
+
+reason.push("展開適性");
 
 candidates.push({
 
@@ -2784,13 +2790,21 @@ motor,
 
 motor3,
 
-attack
+attack,
+
+reason:reason.join("・")
 
 });
 
 }
 
 });
+
+/*
+
+  3着候補としての評価順
+
+*/
 
 candidates.sort((a,b)=>{
 
@@ -2802,7 +2816,9 @@ a.motor*0.10+
 
 a.motor3*0.03+
 
-a.attack*0.10;
+a.attack*0.10-
+
+a.diff*0.05;
 
 const bv=
 
@@ -2812,7 +2828,9 @@ b.motor*0.10+
 
 b.motor3*0.03+
 
-b.attack*0.10;
+b.attack*0.10-
+
+b.diff*0.05;
 
 return bv-av;
 
@@ -2822,11 +2840,11 @@ return bv-av;
 
   最大2艇まで。
 
-  ただし条件が弱い艇は出さない。
+  同じ艇を除外候補に絶対回さない。
 
 */
 
-return candidates.slice(0,2).map(x=>x.boat);
+return candidates.slice(0,2);
 
 }
 
@@ -2840,31 +2858,73 @@ function renderExclusions(rankings){
 
 const el=document.getElementById("exclusions");
 
+if(!rankings||!rankings.length){
+
+el.innerHTML=
+
+`<div class="strategy">評価データなし</div>`;
+
+return;
+
+}
+
 const top=rankings[0].score;
 
-const limited=getThreePlaceBoats(rankings);
+/*
 
-const three=rankings.filter(x=>
+  ここで3着候補を一度だけ確定。
 
-limited.includes(x.boat)
+  以降の除外判定では必ずこの一覧を除外する。
+
+*/
+
+const threeCandidates=getThreePlaceBoats(rankings);
+
+const threeSet=new Set(
+
+threeCandidates.map(x=>x.boat)
 
 );
+
+/*
+
+  完全除外候補
+
+  ・1位と2位は基本除外しない
+
+  ・3着候補に入った艇は絶対除外しない
+
+  ・AI差15ポイント超だけではなく、
+
+    25ポイント超を基本的な完全除外ラインにする
+
+*/
 
 const exclude=rankings.filter((x,index)=>{
 
 if(index<2)return false;
 
-if(limited.includes(x.boat))return false;
+if(threeSet.has(x.boat))return false;
 
 const diff=top-x.score;
 
-return diff>15;
+return diff>25;
 
-}).slice(0,2);
+});
+
+/*
+
+  完全除外は必要な艇だけ。
+
+  最大2艇。
+
+*/
+
+const finalExclude=exclude.slice(0,2);
 
 let html="";
 
-if(three.length){
+if(threeCandidates.length){
 
 html+=`
 
@@ -2880,27 +2940,7 @@ html+=`
 
 `;
 
-three.forEach(x=>{
-
-const diff=top-x.score;
-
-const r=x.racer;
-
-const motor=n(r?.motor_top_2_percent);
-
-let reason="";
-
-if(diff<=15)
-
-reason="AI期待値差が15ポイント以内";
-
-else if(motor>=35)
-
-reason="モーター性能を評価";
-
-else
-
-reason="展開適性を評価";
+threeCandidates.forEach(x=>{
 
 html+=`
 
@@ -2908,7 +2948,7 @@ html+=`
 
 <strong>
 
-${x.boat}号艇 ${esc(r?.name||"-")}
+${x.boat}号艇 ${esc(x.racer?.name||"-")}
 
 </strong>
 
@@ -2928,9 +2968,15 @@ ${x.score.toFixed(1)}
 
 <br>
 
+1位との差：
+
+${x.diff.toFixed(1)}
+
+<br>
+
 理由：
 
-${reason}
+${esc(x.reason)}
 
 </div>
 
@@ -2942,7 +2988,7 @@ html+=`
 
 <span style="color:#777">
 
-※1着・2着ではなく3着候補として評価
+※この艇は1着・2着候補ではなく、3着候補としてのみ評価
 
 </span>
 
@@ -2952,7 +2998,7 @@ html+=`
 
 }
 
-if(exclude.length){
+if(finalExclude.length){
 
 html+=`
 
@@ -2960,7 +3006,7 @@ html+=`
 
 `;
 
-exclude.forEach(x=>{
+finalExclude.forEach(x=>{
 
 html+=`
 
@@ -3038,17 +3084,27 @@ const B=rankings.find(x=>x.boat===b);
 
 if(!A||!B)return null;
 
-const limited=getThreePlaceBoats(rankings);
-
 /*
 
-  3着限定艇は
+  3着までならありの艇は
 
-  2連単買い目では使用しない。
+  2連単では1着・2着に使わない。
+
+  getThreePlaceBoats()は
+
+  毎回同じ条件で判定する。
 
 */
 
-if(limited.includes(a)||limited.includes(b))
+const threeCandidates=getThreePlaceBoats(rankings);
+
+const threeSet=new Set(
+
+threeCandidates.map(x=>x.boat)
+
+);
+
+if(threeSet.has(a)||threeSet.has(b))
 
 return null;
 
@@ -3216,7 +3272,7 @@ used.add(x.key);
 
   回収重視イン逃げ
 
-  的中重視にイン逃げが無い場合のみ
+  的中重視にイン逃げが無い場合のみ。
 
 */
 
@@ -3285,6 +3341,22 @@ const first=rankings[0];
 for(let i=1;i<rankings.length;i++){
 
 const x=rankings[i];
+
+const threeSet=new Set(
+
+getThreePlaceBoats(rankings).map(v=>v.boat)
+
+);
+
+/*
+
+  3着限定艇は
+
+  穴目の1着候補にも入れない。
+
+*/
+
+if(threeSet.has(x.boat))continue;
 
 if(x.score<first.score-10){
 
