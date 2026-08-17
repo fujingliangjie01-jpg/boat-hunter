@@ -544,41 +544,43 @@ font-weight:bold;
 
 .prob{
 
+font-weight:bold;
+
+}
+
+/* =====================================================
+
+買い目の期待度
+
+===================================================== */
+
+.pickHigh{
+
+color:#ff3030;
+
+font-weight:900;
+
+font-size:13px;
+
+text-shadow:0 0 6px rgba(255,40,40,.35);
+
+}
+
+.pickNormal{
+
 color:#ffd84d;
 
 font-weight:bold;
 
 }
 
-/* 5%未満 */
+.pickLow{
 
-.prob.lowProb{
-
-color:#555;
+color:#666;
 
 font-weight:normal;
 
-}
-
-/* 5%未満の行 */
-
-.pick.lowProbRow{
-
-opacity:.65;
-
-}
-
-/* 高確率買い目 */
-
-.prob.highProb{
-
-color:#ff3333;
-
-font-weight:900;
-
-font-size:14px;
-
-text-shadow:0 0 6px rgba(255,50,50,.35);
+opacity:.55;
 
 }
 
@@ -672,6 +674,106 @@ color:#ff5555;
 
 }
 
+/* =====================================================
+
+全体の見通し
+
+===================================================== */
+
+.overviewBox{
+
+background:#151515;
+
+border:1px solid #8a6d1c;
+
+border-radius:9px;
+
+padding:11px;
+
+margin-top:9px;
+
+}
+
+.overviewTitle{
+
+color:#d4af37;
+
+font-size:13px;
+
+font-weight:bold;
+
+margin-bottom:9px;
+
+}
+
+.overviewGrid{
+
+display:grid;
+
+grid-template-columns:repeat(4,1fr);
+
+gap:6px;
+
+}
+
+.overviewItem{
+
+background:#101010;
+
+border:1px solid #292929;
+
+border-radius:7px;
+
+padding:8px 4px;
+
+text-align:center;
+
+}
+
+.overviewLabel{
+
+font-size:10px;
+
+color:#999;
+
+margin-bottom:4px;
+
+}
+
+.overviewValue{
+
+font-size:14px;
+
+font-weight:bold;
+
+color:#ffd84d;
+
+}
+
+.overviewEscape{
+
+border-color:#8a6d1c;
+
+}
+
+.overviewSashi{
+
+border-color:#444;
+
+}
+
+.overviewMaki{
+
+border-color:#444;
+
+}
+
+.overviewMakiSashi{
+
+border-color:#444;
+
+}
+
 @media(max-width:600px){
 
 .grid2{
@@ -689,6 +791,12 @@ grid-template-columns:repeat(2,1fr);
 .racers{
 
 grid-template-columns:1fr;
+
+}
+
+.overviewGrid{
+
+grid-template-columns:repeat(2,1fr);
 
 }
 
@@ -836,11 +944,7 @@ inputmode="numeric"
 
 現在の買い目の中から
 
-<strong class="budgetStrong">
-
-⭐優先買い目
-
-</strong>
+<strong class="budgetStrong">⭐優先買い目</strong>
 
 を表示します。
 
@@ -998,6 +1102,8 @@ style="display:none"
 
 <div id="forecast"></div>
 
+<div id="overview"></div>
+
 <div class="total">
 
 AI買い目確率合計
@@ -1031,6 +1137,14 @@ id="displayBudget"
 <br>
 
 ⭐＝現在の資金で優先して購入する買い目
+
+<br>
+
+🔴＝5.0%以上の高期待買い目
+
+<br>
+
+⚪＝4.5%以下の低期待買い目
 
 <br>
 
@@ -1320,7 +1434,7 @@ return 12;
 
 /* =====================================================
 
-カテゴリー
+⭐評価用カテゴリー
 
 ===================================================== */
 
@@ -1384,21 +1498,7 @@ list:bets.under||[]
 
 ⭐判定
 
-カテゴリー横断で評価。
-
-的中率だけではなく、
-
-逃げ
-
-差し
-
-まくり
-
-まくり差し
-
-穴目
-
-からも候補を選ぶ。
+カテゴリー横断
 
 ===================================================== */
 
@@ -1418,7 +1518,7 @@ const selectedKeys=
 
 new Set();
 
-/* 各カテゴリーの代表 */
+/* 各カテゴリーの代表候補 */
 
 const representatives=
 
@@ -1454,7 +1554,9 @@ return{
 
 ...best,
 
-group:group.name
+group:
+
+group.name
 
 };
 
@@ -1470,9 +1572,13 @@ group:group.name
 
 );
 
-/* 最上位 */
+/* 最高評価 */
 
-if(representatives.length>0){
+if(
+
+representatives.length>0
+
+){
 
 const first=
 
@@ -1480,7 +1586,11 @@ representatives[0];
 
 selected.push(first);
 
-selectedKeys.add(first.key);
+selectedKeys.add(
+
+first.key
+
+);
 
 }
 
@@ -1518,7 +1628,7 @@ selectedKeys.add(item.key);
 
 }
 
-/* 全買い目から追加 */
+/* 全体から追加 */
 
 if(
 
@@ -1540,7 +1650,9 @@ all.push({
 
 ...item,
 
-group:group.name
+group:
+
+group.name
 
 });
 
@@ -1594,7 +1706,11 @@ selectedKeys.add(item.key);
 
 return new Set(
 
-selected.map(x=>x.key)
+selected.map(
+
+x=>x.key
+
+)
 
 );
 
@@ -1602,29 +1718,7 @@ selected.map(x=>x.key)
 
 /* =====================================================
 
-⭐更新
-
-===================================================== */
-
-function updateStars(){
-
-if(!currentBets){
-
-return;
-
-}
-
-renderBets(
-
-currentBets
-
-);
-
-}
-
-/* =====================================================
-
-日付
+今日の日付
 
 ===================================================== */
 
@@ -1736,19 +1830,29 @@ document.createElement(
 
 );
 
-option.value=course;
+option.value=
+
+course;
 
 option.textContent=
 
 course+"コース";
 
-el.appendChild(option);
+el.appendChild(
+
+option
+
+);
 
 }
 
-el.value=boat;
+el.value=
 
-manualCourses[boat]=boat;
+boat;
+
+manualCourses[boat]=
+
+boat;
 
 el.addEventListener(
 
@@ -1788,9 +1892,13 @@ document.getElementById(
 
 );
 
-el.value=boat;
+el.value=
 
-manualCourses[boat]=boat;
+boat;
+
+manualCourses[boat]=
+
+boat;
 
 }
 
@@ -1892,7 +2000,9 @@ url
 
 }catch(error){
 
-lastError=error;
+lastError=
+
+error;
 
 }
 
@@ -1964,11 +2074,7 @@ return races[String(race)]||null;
 
 ===================================================== */
 
-function extractRacers(
-
-race
-
-){
+function extractRacers(race){
 
 const source=
 
@@ -2030,11 +2136,7 @@ b.entry_number
 
 ===================================================== */
 
-function getPreviewData(
-
-race
-
-){
+function getPreviewData(race){
 
 return race?.preview?.racers||{};
 
@@ -2208,7 +2310,11 @@ previewRacers[boat]||
 
 const course=
 
-n(p.course_number);
+n(
+
+p.course_number
+
+);
 
 const el=
 
@@ -2226,15 +2332,23 @@ course<=6
 
 ){
 
-el.value=course;
+el.value=
 
-manualCourses[boat]=course;
+course;
+
+manualCourses[boat]=
+
+course;
 
 }else{
 
-el.value=boat;
+el.value=
 
-manualCourses[boat]=boat;
+boat;
+
+manualCourses[boat]=
+
+boat;
 
 }
 
@@ -2290,7 +2404,9 @@ return racers.find(
 
 r=>
 
-n(r.entry_number)===boat
+n(r.entry_number)===
+
+boat
 
 );
 
@@ -2888,11 +3004,7 @@ b.score-a.score
 
 ===================================================== */
 
-function renderRanking(
-
-rankings
-
-){
+function renderRanking(rankings){
 
 let html=`
 
@@ -3030,11 +3142,7 @@ html;
 
 ===================================================== */
 
-function renderExclusions(
-
-rankings
-
-){
+function renderExclusions(rankings){
 
 const el=
 
@@ -3322,13 +3430,11 @@ b.raw-a.raw
 
 買い目作成
 
+回収重視は各4点
+
 ===================================================== */
 
-function buildBets(
-
-rankings
-
-){
+function buildBets(rankings){
 
 const result={
 
@@ -3416,11 +3522,7 @@ used.add(x.key);
 
 }
 
-/* =====================================================
-
-回収率重視は3点
-
-===================================================== */
+/* 回収重視 各4点 */
 
 const types=[
 
@@ -3456,7 +3558,7 @@ const x of pool
 
 if(
 
-result[type].length>=3
+result[type].length>=4
 
 )
 
@@ -3478,11 +3580,7 @@ used.add(x.key);
 
 });
 
-/* =====================================================
-
-穴目
-
-===================================================== */
+/* 穴 */
 
 const first=
 
@@ -3566,11 +3664,7 @@ b.raw-a.raw
 
 .slice(0,2);
 
-/* =====================================================
-
-確率
-
-===================================================== */
+/* 確率 */
 
 const all=[
 
@@ -3638,6 +3732,312 @@ return result;
 
 /* =====================================================
 
+全体の見通し
+
+===================================================== */
+
+function calculateOverview(){
+
+const scores={
+
+escape:0,
+
+sashi:0,
+
+maki:0,
+
+makiSashi:0
+
+};
+
+let total=0;
+
+for(
+
+let boat=1;
+
+boat<=6;
+
+boat++
+
+){
+
+const score=
+
+scoreBoat(boat);
+
+if(score<=0)
+
+continue;
+
+const course=
+
+getCourse(boat);
+
+/* 逃げ */
+
+if(course===1){
+
+scores.escape+=
+
+score;
+
+}
+
+/* 差し */
+
+if(course===2){
+
+scores.sashi+=
+
+score*1.25;
+
+scores.makiSashi+=
+
+score*0.45;
+
+}
+
+/* 3コース */
+
+if(course===3){
+
+scores.sashi+=
+
+score*0.75;
+
+scores.maki+=
+
+score*0.75;
+
+scores.makiSashi+=
+
+score*1.10;
+
+}
+
+/* 4コース */
+
+if(course===4){
+
+scores.maki+=
+
+score*1.20;
+
+scores.makiSashi+=
+
+score*1.25;
+
+scores.sashi+=
+
+score*0.45;
+
+}
+
+/* 5コース */
+
+if(course===5){
+
+scores.maki+=
+
+score*0.70;
+
+scores.makiSashi+=
+
+score*1.30;
+
+scores.sashi+=
+
+score*0.35;
+
+}
+
+/* 6コース */
+
+if(course===6){
+
+scores.maki+=
+
+score*0.45;
+
+scores.makiSashi+=
+
+score*1.15;
+
+scores.sashi+=
+
+score*0.25;
+
+}
+
+total+=score;
+
+}
+
+/*
+
+1コースの逃げ基礎補正
+
+*/
+
+scores.escape+=
+
+total*0.35;
+
+const sum=
+
+Object.values(scores)
+
+.reduce(
+
+(a,b)=>a+b,
+
+0
+
+);
+
+if(sum<=0){
+
+return{
+
+escape:25,
+
+sashi:25,
+
+maki:25,
+
+makiSashi:25
+
+};
+
+}
+
+return{
+
+escape:
+
+scores.escape/sum*100,
+
+sashi:
+
+scores.sashi/sum*100,
+
+maki:
+
+scores.maki/sum*100,
+
+makiSashi:
+
+scores.makiSashi/sum*100
+
+};
+
+}
+
+/* =====================================================
+
+全体の見通し表示
+
+===================================================== */
+
+function renderOverview(){
+
+const overview=
+
+calculateOverview();
+
+document.getElementById(
+
+"overview"
+
+).innerHTML=
+
+`
+
+<div class="overviewBox">
+
+<div class="overviewTitle">
+
+📊 全体の見通し
+
+</div>
+
+<div class="overviewGrid">
+
+<div class="overviewItem overviewEscape">
+
+<div class="overviewLabel">
+
+逃げ
+
+</div>
+
+<div class="overviewValue">
+
+${overview.escape.toFixed(1)}%
+
+</div>
+
+</div>
+
+<div class="overviewItem overviewSashi">
+
+<div class="overviewLabel">
+
+差し
+
+</div>
+
+<div class="overviewValue">
+
+${overview.sashi.toFixed(1)}%
+
+</div>
+
+</div>
+
+<div class="overviewItem overviewMaki">
+
+<div class="overviewLabel">
+
+まくり
+
+</div>
+
+<div class="overviewValue">
+
+${overview.maki.toFixed(1)}%
+
+</div>
+
+</div>
+
+<div class="overviewItem overviewMakiSashi">
+
+<div class="overviewLabel">
+
+まくり差し
+
+</div>
+
+<div class="overviewValue">
+
+${overview.makiSashi.toFixed(1)}%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+/* =====================================================
+
 保存
 
 ===================================================== */
@@ -3670,11 +4070,7 @@ return
 
 }
 
-function saveCurrentBets(
-
-bets
-
-){
+function saveCurrentBets(bets){
 
 try{
 
@@ -3794,13 +4190,9 @@ error
 
 買い目表示
 
-5%未満 → 薄く
+5.0%以上＝赤
 
-最高確率に近い買い目
-
-→ 赤文字＋強調
-
-⭐は全カテゴリー横断
+4.5%以下＝薄い
 
 ===================================================== */
 
@@ -3816,7 +4208,11 @@ bets
 
 const el=
 
-document.getElementById(id);
+document.getElementById(
+
+id
+
+);
 
 if(
 
@@ -3840,53 +4236,11 @@ return;
 
 const starKeys=
 
-getStarKeys(bets);
+getStarKeys(
 
-/* 全買い目 */
+bets
 
-const all=[];
-
-getBetGroups(bets).forEach(
-
-group=>{
-
-group.list.forEach(
-
-x=>{
-
-all.push(x);
-
-});
-
-});
-
-/* 最高確率 */
-
-const maxProbability=
-
-all.length
-
-?
-
-Math.max(
-
-...all.map(
-
-x=>x.probability||0
-
-)
-
-)
-
-:0;
-
-/*
-
-最高確率の80%以上
-
-→ 高期待度として赤表示
-
-*/
+);
 
 el.innerHTML=
 
@@ -3896,53 +4250,47 @@ x=>{
 
 const probability=
 
-x.probability||0;
+Number(
 
-const isLow=
+x.probability||0
 
-probability<5;
-
-const isHigh=
-
-maxProbability>0&&
-
-probability>=
-
-maxProbability*0.80;
-
-const rowClass=
-
-isLow
-
-?
-
-"pick lowProbRow"
-
-:
-
-"pick";
+);
 
 let probClass=
 
-"prob";
+"pickNormal";
 
-if(isLow){
+/* 5%以上 */
 
-probClass+=
+if(
 
-" lowProb";
+probability>=5.0
 
-}else if(isHigh){
+){
 
-probClass+=
+probClass=
 
-" highProb";
+"pickHigh";
+
+}
+
+/* 4.5%以下 */
+
+else if(
+
+probability<=4.5
+
+){
+
+probClass=
+
+"pickLow";
 
 }
 
 return`
 
-<div class="${rowClass}">
+<div class="pick">
 
 <div class="pickLeft">
 
@@ -3952,13 +4300,9 @@ ${
 
 starKeys.has(x.key)
 
-?
+?"⭐"
 
-"⭐"
-
-:
-
-""
+:""
 
 }
 
@@ -3978,7 +4322,9 @@ ${probability.toFixed(1)}%
 
 </span>
 
-</div>`;
+</div>
+
+`;
 
 }
 
@@ -3992,11 +4338,7 @@ ${probability.toFixed(1)}%
 
 ===================================================== */
 
-function renderBets(
-
-bets
-
-){
+function renderBets(bets){
 
 if(!bets)
 
@@ -4162,6 +4504,8 @@ message.innerHTML=
 
 try{
 
+/* ランキング */
+
 const rankings=
 
 makeRanking();
@@ -4189,6 +4533,8 @@ rankings[1];
 const third=
 
 rankings[2];
+
+/* 本命など */
 
 document.getElementById(
 
@@ -4271,6 +4617,12 @@ AI評価は全国勝率・当地勝率・
 </strong>
 
 </div>`;
+
+/* 全体の見通し */
+
+renderOverview();
+
+/* 買い目 */
 
 const bets=
 
@@ -4358,9 +4710,9 @@ error.message
 
 資金変更
 
-買い目は再生成しない。
+買い目は再生成しない
 
-⭐だけ更新。
+⭐だけ変更
 
 ===================================================== */
 
@@ -4419,6 +4771,26 @@ getBudget();
 updateStars();
 
 });
+
+/* =====================================================
+
+⭐更新
+
+===================================================== */
+
+function updateStars(){
+
+if(!currentBets)
+
+return;
+
+renderBets(
+
+currentBets
+
+);
+
+}
 
 /* =====================================================
 
