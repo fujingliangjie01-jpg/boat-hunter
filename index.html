@@ -2488,6 +2488,14 @@ p.entry_course
 
 );
 
+const motor2Rate=n(
+
+r.motor_top_2_percent||
+
+r.motor_2ren_rate
+
+);
+
 box.innerHTML+=`
 
 <div class="racer">
@@ -2602,7 +2610,7 @@ ${n(r.motor_number)||"-"}
 
 <span>モーター2連</span>
 
-${n(r.motor_top_2_percent).toFixed(1)}%
+${motor2Rate.toFixed(1)}%
 
 </div>
 
@@ -2627,22 +2635,6 @@ ${n(p.start_timing||p.st).toFixed(2)}
 <span>展示</span>
 
 ${n(p.exhibition_time||p.exhibition).toFixed(2)}
-
-</div>
-
-<div>
-
-<span>モーター3連</span>
-
-${n(r.motor_top_3_percent).toFixed(1)}%
-
-</div>
-
-<div>
-
-<span>ボート2連</span>
-
-${n(r.boat_top_2_percent).toFixed(1)}%
 
 </div>
 
@@ -3014,7 +3006,9 @@ Object.entries(overview)
 
 ([type,value])=>
 
-type!=="escape"&&value>=20
+type!=="escape"&&
+
+value>=20
 
 )
 
@@ -3176,13 +3170,75 @@ const course=getCourse(boat);
 
 let score=0;
 
+/* 全国・当地 */
+
 score+=n(r.national_win_rate)*7;
 
 score+=n(r.local_win_rate)*4;
 
-score+=n(r.national_top_2_percent)*0.12;
+/* 全国2連率 */
 
-score+=n(r.motor_top_2_percent)*0.15;
+score+=n(
+
+r.national_top_2_percent||
+
+r.national_2ren_rate
+
+)*0.12;
+
+/* =====================================================
+
+モーター2連率
+
+===================================================== */
+
+const motor2Rate=n(
+
+r.motor_top_2_percent||
+
+r.motor_2ren_rate
+
+);
+
+/*
+
+モーター2連率をAI評価へ反映
+
+基本評価
+
+*/
+
+score+=motor2Rate*0.15;
+
+/*
+
+機力ボーナス
+
+*/
+
+if(motor2Rate>=40){
+
+score+=5;
+
+}else if(motor2Rate>=35){
+
+score+=3;
+
+}else if(motor2Rate>=30){
+
+score+=1;
+
+}else if(motor2Rate<20){
+
+score-=2;
+
+}
+
+/* =====================================================
+
+平均ST
+
+===================================================== */
 
 const avgST=n(r.average_start_timing);
 
@@ -3193,6 +3249,12 @@ score+=
 Math.max(0,0.30-avgST)*20;
 
 }
+
+/* =====================================================
+
+直前ST
+
+===================================================== */
 
 const st=n(
 
@@ -3210,6 +3272,12 @@ Math.max(0,0.25-st)*15;
 
 }
 
+/* =====================================================
+
+展示
+
+===================================================== */
+
 const exhibition=n(
 
 p.exhibition_time||
@@ -3225,6 +3293,12 @@ score+=
 Math.max(0,6.80-exhibition)*5;
 
 }
+
+/* =====================================================
+
+コース
+
+===================================================== */
 
 const courseBonus={
 
@@ -3243,6 +3317,12 @@ const courseBonus={
 };
 
 score+=courseBonus[course]||0;
+
+/* =====================================================
+
+過去10走
+
+===================================================== */
 
 const hs=getHistoryStats(boat);
 
@@ -3266,6 +3346,12 @@ score-=2;
 
 }
 
+/* =====================================================
+
+級別
+
+===================================================== */
+
 const rank=
 
 rankName(
@@ -3279,6 +3365,12 @@ if(rank==="A1")score+=5;
 if(rank==="A2")score+=2;
 
 if(rank==="B2")score-=2;
+
+/* =====================================================
+
+展開適性
+
+===================================================== */
 
 const overview=calculateOverview();
 
@@ -3323,6 +3415,12 @@ type
 }
 
 });
+
+/* =====================================================
+
+最終
+
+===================================================== */
 
 return Math.max(0,score);
 
@@ -3438,7 +3536,13 @@ ${n(r?.local_win_rate).toFixed(2)}
 
 <td>
 
-${n(r?.motor_top_2_percent).toFixed(1)}%
+${n(
+
+r?.motor_top_2_percent||
+
+r?.motor_2ren_rate
+
+).toFixed(1)}%
 
 </td>
 
@@ -3654,9 +3758,13 @@ const r=getRacer(boat);
 
 return(
 
-n(r?.motor_top_2_percent)>=35||
+n(
 
-n(r?.motor_top_3_percent)>=55
+r?.motor_top_2_percent||
+
+r?.motor_2ren_rate
+
+)>=35
 
 );
 
@@ -3994,11 +4102,23 @@ if(escapeLow)raw+=10;
 
 }
 
+/* 過去10走 */
+
 raw+=historyScore(a)*1.3;
+
+/* モーター2連率 */
 
 const r=getRacer(a);
 
-raw+=n(r?.motor_top_2_percent)*0.08;
+const motor2Rate=n(
+
+r?.motor_top_2_percent||
+
+r?.motor_2ren_rate
+
+);
+
+raw+=motor2Rate*0.08;
 
 return{
 
@@ -4100,16 +4220,6 @@ hitPool.sort(
 
 );
 
-/*
-
-AI期待値上位艇を
-
-的中率重視から完全に消さないため、
-
-まずランキング上位艇を優先。
-
-*/
-
 const topBoat=rankings[0]?.boat;
 
 const topHitCandidates=
@@ -4135,12 +4245,6 @@ result.hit.push(x);
 used.add(x.key);
 
 }
-
-/*
-
-残りを通常の期待値順で追加
-
-*/
 
 for(const x of hitPool){
 
@@ -4205,18 +4309,6 @@ topScore>0?
 boatScore/topScore:
 
 0;
-
-/*
-
-AI評価が極端に低い1号艇は除外。
-
-ランキング3位以内
-
-または
-
-1位スコアの85%以上。
-
-*/
 
 return(
 
@@ -4604,18 +4696,6 @@ const p=x.probability||0;
 
 let probabilityClass="";
 
-/*
-
-7.0%以上＝赤
-
-6.0〜6.9＝黄色
-
-5.3〜5.9＝通常
-
-5.2以下＝薄字
-
-*/
-
 if(p>=7){
 
 probabilityClass="veryStrong";
@@ -4878,7 +4958,7 @@ AI評価
 
 全国勝率・当地勝率・
 
-モーター・ST・展示・進入・
+モーター2連率・ST・展示・進入・
 
 決まり手適性・
 
@@ -5105,6 +5185,10 @@ dominantType(overview)
 <br>
 
 📈 同コース過去成績を反映
+
+<br>
+
+⚙️ モーター2連率を評価反映
 
 </span>`;
 
