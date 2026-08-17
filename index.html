@@ -188,6 +188,18 @@ button{
 
 }
 
+.resetBtn{
+
+  margin-top:8px;
+
+  background:#171717;
+
+  border:1px solid #777;
+
+  color:#fff;
+
+}
+
 .message{
 
   margin-top:10px;
@@ -468,6 +480,28 @@ th{
 
 }
 
+.pickLeft{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:5px;
+
+}
+
+.star{
+
+  color:#ffd84d;
+
+  font-size:15px;
+
+  font-weight:bold;
+
+  min-width:17px;
+
+}
+
 .prob{
 
   color:#ffd84d;
@@ -493,6 +527,34 @@ th{
   font-weight:bold;
 
   margin-bottom:8px;
+
+}
+
+.budgetInfo{
+
+  background:#151515;
+
+  border:1px solid #333;
+
+  border-radius:8px;
+
+  padding:9px;
+
+  margin-top:8px;
+
+  font-size:11px;
+
+  line-height:1.6;
+
+  color:#aaa;
+
+}
+
+.budgetStrong{
+
+  color:#d4af37;
+
+  font-weight:bold;
 
 }
 
@@ -678,7 +740,7 @@ th{
 
 <div style="margin-top:9px">
 
-<label>予算</label>
+<label>投資資金（100円単位）</label>
 
 <input
 
@@ -692,7 +754,21 @@ min="100"
 
 step="100"
 
+inputmode="numeric"
+
 >
+
+<div class="budgetInfo">
+
+💰 設定した資金に応じて、現在の買い目に
+
+<strong class="budgetStrong">⭐優先買い目</strong>
+
+を付けます。<br>
+
+買い目そのものは変更しません。
+
+</div>
 
 </div>
 
@@ -749,6 +825,18 @@ step="100"
 </div>
 
 </div>
+
+<button
+
+class="resetBtn"
+
+onclick="resetCourses()"
+
+>
+
+🔄 進入入力をリセット
+
+</button>
 
 <button
 
@@ -850,6 +938,22 @@ AI買い目確率合計
 
 </div>
 
+<div class="budgetInfo">
+
+💰 投資資金：
+
+<strong class="budgetStrong" id="displayBudget">
+
+3,000円
+
+</strong>
+
+<br>
+
+⭐＝現在の資金で優先して購入する買い目
+
+</div>
+
 <div class="pickBox">
 
 <div class="pickTitle">
@@ -938,7 +1042,9 @@ BOAT HUNTER © 2026
 
    BOAT HUNTER
 
-   API v1 完全対応版
+   2026/08/17
+
+   買い目ロジック維持版
 
 ===================================================== */
 
@@ -953,6 +1059,16 @@ let racers=[];
 let previewRacers={};
 
 let manualCourses={};
+
+/* 現在の買い目を保持 */
+
+let currentBets=null;
+
+/* 買い目を保存するキー */
+
+const BET_STORAGE_KEY =
+
+"BOAT_HUNTER_CURRENT_BETS";
 
 /* =====================================================
 
@@ -1005,6 +1121,240 @@ return String(v ?? "")
 .replace(/"/g,"&quot;")
 
 .replace(/'/g,"&#039;");
+
+}
+
+/* =====================================================
+
+   資金
+
+===================================================== */
+
+function getBudget(){
+
+let value =
+
+Number(
+
+document.getElementById("budget").value
+
+);
+
+if(!Number.isFinite(value) || value<100){
+
+value=100;
+
+}
+
+value =
+
+Math.floor(value/100)*100;
+
+if(value<100){
+
+value=100;
+
+}
+
+document.getElementById("budget").value=value;
+
+return value;
+
+}
+
+/* =====================================================
+
+   金額表示
+
+===================================================== */
+
+function formatYen(value){
+
+return Number(value || 0)
+
+.toLocaleString("ja-JP")+"円";
+
+}
+
+/* =====================================================
+
+   資金変更時
+
+   買い目は変更せず⭐だけ更新
+
+===================================================== */
+
+function updateStars(){
+
+if(!currentBets){
+
+return;
+
+}
+
+renderBets(currentBets);
+
+}
+
+/* =====================================================
+
+   ⭐対象数
+
+   買い目そのものは変更しない
+
+===================================================== */
+
+function getStarCount(){
+
+const budget=getBudget();
+
+/*
+
+100円ごとに1点という意味ではなく、
+
+資金に応じて「優先して買う点数」を増やす。
+
+少額では絞る。
+
+資金が増えるほど優先範囲を広げる。
+
+*/
+
+if(budget<=500){
+
+return 1;
+
+}
+
+if(budget<=1000){
+
+return 2;
+
+}
+
+if(budget<=2000){
+
+return 3;
+
+}
+
+if(budget<=3000){
+
+return 4;
+
+}
+
+if(budget<=5000){
+
+return 6;
+
+}
+
+if(budget<=10000){
+
+return 8;
+
+}
+
+if(budget<=20000){
+
+return 10;
+
+}
+
+return 12;
+
+}
+
+/* =====================================================
+
+   ⭐対象を決定
+
+   現在の買い目の順番は変更しない
+
+===================================================== */
+
+function getStarKeys(bets){
+
+const all=[
+
+...(bets.hit || []),
+
+...(bets.escape || []),
+
+...(bets.sashi || []),
+
+...(bets.maki || []),
+
+...(bets.makiSashi || []),
+
+...(bets.under || [])
+
+];
+
+/*
+
+現在の表示順を壊さないため、
+
+確率の高い順に「対象」を選ぶだけ。
+
+表示順自体は変更しない。
+
+*/
+
+const sorted=
+
+[...all].sort(
+
+(a,b)=>
+
+(b.probability || 0) -
+
+(a.probability || 0)
+
+);
+
+const count=
+
+Math.min(
+
+getStarCount(),
+
+sorted.length
+
+);
+
+return new Set(
+
+sorted
+
+.slice(0,count)
+
+.map(x=>x.key)
+
+);
+
+}
+
+/* =====================================================
+
+   ⭐表示
+
+===================================================== */
+
+function isStarred(
+
+bets,
+
+item
+
+){
+
+const keys=
+
+getStarKeys(bets);
+
+return keys.has(item.key);
 
 }
 
@@ -1171,6 +1521,54 @@ Number(this.value);
 );
 
 }
+
+}
+
+/* =====================================================
+
+   進入リセット
+
+===================================================== */
+
+function resetCourses(){
+
+for(let boat=1;boat<=6;boat++){
+
+const el=
+
+document.getElementById(
+
+"course"+boat
+
+);
+
+el.value=boat;
+
+manualCourses[boat]=boat;
+
+}
+
+/*
+
+現在の解析結果があっても、
+
+買い目自体は変更しない。
+
+次のAI解析時に新しい進入を反映。
+
+*/
+
+const message=
+
+document.getElementById("message");
+
+message.innerHTML=
+
+`<span class="success">
+
+🔄 進入入力を初期状態にリセットしました
+
+</span>`;
 
 }
 
@@ -1400,7 +1798,7 @@ a.entry_number-b.entry_number
 
 ===================================================== */
 
-function getPreview(
+function getPreviewData(
 
 race
 
@@ -1526,7 +1924,7 @@ racers=list;
 
 previewRacers=
 
-getPreview(selected);
+getPreviewData(selected);
 
 /* APIの実際の進入を初期値にする */
 
@@ -1683,8 +2081,6 @@ document.getElementById(
 );
 
 box.innerHTML="";
-
-/* レース情報 */
 
 const info=
 
@@ -1950,8 +2346,6 @@ r.boat_top_2_percent
 
 });
 
-/* 水面情報 */
-
 const preview=
 
 raceData.preview || {};
@@ -2016,31 +2410,21 @@ getCourse(boat);
 
 let score=0;
 
-/* 全国勝率 */
-
 score+=
 
 n(r.national_win_rate)*7;
-
-/* 当地勝率 */
 
 score+=
 
 n(r.local_win_rate)*4;
 
-/* 全国2連 */
-
 score+=
 
 n(r.national_top_2_percent)*0.12;
 
-/* モーター */
-
 score+=
 
 n(r.motor_top_2_percent)*0.15;
-
-/* 平均ST */
 
 const avgST=
 
@@ -2060,8 +2444,6 @@ Math.max(
 
 }
 
-/* 直前ST */
-
 const st=
 
 n(p.start_timing);
@@ -2080,8 +2462,6 @@ Math.max(
 
 }
 
-/* 展示タイム */
-
 const exhibition=
 
 n(p.exhibition_time);
@@ -2099,8 +2479,6 @@ Math.max(
 )*5;
 
 }
-
-/* コース */
 
 const courseBonus={
 
@@ -2121,8 +2499,6 @@ const courseBonus={
 score+=
 
 courseBonus[course] || 0;
-
-/* 級別 */
 
 const rank=
 
@@ -2442,15 +2818,11 @@ x=>x.boat===b
 
 if(!A || !B)return null;
 
-/* 1着能力を重視 */
-
 let raw=
 
 A.score*1.35+
 
 B.score*0.75;
-
-/* 逃げ */
 
 if(type==="escape"){
 
@@ -2464,8 +2836,6 @@ raw+=25;
 
 }
 
-/* 差し */
-
 if(type==="sashi"){
 
 if(getCourse(a)===1){
@@ -2474,13 +2844,9 @@ return null;
 
 }
 
-raw+=
-
-10;
+raw+=10;
 
 }
-
-/* まくり */
 
 if(type==="maki"){
 
@@ -2490,13 +2856,9 @@ return null;
 
 }
 
-raw+=
-
-8;
+raw+=8;
 
 }
-
-/* まくり差し */
 
 if(type==="makiSashi"){
 
@@ -2506,13 +2868,9 @@ return null;
 
 }
 
-raw+=
-
-10;
+raw+=10;
 
 }
-
-/* 人気だけに寄りすぎないよう微調整 */
 
 if(
 
@@ -2600,6 +2958,8 @@ b.raw-a.raw
 
    買い目作成
 
+   ※ここは元のロジックを維持
+
 ===================================================== */
 
 function buildBets(
@@ -2627,8 +2987,6 @@ under:[]
 const used=
 
 new Set();
-
-/* 的中率 */
 
 const allHit=[];
 
@@ -2678,8 +3036,6 @@ used.add(x.key);
 
 }
 
-/* 回収率 */
-
 const types=[
 
 "escape",
@@ -2718,8 +3074,6 @@ used.add(x.key);
 
 });
 
-/* 穴 */
-
 const first=
 
 rankings.find(
@@ -2730,13 +3084,19 @@ x=>x.boat===1
 
 for(let boat=2;boat<=6;boat++){
 
-if(
+const target=
 
 rankings.find(
 
 x=>x.boat===boat
 
-).score <
+);
+
+if(!target)continue;
+
+if(
+
+target.score <
 
 (first?.score||0)-10
 
@@ -2752,9 +3112,7 @@ b:1,
 
 raw:
 
-scoreBoat(boat)+
-
-20
+scoreBoat(boat)+20
 
 };
 
@@ -2781,8 +3139,6 @@ b.raw-a.raw
 )
 
 .slice(0,2);
-
-/* 全買い目 */
 
 const all=[
 
@@ -2842,6 +3198,134 @@ return result;
 
 /* =====================================================
 
+   買い目保存
+
+===================================================== */
+
+function getRaceKey(){
+
+const parts=
+
+todayParts();
+
+const venue=
+
+document.getElementById("venue").value;
+
+const race=
+
+document.getElementById("race").value;
+
+return `${parts.yyyymmdd}_${venue}_${race}`;
+
+}
+
+function saveCurrentBets(
+
+bets
+
+){
+
+try{
+
+localStorage.setItem(
+
+BET_STORAGE_KEY,
+
+JSON.stringify({
+
+raceKey:getRaceKey(),
+
+bets:bets,
+
+savedAt:Date.now()
+
+})
+
+);
+
+}catch(error){
+
+console.warn(
+
+"買い目保存失敗",
+
+error
+
+);
+
+}
+
+}
+
+/* =====================================================
+
+   買い目復元
+
+===================================================== */
+
+function restoreCurrentBets(){
+
+try{
+
+const saved=
+
+localStorage.getItem(
+
+BET_STORAGE_KEY
+
+);
+
+if(!saved)return;
+
+const data=
+
+JSON.parse(saved);
+
+if(!data || !data.bets)return;
+
+if(
+
+data.raceKey !== getRaceKey()
+
+){
+
+return;
+
+}
+
+currentBets=
+
+data.bets;
+
+renderBets(
+
+currentBets
+
+);
+
+document.getElementById(
+
+"predictionCard"
+
+).style.display="block";
+
+}catch(error){
+
+console.warn(
+
+"買い目復元失敗",
+
+error
+
+);
+
+}
+
+}
+
+/* =====================================================
+
    表示
 
 ===================================================== */
@@ -2850,7 +3334,9 @@ function renderPicks(
 
 id,
 
-list
+list,
+
+bets
 
 ){
 
@@ -2858,7 +3344,7 @@ const el=
 
 document.getElementById(id);
 
-if(!list.length){
+if(!list || !list.length){
 
 el.innerHTML=
 
@@ -2878,11 +3364,21 @@ list.map(x=>`
 
 <div class="pick">
 
+<div class="pickLeft">
+
+<span class="star">
+
+${isStarred(bets,x) ? "⭐" : ""}
+
+</span>
+
 <strong>
 
 ${x.a} → ${x.b}
 
 </strong>
+
+</div>
 
 <span class="prob">
 
@@ -2908,11 +3404,27 @@ bets
 
 ){
 
+if(!bets)return;
+
+const budget=
+
+getBudget();
+
+document.getElementById(
+
+"displayBudget"
+
+).textContent=
+
+formatYen(budget);
+
 renderPicks(
 
 "hitPicks",
 
-bets.hit
+bets.hit,
+
+bets
 
 );
 
@@ -2920,7 +3432,9 @@ renderPicks(
 
 "escapePicks",
 
-bets.escape
+bets.escape,
+
+bets
 
 );
 
@@ -2928,7 +3442,9 @@ renderPicks(
 
 "sashiPicks",
 
-bets.sashi
+bets.sashi,
+
+bets
 
 );
 
@@ -2936,7 +3452,9 @@ renderPicks(
 
 "makiPicks",
 
-bets.maki
+bets.maki,
+
+bets
 
 );
 
@@ -2944,7 +3462,9 @@ renderPicks(
 
 "makiSashiPicks",
 
-bets.makiSashi
+bets.makiSashi,
+
+bets
 
 );
 
@@ -2952,7 +3472,9 @@ renderPicks(
 
 "underPicks",
 
-bets.under
+bets.under,
+
+bets
 
 );
 
@@ -2962,7 +3484,7 @@ document.getElementById(
 
 ).textContent=
 
-bets.total.toFixed(1)+"%";
+(bets.total || 0).toFixed(1)+"%";
 
 }
 
@@ -2986,7 +3508,15 @@ return;
 
 }
 
-/* 手動進入を保存 */
+/*
+
+100円単位に補正
+
+*/
+
+const budget=
+
+getBudget();
 
 for(let boat=1;boat<=6;boat++){
 
@@ -3104,9 +3634,13 @@ b=>`${b}号艇=${getCourse(b)}コース`
 
 <br><br>
 
-<strong>AI評価は全国勝率・当地勝率・
+<strong>
 
-モーター・ST・展示・進入を総合評価。</strong>
+AI評価は全国勝率・当地勝率・
+
+モーター・ST・展示・進入を総合評価。
+
+</strong>
 
 </div>
 
@@ -3120,9 +3654,25 @@ rankings
 
 );
 
+/*
+
+ここで初めて現在の買い目を更新
+
+*/
+
+currentBets=
+
+bets;
+
+saveCurrentBets(
+
+currentBets
+
+);
+
 renderBets(
 
-bets
+currentBets
 
 );
 
@@ -3148,6 +3698,14 @@ message.innerHTML=
 
 ✅ AI解析完了
 
+<br>
+
+💰 投資資金：${formatYen(budget)}
+
+<br>
+
+🔒 買い目をキープしました
+
 </span>`;
 
 }catch(error){
@@ -3172,11 +3730,75 @@ ${esc(error.message)}
 
 /* =====================================================
 
+   資金変更
+
+   買い目は再生成しない
+
+===================================================== */
+
+document
+
+.getElementById("budget")
+
+.addEventListener(
+
+"change",
+
+function(){
+
+getBudget();
+
+updateStars();
+
+}
+
+);
+
+document
+
+.getElementById("budget")
+
+.addEventListener(
+
+"input",
+
+function(){
+
+const value=
+
+Number(this.value);
+
+if(
+
+Number.isFinite(value) &&
+
+value>=100
+
+){
+
+updateStars();
+
+}
+
+}
+
+);
+
+/* =====================================================
+
    起動
 
 ===================================================== */
 
 initCourses();
+
+/*
+
+前回の買い目を同じレースなら復元
+
+*/
+
+restoreCurrentBets();
 
 </script>
 
