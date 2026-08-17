@@ -12,307 +12,299 @@
 
 <style>
 
-*{
-
-  box-sizing:border-box;
-
-}
+*{box-sizing:border-box}
 
 body{
 
-  margin:0;
+margin:0;
 
-  background:#080808;
+background:#080808;
 
-  color:#fff;
+color:#fff;
 
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 
 }
 
 header{
 
-  background:linear-gradient(135deg,#080808,#181818);
+background:linear-gradient(135deg,#080808,#181818);
 
-  border-bottom:1px solid #b08d32;
+border-bottom:1px solid #b08d32;
 
-  padding:18px 14px;
+padding:18px 14px;
 
-  text-align:center;
+text-align:center;
 
 }
 
 .logo{
 
-  color:#d4af37;
+color:#d4af37;
 
-  font-size:28px;
+font-size:28px;
 
-  font-weight:900;
+font-weight:900;
 
-  letter-spacing:2px;
+letter-spacing:2px;
 
 }
 
 .sub{
 
-  color:#aaa;
+color:#aaa;
 
-  font-size:11px;
+font-size:11px;
 
-  margin-top:4px;
+margin-top:4px;
 
 }
 
 .container{
 
-  max-width:900px;
+max-width:900px;
 
-  margin:auto;
+margin:auto;
 
-  padding:14px;
+padding:14px;
 
 }
 
 .card{
 
-  background:#111;
+background:#111;
 
-  border:1px solid #333;
+border:1px solid #333;
 
-  border-radius:12px;
+border-radius:12px;
 
-  padding:15px;
+padding:15px;
 
-  margin-bottom:14px;
+margin-bottom:14px;
 
-  box-shadow:0 4px 18px rgba(0,0,0,.35);
+box-shadow:0 4px 18px rgba(0,0,0,.35);
 
 }
 
 .title{
 
-  color:#d4af37;
+color:#d4af37;
 
-  font-size:17px;
+font-size:17px;
 
-  font-weight:800;
+font-weight:800;
 
-  margin-bottom:12px;
+margin-bottom:12px;
 
 }
 
 label{
 
-  display:block;
+display:block;
 
-  color:#bbb;
+color:#bbb;
 
-  font-size:12px;
+font-size:12px;
 
-  margin-bottom:5px;
-
-}
-
-select,
-
-input{
-
-  width:100%;
-
-  background:#191919;
-
-  color:#fff;
-
-  border:1px solid #444;
-
-  border-radius:8px;
-
-  padding:11px;
-
-  font-size:15px;
-
-  outline:none;
+margin-bottom:5px;
 
 }
 
-select:focus,
+select,input{
 
-input:focus{
+width:100%;
 
-  border-color:#d4af37;
+background:#191919;
+
+color:#fff;
+
+border:1px solid #444;
+
+border-radius:8px;
+
+padding:11px;
+
+font-size:15px;
+
+outline:none;
+
+}
+
+select:focus,input:focus{
+
+border-color:#d4af37;
 
 }
 
 .grid2{
 
-  display:grid;
+display:grid;
 
-  grid-template-columns:1fr 1fr;
+grid-template-columns:1fr 1fr;
 
-  gap:10px;
+gap:10px;
 
 }
 
 button{
 
-  width:100%;
+width:100%;
 
-  border:0;
+border:0;
 
-  border-radius:9px;
+border-radius:9px;
 
-  padding:13px;
+padding:13px;
 
-  font-size:15px;
+font-size:15px;
 
-  font-weight:800;
+font-weight:800;
 
-  cursor:pointer;
+cursor:pointer;
 
 }
 
 .mainBtn{
 
-  background:linear-gradient(135deg,#d4af37,#8d6b18);
+background:linear-gradient(135deg,#d4af37,#8d6b18);
 
-  color:#080808;
+color:#080808;
 
 }
 
 .subBtn{
 
-  background:#242424;
+background:#242424;
 
-  color:#fff;
+color:#fff;
 
-  border:1px solid #555;
+border:1px solid #555;
 
 }
 
 button:disabled{
 
-  opacity:.45;
+opacity:.45;
 
 }
 
 .status{
 
-  padding:10px;
+padding:10px;
 
-  background:#171717;
+background:#171717;
 
-  border-radius:8px;
+border-radius:8px;
 
-  font-size:12px;
+font-size:12px;
 
-  color:#bbb;
+color:#bbb;
 
-  margin-top:10px;
+margin-top:10px;
 
-  white-space:pre-line;
+white-space:pre-line;
 
 }
 
 .api{
 
-  font-size:11px;
+font-size:11px;
 
-  color:#888;
+color:#888;
 
-  line-height:1.7;
+line-height:1.7;
 
 }
 
 .raceHeader{
 
-  display:flex;
+display:flex;
 
-  justify-content:space-between;
+justify-content:space-between;
 
-  align-items:center;
+align-items:center;
 
-  gap:10px;
+gap:10px;
 
 }
 
 .raceTitle{
 
-  color:#d4af37;
+color:#d4af37;
 
-  font-size:20px;
+font-size:20px;
 
-  font-weight:900;
+font-weight:900;
 
 }
 
 .badge{
 
-  display:inline-block;
+display:inline-block;
 
-  padding:4px 7px;
+padding:4px 7px;
 
-  border-radius:5px;
+border-radius:5px;
 
-  background:#222;
+background:#222;
 
-  color:#bbb;
+color:#bbb;
 
-  font-size:10px;
+font-size:10px;
 
-  margin:2px;
+margin:2px;
 
 }
 
 .racers{
 
-  display:grid;
+display:grid;
 
-  grid-template-columns:repeat(2,1fr);
+grid-template-columns:repeat(2,1fr);
 
-  gap:9px;
+gap:9px;
 
 }
 
 .racer{
 
-  background:#181818;
+background:#181818;
 
-  border:1px solid #333;
+border:1px solid #333;
 
-  border-radius:10px;
+border-radius:10px;
 
-  padding:10px;
+padding:10px;
 
 }
 
 .racerTop{
 
-  display:flex;
+display:flex;
 
-  align-items:center;
+align-items:center;
 
-  gap:8px;
+gap:8px;
 
 }
 
 .number{
 
-  width:28px;
+width:28px;
 
-  height:28px;
+height:28px;
 
-  border-radius:5px;
+border-radius:5px;
 
-  display:flex;
+display:flex;
 
-  align-items:center;
+align-items:center;
 
-  justify-content:center;
+justify-content:center;
 
-  font-weight:900;
+font-weight:900;
 
-  color:#111;
+color:#111;
 
 }
 
@@ -330,187 +322,187 @@ button:disabled{
 
 .name{
 
-  font-weight:800;
+font-weight:800;
 
-  font-size:14px;
+font-size:14px;
 
 }
 
 .rank{
 
-  color:#d4af37;
+color:#d4af37;
 
-  font-size:11px;
+font-size:11px;
 
 }
 
 .stats{
 
-  margin-top:8px;
+margin-top:8px;
 
-  font-size:11px;
+font-size:11px;
 
-  line-height:1.7;
+line-height:1.7;
 
-  color:#bbb;
+color:#bbb;
 
 }
 
 .score{
 
-  margin-top:7px;
+margin-top:7px;
 
-  color:#d4af37;
+color:#d4af37;
 
-  font-size:17px;
+font-size:17px;
 
-  font-weight:900;
+font-weight:900;
 
 }
 
 .entryBox{
 
-  display:grid;
+display:grid;
 
-  grid-template-columns:repeat(6,1fr);
+grid-template-columns:repeat(6,1fr);
 
-  gap:5px;
+gap:5px;
 
 }
 
 .entryBtn{
 
-  background:#222;
+background:#222;
 
-  border:1px solid #444;
+border:1px solid #444;
 
-  color:#fff;
+color:#fff;
 
-  padding:9px 3px;
+padding:9px 3px;
 
-  font-size:12px;
+font-size:12px;
 
 }
 
 .entryBtn.active{
 
-  background:#d4af37;
+background:#d4af37;
 
-  color:#111;
+color:#111;
 
-  border-color:#d4af37;
+border-color:#d4af37;
 
 }
 
 .forecast{
 
-  background:#151515;
+background:#151515;
 
-  border-left:4px solid #d4af37;
+border-left:4px solid #d4af37;
 
-  padding:12px;
+padding:12px;
 
-  border-radius:7px;
+border-radius:7px;
 
-  line-height:1.8;
+line-height:1.8;
 
-  font-size:13px;
+font-size:13px;
 
 }
 
 .pickBox{
 
-  background:linear-gradient(135deg,#151515,#0d0d0d);
+background:linear-gradient(135deg,#151515,#0d0d0d);
 
-  border:1px solid #4c3c14;
+border:1px solid #4c3c14;
 
-  border-radius:10px;
+border-radius:10px;
 
-  padding:13px;
+padding:13px;
 
-  margin-top:10px;
+margin-top:10px;
 
 }
 
 .pickTitle{
 
-  color:#d4af37;
+color:#d4af37;
 
-  font-weight:900;
+font-weight:900;
 
-  margin-bottom:8px;
+margin-bottom:8px;
 
 }
 
 .pick{
 
-  font-size:18px;
+font-size:18px;
 
-  font-weight:900;
+font-weight:900;
 
-  letter-spacing:1px;
+letter-spacing:1px;
 
-  margin:7px 0;
+margin:7px 0;
 
 }
 
 .reason{
 
-  color:#aaa;
+color:#aaa;
 
-  font-size:11px;
+font-size:11px;
 
-  line-height:1.7;
+line-height:1.7;
 
 }
 
 .big{
 
-  color:#fff;
+color:#fff;
 
-  font-size:24px;
+font-size:24px;
 
-  font-weight:900;
+font-weight:900;
 
 }
 
 .hidden{
 
-  display:none;
+display:none;
 
 }
 
 .warning{
 
-  color:#ff7777;
+color:#ff7777;
 
 }
 
 .good{
 
-  color:#70d070;
+color:#70d070;
 
 }
 
 .gold{
 
-  color:#d4af37;
+color:#d4af37;
+
+}
+
+.error{
+
+color:#ff7777;
+
+font-weight:800;
 
 }
 
 @media(max-width:600px){
 
-  .racers{
+.racers{grid-template-columns:1fr;}
 
-    grid-template-columns:1fr;
-
-  }
-
-  .grid2{
-
-    grid-template-columns:1fr;
-
-  }
+.grid2{grid-template-columns:1fr;}
 
 }
 
@@ -524,11 +516,7 @@ button:disabled{
 
 <div class="logo">BOAT HUNTER</div>
 
-<div class="sub">
-
-AI BOAT RACE PREDICTION SYSTEM © 2026
-
-</div>
+<div class="sub">AI BOAT RACE PREDICTION SYSTEM © 2026</div>
 
 </header>
 
@@ -588,47 +576,19 @@ AI BOAT RACE PREDICTION SYSTEM © 2026
 
 <label>予算</label>
 
-<input
-
-id="budget"
-
-type="number"
-
-value="3000"
-
-min="100"
-
->
+<input id="budget" type="number" value="3000" min="100">
 
 </div>
 
-<div
+<div style="margin-top:10px;" class="grid2">
 
-style="margin-top:10px;"
-
-class="grid2"
-
->
-
-<button
-
-class="mainBtn"
-
-onclick="loadRace()"
-
->
+<button class="mainBtn" onclick="loadRace()">
 
 出走表を取得
 
 </button>
 
-<button
-
-class="subBtn"
-
-onclick="runAnalysis()"
-
->
+<button class="subBtn" onclick="runAnalysis()">
 
 AI解析開始
 
@@ -652,17 +612,7 @@ AI解析開始
 
 <div>
 
-<div
-
-class="raceTitle"
-
-id="raceTitle"
-
->
-
----
-
-</div>
+<div class="raceTitle" id="raceTitle">---</div>
 
 <div id="raceMeta"></div>
 
@@ -676,23 +626,9 @@ id="raceTitle"
 
 <div class="title">進入予想</div>
 
-<div
+<div class="entryBox" id="entryButtons"></div>
 
-class="entryBox"
-
-id="entryButtons"
-
-></div>
-
-<div
-
-style="margin-top:10px;"
-
-class="forecast"
-
-id="entryText"
-
->
+<div style="margin-top:10px;" class="forecast" id="entryText">
 
 進入を設定してください。
 
@@ -704,13 +640,7 @@ id="entryText"
 
 <div class="title">出走表・AI評価</div>
 
-<div
-
-class="racers"
-
-id="racers"
-
-></div>
+<div class="racers" id="racers"></div>
 
 </div>
 
@@ -718,13 +648,7 @@ id="racers"
 
 <div class="title">展開予想</div>
 
-<div
-
-class="forecast"
-
-id="forecast"
-
->
+<div class="forecast" id="forecast">
 
 AI解析待機中
 
@@ -736,11 +660,7 @@ AI解析待機中
 
 <div class="card">
 
-<div class="title">
-
-AI期待値ランキング
-
-</div>
+<div class="title">AI期待値ランキング</div>
 
 <div id="ranking"></div>
 
@@ -748,29 +668,15 @@ AI期待値ランキング
 
 <div class="card">
 
-<div class="title">
-
-🎯 的中率重視
-
-</div>
+<div class="title">🎯 的中率重視</div>
 
 <div class="pickBox">
 
-<div class="pickTitle">
-
-本線
-
-</div>
+<div class="pickTitle">本線</div>
 
 <div id="hitPicks"></div>
 
-<div
-
-class="reason"
-
-id="hitReason"
-
-></div>
+<div class="reason" id="hitReason"></div>
 
 </div>
 
@@ -778,29 +684,15 @@ id="hitReason"
 
 <div class="card">
 
-<div class="title">
-
-💰 回収率重視
-
-</div>
+<div class="title">💰 回収率重視</div>
 
 <div class="pickBox">
 
-<div class="pickTitle">
-
-期待値狙い
-
-</div>
+<div class="pickTitle">期待値狙い</div>
 
 <div id="roiPicks"></div>
 
-<div
-
-class="reason"
-
-id="roiReason"
-
-></div>
+<div class="reason" id="roiReason"></div>
 
 </div>
 
@@ -808,29 +700,15 @@ id="roiReason"
 
 <div class="card">
 
-<div class="title">
-
-🔥 穴狙い
-
-</div>
+<div class="title">🔥 穴狙い</div>
 
 <div class="pickBox">
 
-<div class="pickTitle">
-
-高配当候補
-
-</div>
+<div class="pickTitle">高配当候補</div>
 
 <div id="holePicks"></div>
 
-<div
-
-class="reason"
-
-id="holeReason"
-
-></div>
+<div class="reason" id="holeReason"></div>
 
 </div>
 
@@ -838,11 +716,7 @@ id="holeReason"
 
 <div class="card">
 
-<div class="title">
-
-買い目配分
-
-</div>
+<div class="title">買い目配分</div>
 
 <div id="budgetResult"></div>
 
@@ -852,23 +726,9 @@ id="holeReason"
 
 <div class="card">
 
-<div class="title">
+<div class="title">API情報</div>
 
-API情報
-
-</div>
-
-<div
-
-id="apiInfo"
-
-class="api"
-
->
-
----
-
-</div>
+<div id="apiInfo" class="api">---</div>
 
 </div>
 
@@ -878,27 +738,29 @@ class="api"
 
 <script>
 
-/* =========================================
+/* =====================================================
 
    BOAT HUNTER
 
    817-18時 基準版
 
-   出走表取得強化版
+   現行API対応・出走表取得修正版
 
-========================================= */
+===================================================== */
 
-/* =========================================
+/* =====================================================
 
    API
 
-   V1を最優先
-
-========================================= */
+===================================================== */
 
 const API_V1 =
 
 "https://boatraceopenapi.github.io/api/v1/today.json";
+
+const API_V1_DATE =
+
+"https://boatraceopenapi.github.io/api/v1";
 
 const API_V3 =
 
@@ -908,11 +770,11 @@ const API_V2 =
 
 "https://boatraceopenapi.github.io/programs/v2";
 
-/* =========================================
+/* =====================================================
 
    24競艇場
 
-========================================= */
+===================================================== */
 
 const STADIUMS = [
 
@@ -974,11 +836,11 @@ let entryOrder = [1,2,3,4,5,6];
 
 let usedApi = "";
 
-/* =========================================
+/* =====================================================
 
-   競艇場セット
+   DOM
 
-========================================= */
+===================================================== */
 
 const stadium =
 
@@ -998,11 +860,11 @@ stadium.appendChild(op);
 
 });
 
-/* =========================================
+/* =====================================================
 
-   今日の日付
+   日付
 
-========================================= */
+===================================================== */
 
 function todayJP(){
 
@@ -1014,39 +876,39 @@ d.getFullYear();
 
 const m =
 
-String(d.getMonth()+1)
-
-.padStart(2,"0");
+String(d.getMonth()+1).padStart(2,"0");
 
 const day =
 
-String(d.getDate())
-
-.padStart(2,"0");
+String(d.getDate()).padStart(2,"0");
 
 return `${y}-${m}-${day}`;
 
 }
 
-/* =========================================
+function todayCompact(){
 
-   ステータス
-
-========================================= */
-
-function setStatus(text){
-
-document.getElementById("status")
-
-.textContent = text;
+return todayJP().replaceAll("-","");
 
 }
 
-/* =========================================
+/* =====================================================
 
-   数値化
+   ステータス
 
-========================================= */
+===================================================== */
+
+function setStatus(text){
+
+document.getElementById("status").textContent = text;
+
+}
+
+/* =====================================================
+
+   数値
+
+===================================================== */
 
 function num(v){
 
@@ -1080,11 +942,11 @@ return isNaN(n) ? 0 : n;
 
 }
 
-/* =========================================
+/* =====================================================
 
    最初に見つかった値
 
-========================================= */
+===================================================== */
 
 function first(obj,keys,def=0){
 
@@ -1112,27 +974,75 @@ return def;
 
 }
 
-/* =========================================
+/* =====================================================
+
+   級別変換
+
+===================================================== */
+
+function rankName(v){
+
+if(typeof v === "string"){
+
+const s = v.toUpperCase();
+
+if(
+
+s.includes("A1") ||
+
+s.includes("A2") ||
+
+s.includes("B1") ||
+
+s.includes("B2")
+
+){
+
+return s;
+
+}
+
+}
+
+const n = Number(v);
+
+if(n === 1) return "A1";
+
+if(n === 2) return "A2";
+
+if(n === 3) return "B1";
+
+if(n === 4) return "B2";
+
+return String(v || "B1");
+
+}
+
+/* =====================================================
 
    選手データ正規化
 
-========================================= */
+===================================================== */
 
 function normalizeRacer(r,i){
 
-/* 入艇番号 */
-
-let course =
+const course =
 
 Number(
 
-first(r,[
+first(
+
+r,
+
+[
+
+"entry_number",
+
+"entryNumber",
 
 "course",
 
 "courseNumber",
-
-"entry",
 
 "boatNumber",
 
@@ -1144,15 +1054,21 @@ first(r,[
 
 "lane"
 
-],i+1)
+],
+
+i+1
+
+)
 
 );
 
-/* 名前 */
-
 const name =
 
-first(r,[
+first(
+
+r,
+
+[
 
 "name",
 
@@ -1168,13 +1084,21 @@ first(r,[
 
 "選手名"
 
-],`選手${i+1}`);
+],
 
-/* 級別 */
+`選手${i+1}`
+
+);
 
 const rank =
 
-first(r,[
+rankName(
+
+first(
+
+r,
+
+[
 
 "rank",
 
@@ -1184,17 +1108,29 @@ first(r,[
 
 "grade",
 
-"kyu"
+"kyu",
 
-],"B1");
+"rank_number"
 
-/* 全国勝率 */
+],
+
+"B1"
+
+)
+
+);
 
 const national =
 
 num(
 
-first(r,[
+first(
+
+r,
+
+[
+
+"national_win_rate",
 
 "nationalWinRate",
 
@@ -1208,21 +1144,27 @@ first(r,[
 
 "win_rate"
 
-],0)
+],
+
+0
+
+)
 
 );
-
-/* 当地勝率 */
 
 const local =
 
 num(
 
-first(r,[
+first(
 
-"localWinRate",
+r,
+
+[
 
 "local_win_rate",
+
+"localWinRate",
 
 "localRate",
 
@@ -1230,17 +1172,25 @@ first(r,[
 
 "local_rate"
 
-],0)
+],
+
+0
+
+)
 
 );
-
-/* モーター2連率 */
 
 const motor2 =
 
 num(
 
-first(r,[
+first(
+
+r,
+
+[
+
+"motor_top_2_percent",
 
 "motor2Rate",
 
@@ -1254,17 +1204,25 @@ first(r,[
 
 "motor_2ren"
 
-],0)
+],
+
+0
+
+)
 
 );
-
-/* モーター3連率 */
 
 const motor3 =
 
 num(
 
-first(r,[
+first(
+
+r,
+
+[
+
+"motor_top_3_percent",
 
 "motor3Rate",
 
@@ -1278,17 +1236,27 @@ first(r,[
 
 "motor_3ren"
 
-],0)
+],
+
+0
+
+)
 
 );
-
-/* ST */
 
 const st =
 
 num(
 
-first(r,[
+first(
+
+r,
+
+[
+
+"average_start_timing",
+
+"start_timing",
 
 "ST",
 
@@ -1302,17 +1270,25 @@ first(r,[
 
 "start"
 
-],0)
+],
+
+0
+
+)
 
 );
-
-/* 展示タイム */
 
 const exhibition =
 
 num(
 
-first(r,[
+first(
+
+r,
+
+[
+
+"exhibition_time",
 
 "exhibitionTime",
 
@@ -1324,15 +1300,23 @@ first(r,[
 
 "tenji"
 
-],0)
+],
+
+0
+
+)
 
 );
 
-/* モーター番号 */
-
 const motorNo =
 
-first(r,[
+first(
+
+r,
+
+[
+
+"motor_number",
 
 "motorNumber",
 
@@ -1342,9 +1326,13 @@ first(r,[
 
 "motor_number"
 
-],"-");
+],
 
-return{
+"-"
+
+);
+
+return {
 
 raw:r,
 
@@ -1356,23 +1344,23 @@ course >= 1 && course <= 6
 
 : i+1,
 
-name,
+name:name,
 
-rank,
+rank:rank,
 
-national,
+national:national,
 
-local,
+local:local,
 
-motor2,
+motor2:motor2,
 
-motor3,
+motor3:motor3,
 
-st,
+st:st,
 
-exhibition,
+exhibition:exhibition,
 
-motorNo,
+motorNo:motorNo,
 
 score:0
 
@@ -1380,11 +1368,241 @@ score:0
 
 }
 
-/* =========================================
+/* =====================================================
 
-   APIからレースを探す
+   V1のレースを直接取得
 
-========================================= */
+   現行V1構造:
+
+   programs.stadiums["1"].races["1"]
+
+===================================================== */
+
+function getRaceFromV1Data(data){
+
+const stadiumNo =
+
+String(stadium.value);
+
+const raceNo =
+
+String(
+
+document.getElementById("raceNo").value
+
+);
+
+if(
+
+data &&
+
+data.programs &&
+
+data.programs.stadiums &&
+
+data.programs.stadiums[stadiumNo] &&
+
+data.programs.stadiums[stadiumNo].races &&
+
+data.programs.stadiums[stadiumNo].races[raceNo]
+
+){
+
+return data.programs
+
+.stadiums[stadiumNo]
+
+.races[raceNo];
+
+}
+
+return null;
+
+}
+
+/* =====================================================
+
+   V1取得
+
+===================================================== */
+
+async function getRaceV1(){
+
+const date =
+
+todayCompact();
+
+const stadiumNo =
+
+String(stadium.value);
+
+const raceNo =
+
+String(
+
+document.getElementById("raceNo").value
+
+);
+
+/* まず当日API */
+
+try{
+
+const data =
+
+await fetchJSON(
+
+API_V1 + "?t=" + Date.now()
+
+);
+
+const race =
+
+getRaceFromV1Data(data);
+
+if(race){
+
+return race;
+
+}
+
+}catch(e){
+
+console.log(
+
+"V1 today失敗:",
+
+e.message
+
+);
+
+}
+
+/* 日付指定API */
+
+const url =
+
+`${API_V1_DATE}/${date.slice(0,4)}/${date}.json?t=${Date.now()}`;
+
+const data =
+
+await fetchJSON(url);
+
+const race =
+
+getRaceFromV1Data(data);
+
+if(race){
+
+return race;
+
+}
+
+throw new Error(
+
+`V1に${stadiumNo}場 ${raceNo}Rがありません。`
+
+);
+
+}
+
+/* =====================================================
+
+   V1 racers抽出
+
+   racersはオブジェクトなのでObject.values()を使用
+
+===================================================== */
+
+function extractV1Racers(race){
+
+if(!race) return [];
+
+/* 出走表racers */
+
+if(
+
+race.racers &&
+
+typeof race.racers === "object"
+
+){
+
+const values =
+
+Object.values(race.racers);
+
+if(values.length >= 6){
+
+return values
+
+.sort(
+
+(a,b)=>
+
+Number(
+
+first(a,["entry_number","entryNumber"],999)
+
+)
+
+-
+
+Number(
+
+first(b,["entry_number","entryNumber"],999)
+
+)
+
+)
+
+.slice(0,6)
+
+.map(
+
+(r,i)=>
+
+normalizeRacer(r,i)
+
+);
+
+}
+
+}
+
+/* 念のため配列 */
+
+if(
+
+Array.isArray(race.racers) &&
+
+race.racers.length >= 6
+
+){
+
+return race.racers
+
+.slice(0,6)
+
+.map(
+
+(r,i)=>
+
+normalizeRacer(r,i)
+
+);
+
+}
+
+return [];
+
+}
+
+/* =====================================================
+
+   旧V3/V2レース検索
+
+===================================================== */
 
 function findRace(data,stadiumNo,raceNo){
 
@@ -1424,17 +1642,19 @@ return null;
 
 }
 
-/* -----------------------------------------
-
-   直接的な競艇場・レース番号
-
------------------------------------------ */
+/* 直接判定 */
 
 const s =
 
 Number(
 
-first(data,[
+first(
+
+data,
+
+[
+
+"stadium_number",
 
 "stadiumNumber",
 
@@ -1452,7 +1672,11 @@ first(data,[
 
 "stadiumId"
 
-],-1)
+],
+
+-1
+
+)
 
 );
 
@@ -1460,7 +1684,13 @@ const r =
 
 Number(
 
-first(data,[
+first(
+
+data,
+
+[
+
+"race_number",
 
 "raceNumber",
 
@@ -1472,7 +1702,11 @@ first(data,[
 
 "raceId"
 
-],-1)
+],
+
+-1
+
+)
 
 );
 
@@ -1488,19 +1722,11 @@ return data;
 
 }
 
-/* -----------------------------------------
-
-   races の中を探す
-
------------------------------------------ */
+/* races */
 
 if(data.races){
 
-if(
-
-Array.isArray(data.races)
-
-){
+if(Array.isArray(data.races)){
 
 for(const race of data.races){
 
@@ -1508,7 +1734,13 @@ const rr =
 
 Number(
 
-first(race,[
+first(
+
+race,
+
+[
+
+"race_number",
 
 "raceNumber",
 
@@ -1516,15 +1748,15 @@ first(race,[
 
 "race"
 
-],-1)
+],
+
+-1
+
+)
 
 );
 
-if(
-
-rr === Number(raceNo)
-
-){
+if(rr === Number(raceNo)){
 
 return race;
 
@@ -1542,7 +1774,7 @@ typeof data.races === "object"
 
 const direct =
 
-data.races[raceNo];
+data.races[String(raceNo)];
 
 if(direct){
 
@@ -1554,17 +1786,11 @@ return direct;
 
 }
 
-/* -----------------------------------------
-
-   再帰
-
------------------------------------------ */
+/* 再帰 */
 
 for(const key of Object.keys(data)){
 
-const value =
-
-data[key];
+const value = data[key];
 
 if(
 
@@ -1596,17 +1822,285 @@ return null;
 
 }
 
-/* =========================================
+/* =====================================================
 
-   選手配列を強力に抽出
+   旧API取得
 
-========================================= */
+===================================================== */
+
+async function getRaceVersion(base){
+
+const stadiumNo =
+
+Number(stadium.value);
+
+const raceNo =
+
+Number(
+
+document.getElementById("raceNo").value
+
+);
+
+const compact =
+
+todayCompact();
+
+const year =
+
+compact.slice(0,4);
+
+/* 正式な旧API日付形式 */
+
+const urls = [
+
+`${base}/${year}/${compact}.json`,
+
+`${base}/today.json`
+
+];
+
+for(const url of urls){
+
+try{
+
+const data =
+
+await fetchJSON(
+
+url + "?t=" + Date.now()
+
+);
+
+const race =
+
+findRace(
+
+data,
+
+stadiumNo,
+
+raceNo
+
+);
+
+if(race){
+
+return race;
+
+}
+
+}catch(e){
+
+console.log(
+
+"旧API失敗:",
+
+url,
+
+e.message
+
+);
+
+}
+
+}
+
+return null;
+
+}
+
+/* =====================================================
+
+   JSON取得
+
+===================================================== */
+
+async function fetchJSON(url){
+
+const response =
+
+await fetch(
+
+url,
+
+{
+
+method:"GET",
+
+cache:"no-store",
+
+headers:{
+
+"Accept":"application/json"
+
+}
+
+}
+
+);
+
+if(!response.ok){
+
+throw new Error(
+
+"HTTP " + response.status
+
+);
+
+}
+
+return await response.json();
+
+}
+
+/* =====================================================
+
+   レース取得
+
+   V1 → V3 → V2
+
+===================================================== */
+
+async function getRace(){
+
+/* V1 */
+
+try{
+
+const race =
+
+await getRaceV1();
+
+if(race){
+
+usedApi = "V1";
+
+return race;
+
+}
+
+}catch(e){
+
+console.log(
+
+"V1失敗:",
+
+e.message
+
+);
+
+}
+
+/* V3 */
+
+try{
+
+const race =
+
+await getRaceVersion(API_V3);
+
+if(race){
+
+usedApi = "V3";
+
+return race;
+
+}
+
+}catch(e){
+
+console.log(
+
+"V3失敗:",
+
+e.message
+
+);
+
+}
+
+/* V2 */
+
+try{
+
+const race =
+
+await getRaceVersion(API_V2);
+
+if(race){
+
+usedApi = "V2";
+
+return race;
+
+}
+
+}catch(e){
+
+console.log(
+
+"V2失敗:",
+
+e.message
+
+);
+
+}
+
+throw new Error(
+
+"V1・V3・V2のすべてで対象レースを取得できませんでした。"
+
+);
+
+}
+
+/* =====================================================
+
+   旧APIから選手抽出
+
+===================================================== */
 
 function extractRacers(race){
 
 if(!race) return [];
 
-/* よくある場所 */
+/* racers */
+
+if(
+
+race.racers &&
+
+typeof race.racers === "object" &&
+
+!Array.isArray(race.racers)
+
+){
+
+const arr =
+
+Object.values(race.racers);
+
+if(arr.length >= 6){
+
+return arr
+
+.slice(0,6)
+
+.map(
+
+(r,i)=>
+
+normalizeRacer(r,i)
+
+);
+
+}
+
+}
+
+/* 配列 */
 
 const directKeys = [
 
@@ -1642,483 +2136,31 @@ arr.length >= 6
 
 ){
 
-const normalized =
-
-arr
+return arr
 
 .slice(0,6)
 
-.map((r,i)=>normalizeRacer(r,i));
+.map(
 
-/*
+(r,i)=>
 
-名前が6人以上取れていれば採用
-
-*/
-
-const valid =
-
-normalized.filter(
-
-x =>
-
-x.name &&
-
-!x.name.startsWith("選手")
-
-).length;
-
-if(valid >= 4){
-
-return normalized;
-
-}
-
-}
-
-}
-
-/* =========================================
-
-   オブジェクト配列を再帰探索
-
-========================================= */
-
-function searchArrays(obj){
-
-if(!obj) return null;
-
-if(Array.isArray(obj)){
-
-if(obj.length >= 6){
-
-const objects =
-
-obj.filter(
-
-x =>
-
-x &&
-
-typeof x === "object"
+normalizeRacer(r,i)
 
 );
 
-if(objects.length >= 6){
-
-const normalized =
-
-objects
-
-.slice(0,6)
-
-.map((r,i)=>normalizeRacer(r,i));
-
-const valid =
-
-normalized.filter(
-
-x =>
-
-x.name &&
-
-!x.name.startsWith("選手")
-
-).length;
-
-if(valid >= 4){
-
-return normalized;
-
 }
 
 }
 
-}
-
-for(const item of obj){
-
-const found =
-
-searchArrays(item);
-
-if(found) return found;
+return [];
 
 }
 
-return null;
-
-}
-
-if(typeof obj !== "object"){
-
-return null;
-
-}
-
-for(const key of Object.keys(obj)){
-
-const found =
-
-searchArrays(obj[key]);
-
-if(found) return found;
-
-}
-
-return null;
-
-}
-
-const result =
-
-searchArrays(race);
-
-return result || [];
-
-}
-
-/* =========================================
-
-   JSON取得
-
-========================================= */
-
-async function fetchJSON(url){
-
-const response =
-
-await fetch(
-
-url,
-
-{
-
-method:"GET",
-
-cache:"no-store",
-
-headers:{
-
-"Accept":"application/json"
-
-}
-
-}
-
-);
-
-if(!response.ok){
-
-throw new Error(
-
-"HTTP "+response.status
-
-);
-
-}
-
-return await response.json();
-
-}
-
-/* =========================================
-
-   V1取得
-
-   817-18時版の成功方式
-
-========================================= */
-
-async function getRaceV1(){
-
-const stadiumNo =
-
-String(stadium.value);
-
-const raceNo =
-
-String(
-
-document.getElementById("raceNo").value
-
-);
-
-const url =
-
-API_V1+
-
-"?t="+Date.now();
-
-const data =
-
-await fetchJSON(url);
-
-/* -----------------------------------------
-
-   成功していた構造
-
------------------------------------------ */
-
-if(
-
-data &&
-
-data.programs &&
-
-data.programs.stadiums &&
-
-data.programs.stadiums[stadiumNo] &&
-
-data.programs.stadiums[stadiumNo].races
-
-){
-
-const races =
-
-data.programs.stadiums[stadiumNo].races;
-
-if(races[raceNo]){
-
-return races[raceNo];
-
-}
-
-}
-
-/* -----------------------------------------
-
-   再帰検索
-
------------------------------------------ */
-
-const found =
-
-findRace(
-
-data,
-
-stadiumNo,
-
-raceNo
-
-);
-
-if(found){
-
-return found;
-
-}
-
-throw new Error(
-
-"V1に対象レースがありません。"
-
-);
-
-}
-
-/* =========================================
-
-   V3/V2取得
-
-========================================= */
-
-async function getRaceVersion(base){
-
-const stadiumNo =
-
-Number(stadium.value);
-
-const raceNo =
-
-Number(
-
-document.getElementById("raceNo").value
-
-);
-
-const date =
-
-todayJP();
-
-const urls = [
-
-`${base}/${date}/${stadiumNo}`,
-
-`${base}/${date}`,
-
-base
-
-];
-
-for(const url of urls){
-
-try{
-
-const data =
-
-await fetchJSON(url);
-
-const race =
-
-findRace(
-
-data,
-
-stadiumNo,
-
-raceNo
-
-);
-
-if(race){
-
-return race;
-
-}
-
-}catch(e){
-
-console.log(
-
-"API失敗:",
-
-url,
-
-e.message
-
-);
-
-}
-
-}
-
-return null;
-
-}
-
-/* =========================================
-
-   レース取得
-
-   V1 → V3 → V2
-
-========================================= */
-
-async function getRace(){
-
-/* V1 */
-
-try{
-
-const race =
-
-await getRaceV1();
-
-if(race){
-
-usedApi =
-
-"V1";
-
-return race;
-
-}
-
-}catch(e){
-
-console.log(
-
-"V1失敗:",
-
-e.message
-
-);
-
-}
-
-/* V3 */
-
-try{
-
-const race =
-
-await getRaceVersion(
-
-API_V3
-
-);
-
-if(race){
-
-usedApi =
-
-"V3";
-
-return race;
-
-}
-
-}catch(e){
-
-console.log(
-
-"V3失敗:",
-
-e.message
-
-);
-
-}
-
-/* V2 */
-
-try{
-
-const race =
-
-await getRaceVersion(
-
-API_V2
-
-);
-
-if(race){
-
-usedApi =
-
-"V2";
-
-return race;
-
-}
-
-}catch(e){
-
-console.log(
-
-"V2失敗:",
-
-e.message
-
-);
-
-}
-
-throw new Error(
-
-"V1・V3・V2のすべてで対象レースを取得できませんでした。"
-
-);
-
-}
-
-/* =========================================
+/* =====================================================
 
    出走表取得
 
-========================================= */
+===================================================== */
 
 async function loadRace(){
 
@@ -2132,7 +2174,7 @@ setStatus(
 
 "出走表を取得中...\n"+
 
-"V1 → V3 → V2 の順で確認しています。"
+"現行V1 → V3 → V2 の順で確認しています。"
 
 );
 
@@ -2148,21 +2190,29 @@ raceData =
 
 await getRace();
 
+/* V1専用抽出 */
+
+if(usedApi === "V1"){
+
+racers =
+
+extractV1Racers(raceData);
+
+}else{
+
 racers =
 
 extractRacers(raceData);
 
-/*
+}
 
-6艇取れているか確認
-
-*/
+/* 6艇確認 */
 
 if(racers.length < 6){
 
 console.error(
 
-"取得したレースデータ:",
+"取得レース:",
 
 raceData
 
@@ -2170,17 +2220,13 @@ raceData
 
 throw new Error(
 
-"APIからレースは取得できましたが、6艇の選手データを抽出できませんでした。"
+"レースは取得できましたが、6艇の選手データを抽出できませんでした。"
 
 );
 
 }
 
-/*
-
-枠番は必ず1〜6
-
-*/
+/* 枠番を1〜6に固定 */
 
 racers =
 
@@ -2208,7 +2254,9 @@ document
 
 .getElementById("raceArea")
 
-.classList.remove("hidden");
+.classList
+
+.remove("hidden");
 
 setStatus(
 
@@ -2228,7 +2276,9 @@ setStatus(
 
 "❌ 出走表取得失敗\n\n"+
 
-e.message
+e.message+
+
+"\n\nブラウザの通信状況も確認してください。"
 
 );
 
@@ -2240,25 +2290,21 @@ btn.disabled = false;
 
 }
 
-/* =========================================
+/* =====================================================
 
    レース表示
 
-========================================= */
+===================================================== */
 
 function renderRace(){
 
 const sName =
 
-stadium
-
-.options[
+stadium.options[
 
 stadium.selectedIndex
 
-]
-
-.textContent;
+].textContent;
 
 const raceNo =
 
@@ -2314,11 +2360,11 @@ document
 
 }
 
-/* =========================================
+/* =====================================================
 
    選手表示
 
-========================================= */
+===================================================== */
 
 function renderRacers(){
 
@@ -2336,9 +2382,7 @@ const div =
 
 document.createElement("div");
 
-div.className =
-
-"racer";
+div.className = "racer";
 
 div.innerHTML = `
 
@@ -2414,21 +2458,17 @@ area.appendChild(div);
 
 }
 
-/* =========================================
+/* =====================================================
 
    進入
 
-========================================= */
+===================================================== */
 
 function renderEntryButtons(){
 
 const area =
 
-document.getElementById(
-
-"entryButtons"
-
-);
+document.getElementById("entryButtons");
 
 area.innerHTML = "";
 
@@ -2502,19 +2542,23 @@ ${
 
 maezuke
 
-? '<span class="warning">前付けあり</span>'
+?
 
-: '<span class="good">枠なり想定</span>'
+'<span class="warning">前付けあり</span>'
+
+:
+
+'<span class="good">枠なり想定</span>'
 
 }`;
 
 }
 
-/* =========================================
+/* =====================================================
 
    AI評価
 
-========================================= */
+===================================================== */
 
 function courseBonus(course){
 
@@ -2540,9 +2584,7 @@ function rankBonus(rank){
 
 const r =
 
-String(rank)
-
-.toUpperCase();
+String(rank).toUpperCase();
 
 if(r==="A1") return 5;
 
@@ -2560,25 +2602,11 @@ function calcScore(r){
 
 let score = 0;
 
-/* 全国勝率 */
+score += r.national * 7;
 
-score +=
+score += r.local * 4;
 
-r.national * 7;
-
-/* 当地勝率 */
-
-score +=
-
-r.local * 4;
-
-/* モーター */
-
-score +=
-
-r.motor2 * 0.15;
-
-/* ST */
+score += r.motor2 * 0.15;
 
 if(r.st > 0){
 
@@ -2594,51 +2622,27 @@ Math.max(
 
 }
 
-/* コース */
+score +=
+
+courseBonus(r.course);
 
 score +=
 
-courseBonus(
-
-r.course
-
-);
-
-/* 級別 */
-
-score +=
-
-rankBonus(
-
-r.rank
-
-);
+rankBonus(r.rank);
 
 /* 展示 */
 
 if(r.exhibition > 0){
 
-if(
-
-r.exhibition <= 6.70
-
-){
+if(r.exhibition <= 6.70){
 
 score += 3;
 
-}else if(
-
-r.exhibition <= 6.80
-
-){
+}else if(r.exhibition <= 6.80){
 
 score += 1;
 
-}else if(
-
-r.exhibition >= 7.00
-
-){
+}else if(r.exhibition >= 7.00){
 
 score -= 2;
 
@@ -2648,27 +2652,15 @@ score -= 2;
 
 /* 前付け */
 
-if(
+if(entryOrder[0] !== 1){
 
-entryOrder[0] !== 1
-
-){
-
-if(
-
-r.course === entryOrder[0]
-
-){
+if(r.course === entryOrder[0]){
 
 score += 3;
 
 }
 
-if(
-
-r.course === 1
-
-){
+if(r.course === 1){
 
 score -= 2;
 
@@ -2676,11 +2668,7 @@ score -= 2;
 
 }
 
-return Math.round(
-
-score * 10
-
-) / 10;
+return Math.round(score*10)/10;
 
 }
 
@@ -2724,11 +2712,11 @@ r=>r.course===n
 
 }
 
-/* =========================================
+/* =====================================================
 
    展開
 
-========================================= */
+===================================================== */
 
 function makeForecast(){
 
@@ -2820,11 +2808,11 @@ text;
 
 }
 
-/* =========================================
+/* =====================================================
 
    ランキング
 
-========================================= */
+===================================================== */
 
 function renderRanking(){
 
@@ -2836,23 +2824,13 @@ const list =
 
 getOrdered();
 
-const total =
-
-list.reduce(
-
-(s,x)=>s+x.score,
-
-0
-
-);
-
 area.innerHTML =
 
 list.map(
 
-(r,i)=>{
+(r,i)=>
 
-return `
+`
 
 <div style="
 
@@ -2886,47 +2864,29 @@ ${escapeHTML(r.name)}
 
 <div>
 
-<b>
-
-${r.score.toFixed(1)}
-
-</b>
+<b>${r.score.toFixed(1)}</b>
 
 </div>
 
 </div>
 
-`;
-
-}
+`
 
 ).join("");
 
 }
 
-/* =========================================
+/* =====================================================
 
    買い目
 
-========================================= */
+===================================================== */
 
 function makeCombinations(){
 
 const sorted =
 
 getOrdered();
-
-/*
-
---------------------------------------------
-
-的中率重視
-
-本命を軸に上位を組む
-
---------------------------------------------
-
-*/
 
 const hit = [];
 
@@ -2970,17 +2930,7 @@ hit.push(
 
 });
 
-/*
-
---------------------------------------------
-
-回収率重視
-
-評価上位5艇を広めに使用
-
---------------------------------------------
-
-*/
+/* 回収率 */
 
 const roi = [];
 
@@ -2990,41 +2940,13 @@ sorted
 
 .slice(0,5)
 
-.map(
+.map(r=>r.course);
 
-r=>r.course
+for(let i=0;i<candidates.length;i++){
 
-);
+for(let j=0;j<candidates.length;j++){
 
-for(
-
-let i=0;
-
-i<candidates.length;
-
-i++
-
-){
-
-for(
-
-let j=0;
-
-j<candidates.length;
-
-j++
-
-){
-
-for(
-
-let k=0;
-
-k<candidates.length;
-
-k++
-
-){
+for(let k=0;k<candidates.length;k++){
 
 if(
 
@@ -3044,21 +2966,13 @@ const combo =
 
 `${candidates[i]}-${candidates[j]}-${candidates[k]}`;
 
-if(
-
-!roi.includes(combo)
-
-){
+if(!roi.includes(combo)){
 
 roi.push(combo);
 
 }
 
-if(
-
-roi.length>=6
-
-){
+if(roi.length>=6){
 
 break;
 
@@ -3066,11 +2980,7 @@ break;
 
 }
 
-if(
-
-roi.length>=6
-
-){
+if(roi.length>=6){
 
 break;
 
@@ -3078,11 +2988,7 @@ break;
 
 }
 
-if(
-
-roi.length>=6
-
-){
+if(roi.length>=6){
 
 break;
 
@@ -3090,17 +2996,7 @@ break;
 
 }
 
-/*
-
---------------------------------------------
-
-穴
-
-ランキング4〜6位
-
---------------------------------------------
-
-*/
+/* 穴 */
 
 const hole = [];
 
@@ -3112,13 +3008,11 @@ sorted
 
 r=>{
 
-hole.push(
+hole.push(r.course);
 
-r.course
+}
 
 );
-
-});
 
 return{
 
@@ -3132,11 +3026,11 @@ hole
 
 }
 
-/* =========================================
+/* =====================================================
 
    AI解析
 
-========================================= */
+===================================================== */
 
 function runAnalysis(){
 
@@ -3278,9 +3172,7 @@ document
 
 2〜5番手までを組み合わせて
 
-回収率を狙う構成。
-
-`;
+回収率を狙う構成。`;
 
 document
 
@@ -3326,9 +3218,7 @@ setStatus(
 
 window.scrollTo({
 
-top:
-
-document.body.scrollHeight,
+top:document.body.scrollHeight,
 
 behavior:"smooth"
 
@@ -3336,11 +3226,11 @@ behavior:"smooth"
 
 }
 
-/* =========================================
+/* =====================================================
 
    予算
 
-========================================= */
+===================================================== */
 
 function makeBudget(picks){
 
@@ -3356,13 +3246,7 @@ document
 
 );
 
-if(
-
-!budget ||
-
-budget<100
-
-){
+if(!budget || budget<100){
 
 budget=3000;
 
@@ -3370,27 +3254,15 @@ budget=3000;
 
 const hitBudget =
 
-Math.floor(
-
-budget*.50/100
-
-)*100;
+Math.floor(budget*.50/100)*100;
 
 const roiBudget =
 
-Math.floor(
-
-budget*.35/100
-
-)*100;
+Math.floor(budget*.35/100)*100;
 
 const holeBudget =
 
-Math.floor(
-
-budget*.15/100
-
-)*100;
+Math.floor(budget*.15/100)*100;
 
 const hitEach =
 
@@ -3402,13 +3274,7 @@ Math.floor(
 
 hitBudget/
 
-Math.max(
-
-1,
-
-picks.hit.length
-
-)/
+Math.max(1,picks.hit.length)/
 
 100
 
@@ -3426,13 +3292,7 @@ Math.floor(
 
 roiBudget/
 
-Math.max(
-
-1,
-
-picks.roi.length
-
-)/
+Math.max(1,picks.roi.length)/
 
 100
 
@@ -3450,13 +3310,7 @@ Math.floor(
 
 holeBudget/
 
-Math.max(
-
-1,
-
-picks.hole.length
-
-)/
+Math.max(1,picks.hole.length)/
 
 100
 
@@ -3488,9 +3342,7 @@ ${hitBudget.toLocaleString()}円
 
 <div class="reason">
 
-1点
-
-${hitEach.toLocaleString()}円
+1点 ${hitEach.toLocaleString()}円
 
 </div>
 
@@ -3512,9 +3364,7 @@ ${roiBudget.toLocaleString()}円
 
 <div class="reason">
 
-1点
-
-${roiEach.toLocaleString()}円
+1点 ${roiEach.toLocaleString()}円
 
 </div>
 
@@ -3536,9 +3386,7 @@ ${holeBudget.toLocaleString()}円
 
 <div class="reason">
 
-1点
-
-${holeEach.toLocaleString()}円
+1点 ${holeEach.toLocaleString()}円
 
 </div>
 
@@ -3566,55 +3414,25 @@ ${budget.toLocaleString()}円
 
 }
 
-/* =========================================
+/* =====================================================
 
    HTML安全化
 
-========================================= */
+===================================================== */
 
 function escapeHTML(value){
 
 return String(value)
 
-.replace(
+.replace(/&/g,"&amp;")
 
-/&/g,
+.replace(/</g,"&lt;")
 
-"&amp;"
+.replace(/>/g,"&gt;")
 
-)
+.replace(/"/g,"&quot;")
 
-.replace(
-
-/</g,
-
-"&lt;"
-
-)
-
-.replace(
-
-/>/g,
-
-"&gt;"
-
-)
-
-.replace(
-
-/"/g,
-
-"&quot;"
-
-)
-
-.replace(
-
-/'/g,
-
-"&#039;"
-
-);
+.replace(/'/g,"&#039;");
 
 }
 
