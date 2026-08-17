@@ -306,17 +306,51 @@ color:#000;
 
 }
 
-.n1{background:#fff}
+.n1{
 
-.n2{background:#222;color:#fff;border:1px solid #777}
+background:#fff;
 
-.n3{background:#e22;color:#fff}
+}
 
-.n4{background:#248cff;color:#fff}
+.n2{
 
-.n5{background:#e5d000}
+background:#222;
 
-.n6{background:#20a747;color:#fff}
+color:#fff;
+
+border:1px solid #777;
+
+}
+
+.n3{
+
+background:#e22;
+
+color:#fff;
+
+}
+
+.n4{
+
+background:#248cff;
+
+color:#fff;
+
+}
+
+.n5{
+
+background:#e5d000;
+
+}
+
+.n6{
+
+background:#20a747;
+
+color:#fff;
+
+}
 
 .racerName{
 
@@ -513,6 +547,38 @@ font-weight:bold;
 color:#ffd84d;
 
 font-weight:bold;
+
+}
+
+/* 5%未満 */
+
+.prob.lowProb{
+
+color:#555;
+
+font-weight:normal;
+
+}
+
+/* 5%未満の行 */
+
+.pick.lowProbRow{
+
+opacity:.65;
+
+}
+
+/* 高確率買い目 */
+
+.prob.highProb{
+
+color:#ff3333;
+
+font-weight:900;
+
+font-size:14px;
+
+text-shadow:0 0 6px rgba(255,50,50,.35);
 
 }
 
@@ -770,7 +836,11 @@ inputmode="numeric"
 
 現在の買い目の中から
 
-<strong class="budgetStrong">⭐優先買い目</strong>
+<strong class="budgetStrong">
+
+⭐優先買い目
+
+</strong>
 
 を表示します。
 
@@ -1250,7 +1320,7 @@ return 12;
 
 /* =====================================================
 
-⭐評価用カテゴリー
+カテゴリー
 
 ===================================================== */
 
@@ -1314,21 +1384,21 @@ list:bets.under||[]
 
 ⭐判定
 
-重要：
+カテゴリー横断で評価。
 
-買い目は変更しない。
+的中率だけではなく、
 
-⭐だけをカテゴリー横断で決める。
+逃げ
 
-まず各カテゴリーの代表候補を評価。
+差し
 
-その後、全候補から残りを選ぶ。
+まくり
 
-これにより、
+まくり差し
 
-的中率重視だけでなく
+穴目
 
-回収率重視側・穴目も⭐対象になる。
+からも候補を選ぶ。
 
 ===================================================== */
 
@@ -1342,33 +1412,29 @@ const count=
 
 getStarCount();
 
-const selected=
-
-[];
+const selected=[];
 
 const selectedKeys=
 
 new Set();
 
-/* -----------------------------------------------------
-
-第1段階
-
-各カテゴリーから最高評価を1点ずつ候補化
-
------------------------------------------------------ */
+/* 各カテゴリーの代表 */
 
 const representatives=
 
 groups
 
-.filter(group=>
+.filter(
+
+group=>
 
 group.list.length>0
 
 )
 
-.map(group=>{
+.map(
+
+group=>{
 
 const best=
 
@@ -1388,9 +1454,7 @@ return{
 
 ...best,
 
-group:
-
-group.name
+group:group.name
 
 };
 
@@ -1406,25 +1470,7 @@ group.name
 
 );
 
-/*
-
-資金が少ない場合は
-
-全カテゴリーから無理に選ばない。
-
-ただし資金が増えた場合、
-
-回収率側からも⭐が入りやすくする。
-
-*/
-
-/* -----------------------------------------------------
-
-最初の⭐
-
-全体で最もデータ評価が高いもの
-
------------------------------------------------------ */
+/* 最上位 */
 
 if(representatives.length>0){
 
@@ -1438,15 +1484,7 @@ selectedKeys.add(first.key);
 
 }
 
-/* -----------------------------------------------------
-
-第2段階
-
-別カテゴリーから追加
-
-同じカテゴリーだけで⭐が埋まらないようにする。
-
------------------------------------------------------ */
+/* 各カテゴリーから追加 */
 
 for(
 
@@ -1480,15 +1518,7 @@ selectedKeys.add(item.key);
 
 }
 
-/* -----------------------------------------------------
-
-第3段階
-
-まだ⭐が足りない場合、
-
-全買い目から確率順に追加
-
------------------------------------------------------ */
+/* 全買い目から追加 */
 
 if(
 
@@ -1498,9 +1528,13 @@ selected.length<count
 
 const all=[];
 
-groups.forEach(group=>{
+groups.forEach(
 
-group.list.forEach(item=>{
+group=>{
+
+group.list.forEach(
+
+item=>{
 
 all.push({
 
@@ -1558,12 +1592,6 @@ selectedKeys.add(item.key);
 
 }
 
-/* -----------------------------------------------------
-
-⭐対象キーだけ返す
-
------------------------------------------------------ */
-
 return new Set(
 
 selected.map(x=>x.key)
@@ -1596,7 +1624,7 @@ currentBets
 
 /* =====================================================
 
-今日の日付
+日付
 
 ===================================================== */
 
@@ -1708,29 +1736,19 @@ document.createElement(
 
 );
 
-option.value=
-
-course;
+option.value=course;
 
 option.textContent=
 
 course+"コース";
 
-el.appendChild(
-
-option
-
-);
+el.appendChild(option);
 
 }
 
-el.value=
+el.value=boat;
 
-boat;
-
-manualCourses[boat]=
-
-boat;
+manualCourses[boat]=boat;
 
 el.addEventListener(
 
@@ -1770,13 +1788,9 @@ document.getElementById(
 
 );
 
-el.value=
+el.value=boat;
 
-boat;
-
-manualCourses[boat]=
-
-boat;
+manualCourses[boat]=boat;
 
 }
 
@@ -1878,9 +1892,7 @@ url
 
 }catch(error){
 
-lastError=
-
-error;
+lastError=error;
 
 }
 
@@ -2196,11 +2208,7 @@ previewRacers[boat]||
 
 const course=
 
-n(
-
-p.course_number
-
-);
+n(p.course_number);
 
 const el=
 
@@ -2218,23 +2226,15 @@ course<=6
 
 ){
 
-el.value=
+el.value=course;
 
-course;
-
-manualCourses[boat]=
-
-course;
+manualCourses[boat]=course;
 
 }else{
 
-el.value=
+el.value=boat;
 
-boat;
-
-manualCourses[boat]=
-
-boat;
+manualCourses[boat]=boat;
 
 }
 
@@ -2290,9 +2290,7 @@ return racers.find(
 
 r=>
 
-n(r.entry_number)===
-
-boat
+n(r.entry_number)===boat
 
 );
 
@@ -2692,7 +2690,9 @@ const r=
 
 getRacer(boat);
 
-if(!r)return 0;
+if(!r)
+
+return 0;
 
 const p=
 
@@ -3070,9 +3070,9 @@ top-x.score>=15
 
 if(!excluded.length){
 
-el.innerHTML=`
+el.innerHTML=
 
-<div class="strategy">
+`<div class="strategy">
 
 大きな能力差なし。<br>
 
@@ -3129,8 +3129,6 @@ top-x.score
 /* =====================================================
 
 候補生成
-
-※ここは変更なし
 
 ===================================================== */
 
@@ -3324,8 +3322,6 @@ b.raw-a.raw
 
 買い目作成
 
-※完全に元のロジック
-
 ===================================================== */
 
 function buildBets(
@@ -3420,6 +3416,12 @@ used.add(x.key);
 
 }
 
+/* =====================================================
+
+回収率重視は3点
+
+===================================================== */
+
 const types=[
 
 "escape",
@@ -3454,7 +3456,7 @@ const x of pool
 
 if(
 
-result[type].length>=4
+result[type].length>=3
 
 )
 
@@ -3475,6 +3477,12 @@ used.add(x.key);
 }
 
 });
+
+/* =====================================================
+
+穴目
+
+===================================================== */
 
 const first=
 
@@ -3520,13 +3528,9 @@ key:
 
 `${boat}-1`,
 
-a:
+a:boat,
 
-boat,
-
-b:
-
-1,
+b:1,
 
 raw:
 
@@ -3561,6 +3565,12 @@ b.raw-a.raw
 )
 
 .slice(0,2);
+
+/* =====================================================
+
+確率
+
+===================================================== */
 
 const all=[
 
@@ -3678,9 +3688,7 @@ raceKey:
 
 getRaceKey(),
 
-bets:
-
-bets,
+bets:bets,
 
 savedAt:
 
@@ -3786,6 +3794,14 @@ error
 
 買い目表示
 
+5%未満 → 薄く
+
+最高確率に近い買い目
+
+→ 赤文字＋強調
+
+⭐は全カテゴリー横断
+
 ===================================================== */
 
 function renderPicks(
@@ -3800,11 +3816,7 @@ bets
 
 const el=
 
-document.getElementById(
-
-id
-
-);
+document.getElementById(id);
 
 if(
 
@@ -3828,19 +3840,109 @@ return;
 
 const starKeys=
 
-getStarKeys(
+getStarKeys(bets);
 
-bets
+/* 全買い目 */
 
-);
+const all=[];
+
+getBetGroups(bets).forEach(
+
+group=>{
+
+group.list.forEach(
+
+x=>{
+
+all.push(x);
+
+});
+
+});
+
+/* 最高確率 */
+
+const maxProbability=
+
+all.length
+
+?
+
+Math.max(
+
+...all.map(
+
+x=>x.probability||0
+
+)
+
+)
+
+:0;
+
+/*
+
+最高確率の80%以上
+
+→ 高期待度として赤表示
+
+*/
 
 el.innerHTML=
 
 list.map(
 
-x=>`
+x=>{
 
-<div class="pick">
+const probability=
+
+x.probability||0;
+
+const isLow=
+
+probability<5;
+
+const isHigh=
+
+maxProbability>0&&
+
+probability>=
+
+maxProbability*0.80;
+
+const rowClass=
+
+isLow
+
+?
+
+"pick lowProbRow"
+
+:
+
+"pick";
+
+let probClass=
+
+"prob";
+
+if(isLow){
+
+probClass+=
+
+" lowProb";
+
+}else if(isHigh){
+
+probClass+=
+
+" highProb";
+
+}
+
+return`
+
+<div class="${rowClass}">
 
 <div class="pickLeft">
 
@@ -3850,9 +3952,13 @@ ${
 
 starKeys.has(x.key)
 
-?"⭐"
+?
 
-:""
+"⭐"
+
+:
+
+""
 
 }
 
@@ -3866,13 +3972,15 @@ ${x.a} → ${x.b}
 
 </div>
 
-<span class="prob">
+<span class="${probClass}">
 
-${x.probability.toFixed(1)}%
+${probability.toFixed(1)}%
 
 </span>
 
-</div>`
+</div>`;
+
+}
 
 ).join("");
 
@@ -4250,9 +4358,9 @@ error.message
 
 資金変更
 
-買い目は絶対に再生成しない
+買い目は再生成しない。
 
-⭐だけ変更
+⭐だけ更新。
 
 ===================================================== */
 
