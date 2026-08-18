@@ -94,6 +94,8 @@ button{width:100%;padding:13px;border:0;border-radius:9px;font-size:14px;font-we
 
 .historyMiddle{color:#ffd84d;font-weight:bold}
 
+.historyDecision{color:#d4af37;font-weight:bold}
+
 table{width:100%;border-collapse:collapse;font-size:11px}
 
 th,td{padding:7px 3px;border-bottom:1px solid #292929;text-align:center}
@@ -159,8 +161,6 @@ th{color:#d4af37}
 .footer{text-align:center;color:#555;font-size:10px;padding:20px}
 
 .loading{color:#d4af37}.success{color:#4cd964}.error{color:#ff5555}
-
-.historyDecision{color:#d4af37;font-weight:bold}
 
 @media(max-width:600px){
 
@@ -456,6 +456,14 @@ AI買い目確率合計<br>
 
 <script>
 
+/* =========================================================
+
+   API
+
+   ※ここは出走表取得の安定性を優先して変更していない
+
+========================================================= */
+
 const API_V1="https://boatraceopenapi.github.io/api/v1";
 
 const API_V3="https://boatraceopenapi.github.io/programs/v3";
@@ -473,6 +481,10 @@ let manualCourses={};
 let historyData={};
 
 let currentBets=null;
+
+const HISTORY_RACES=7;
+
+const HISTORY_DAYS=60;
 
 const $=id=>document.getElementById(id);
 
@@ -576,11 +588,13 @@ return r.json();
 
 }
 
-/* =========================
+/* =========================================================
 
    API探索
 
-========================= */
+   ※出走表取得ロジックは元コードを維持
+
+========================================================= */
 
 function findRace(data,venue,raceNo){
 
@@ -636,7 +650,7 @@ rn!=null &&
 
 String(rn)===targetRace &&
 
-(vn==null || String(vn)===targetVenue)
+(vn==null||String(vn)===targetVenue)
 
 ){
 
@@ -740,9 +754,7 @@ let arr=Array.isArray(source)
 
 return arr.map((x,i)=>{
 
-let entry=
-
-num(
+let entry=num(
 
 x?.entry_number??
 
@@ -778,11 +790,13 @@ entry_number:entry
 
 }
 
-/* =========================
+/* =========================================================
 
    当日出走表
 
-========================= */
+   ※ここも元コードを維持
+
+========================================================= */
 
 async function loadDaily(){
 
@@ -836,11 +850,11 @@ throw Error("APIから6艇の出走表を取得できませんでした");
 
 }
 
-/* =========================
+/* =========================================================
 
    進入
 
-========================= */
+========================================================= */
 
 function initCourses(){
 
@@ -884,11 +898,11 @@ $("message").innerHTML=
 
 }
 
-/* =========================
+/* =========================================================
 
    出走表取得
 
-========================= */
+========================================================= */
 
 async function loadRaceData(){
 
@@ -964,7 +978,7 @@ $("raceCard").style.display="block";
 
 $("message").innerHTML=
 
-'<span class="success">✅ 出走表取得成功<br>AI解析時に過去10走を取得します</span>';
+'<span class="success">✅ 出走表取得成功<br>AI解析時に過去7走を取得します</span>';
 
 }catch(e){
 
@@ -982,11 +996,11 @@ esc(e.message)+
 
 }
 
-/* =========================
+/* =========================================================
 
-   選手番号
+   選手番号・結果
 
-========================= */
+========================================================= */
 
 function getRacerNumber(x){
 
@@ -1082,11 +1096,13 @@ return({
 
 }
 
-/* =========================
+/* =========================================================
 
-   過去10走
+   過去7走
 
-========================= */
+   今回の進入コースと「同じコース」だけを対象
+
+========================================================= */
 
 function emptyHistory(){
 
@@ -1096,11 +1112,29 @@ racers.forEach(r=>{
 
 let no=getRacerNumber(r);
 
+let c=course(num(r.entry_number));
+
 if(no){
 
 x[no]={
 
-boats:{1:[],2:[],3:[],4:[],5:[],6:[]}
+course:c,
+
+boats:{
+
+1:[],
+
+2:[],
+
+3:[],
+
+4:[],
+
+5:[],
+
+6:[]
+
+}
 
 };
 
@@ -1123,16 +1157,6 @@ race?.results||
 race?.race_result;
 
 if(!result)return;
-
-let technique=decision(
-
-result.technique_number||
-
-result.technique||
-
-result.decision
-
-);
 
 let resultRacers=
 
@@ -1174,9 +1198,33 @@ if(no<=0||c<1||c>6||place<1||place>6)return;
 
 if(!targets[no])return;
 
-if(!targets[no].boats[c])return;
+/*
 
-if(targets[no].boats[c].length>=10)return;
+今回の進入コースと同じコースだけ保存
+
+*/
+
+if(c!==targets[no].course)return;
+
+if(targets[no].boats[c].length>=HISTORY_RACES)return;
+
+let technique=
+
+x.technique_number||
+
+x.technique||
+
+x.decision||
+
+x.decision_number||
+
+result.technique_number||
+
+result.technique||
+
+result.decision||
+
+result.decision_number;
 
 targets[no].boats[c].push({
 
@@ -1186,7 +1234,7 @@ place,
 
 course:c,
 
-decision:technique
+decision:decision(technique)
 
 });
 
@@ -1200,9 +1248,7 @@ let stadiums=data?.programs?.stadiums;
 
 if(!stadiums)return;
 
-let stadium=
-
-stadiums[String($("venue").value)];
+let stadium=stadiums[String($("venue").value)];
 
 if(!stadium)return;
 
@@ -1228,7 +1274,15 @@ race?.race_result
 
 ){
 
-addResultRace(race,targets,wanted);
+addResultRace(
+
+race,
+
+targets,
+
+wanted
+
+);
 
 }
 
@@ -1248,7 +1302,7 @@ return(
 
 targets[no]?.boats?.[c]?.length||0
 
-)>=10;
+)>=HISTORY_RACES;
 
 });
 
@@ -1266,7 +1320,11 @@ String(b.date).localeCompare(String(a.date))
 
 );
 
-if(arr.length>10)arr.splice(10);
+if(arr.length>HISTORY_RACES){
+
+arr.splice(HISTORY_RACES);
+
+}
 
 });
 
@@ -1274,11 +1332,21 @@ if(arr.length>10)arr.splice(10);
 
 }
 
+/* =========================================================
+
+   高速過去データ取得
+
+   60日以内を複数日並列取得
+
+   7走揃った艇は終了
+
+========================================================= */
+
 async function loadHistory(){
 
 let key=
 
-"bh-history-v4-"+today().ymd+
+"bh-history-v5-"+today().ymd+
 
 "-"+$("venue").value+
 
@@ -1314,13 +1382,37 @@ Object.keys(targets).map(Number)
 
 /*
 
-  ★ ここを120日→60日に変更
+  60日以内を検索。
+
+  ただし1日ずつ待たず、最大10日を並列処理。
 
 */
 
-for(let daysAgo=1;daysAgo<=60;daysAgo++){
+for(let start=1;start<=HISTORY_DAYS;start+=10){
 
 if(historyComplete(targets))break;
+
+let days=[];
+
+for(
+
+let daysAgo=start;
+
+daysAgo<start+10&&daysAgo<=HISTORY_DAYS;
+
+daysAgo++
+
+){
+
+days.push(daysAgo);
+
+}
+
+await Promise.all(
+
+days.map(async daysAgo=>{
+
+if(historyComplete(targets))return;
 
 let d=new Date();
 
@@ -1338,6 +1430,14 @@ const urls=[
 
 ];
 
+/*
+
+同じ日のAPIは順番に試す。
+
+日付同士は並列。
+
+*/
+
 for(const url of urls){
 
 try{
@@ -1354,15 +1454,17 @@ wanted
 
 );
 
-if(historyComplete(targets))break;
+break;
 
 }catch(e){}
 
 }
 
-sortHistory(targets);
+})
 
-if(daysAgo%5===0||historyComplete(targets)){
+);
+
+sortHistory(targets);
 
 let counts=racers.map(r=>{
 
@@ -1382,15 +1484,11 @@ $("message").innerHTML=
 
 `<span class="loading">
 
-🤖 過去10走取得中... ${daysAgo}日前まで確認<br>
+🤖 同コース過去7走取得中... ${Math.min(start+9,HISTORY_DAYS)}日前まで確認<br>
 
 現在：${counts.join(" / ")}走
 
 </span>`;
-
-}
-
-await new Promise(r=>setTimeout(r,0));
 
 }
 
@@ -1426,7 +1524,7 @@ return(
 
 historyData[no]?.boats?.[c]||[]
 
-).slice(0,10);
+).slice(0,HISTORY_RACES);
 
 }
 
@@ -1474,11 +1572,19 @@ s.rate*.2
 
 }
 
+/* =========================================================
+
+   過去7走表示
+
+========================================================= */
+
 function renderHistory(b){
 
 let a=history(b);
 
 let s=hstats(b);
+
+let c=course(b);
 
 if(!a.length){
 
@@ -1486,13 +1592,17 @@ return`
 
 <div class="history">
 
-<div class="historyTitle">📈 ${course(b)}コース過去10走</div>
+<div class="historyTitle">
+
+📈 ${c}コース過去7走
+
+</div>
 
 <div class="historyList">
 
 <span style="color:#777">
 
-まだ同コース過去結果を取得できていません
+今回の${c}コースと同じ進入の過去結果を取得できていません
 
 </span>
 
@@ -1508,7 +1618,7 @@ return`
 
 <div class="historyTitle">
 
-📈 ${course(b)}コース過去${a.length}走
+📈 ${c}コース過去${a.length}走
 
 </div>
 
@@ -1516,25 +1626,33 @@ return`
 
 <div class="historyStat">
 
-1着<strong>${s.first}</strong>
+1着
+
+<strong>${s.first}</strong>
 
 </div>
 
 <div class="historyStat">
 
-2着<strong>${s.second}</strong>
+2着
+
+<strong>${s.second}</strong>
 
 </div>
 
 <div class="historyStat">
 
-3着<strong>${s.third}</strong>
+3着
+
+<strong>${s.third}</strong>
 
 </div>
 
 <div class="historyStat">
 
-3連対率<strong>${s.rate.toFixed(1)}%</strong>
+3連対率
+
+<strong>${s.rate.toFixed(1)}%</strong>
 
 </div>
 
@@ -1564,7 +1682,7 @@ ${x.place}着
 
 <span class="historyDecision">
 
-${x.decision!=="-"?"/ "+esc(x.decision):""}
+${x.decision!=="-"?" / "+esc(x.decision):""}
 
 </span>
 
@@ -1580,11 +1698,11 @@ ${x.decision!=="-"?"/ "+esc(x.decision):""}
 
 }
 
-/* =========================
+/* =========================================================
 
    級別
 
-========================= */
+========================================================= */
 
 function rank(n){
 
@@ -1602,11 +1720,11 @@ return({
 
 }
 
-/* =========================
+/* =========================================================
 
    出走表
 
-========================= */
+========================================================= */
 
 function renderRace(){
 
@@ -1664,7 +1782,11 @@ return`
 
 <div class="racerTop">
 
-<div class="number n${b}">${b}</div>
+<div class="number n${b}">
+
+${b}
+
+</div>
 
 <div class="racerName">
 
@@ -1870,11 +1992,11 @@ ${num(w.water_temperature).toFixed(1)}℃
 
 }
 
-/* =========================
+/* =========================================================
 
    決まり手
 
-========================= */
+========================================================= */
 
 function decisions(r){
 
@@ -1982,6 +2104,14 @@ return v;
 
 }
 
+/* =========================================================
+
+   全体見通し
+
+   イン逃げの基準を42%に変更
+
+========================================================= */
+
 function overview(){
 
 let v={
@@ -1998,9 +2128,11 @@ makiSashi:0
 
 for(let b=1;b<=6;b++){
 
-for(let t in v)
+for(let t in v){
 
 v[t]+=suitability(b,t);
+
+}
 
 }
 
@@ -2008,7 +2140,7 @@ let r=racer(1);
 
 v.escape+=course(1)===1
 
-?45+num(r?.national_win_rate)*2.2
+?42+num(r?.national_win_rate)*2.2
 
 :8;
 
@@ -2021,6 +2153,14 @@ Object.keys(v).forEach(k=>{
 v[k]=v[k]/total*100;
 
 });
+
+/*
+
+全体見通しのイン逃げを42%基準に調整。
+
+他展開との比較関係は維持。
+
+*/
 
 return v;
 
@@ -2056,15 +2196,15 @@ return Object.entries(o)
 
 .sort((a,b)=>b[1]-a[1])
 
-.filter(([t,v])=>t==="escape"?v>=50:v>=20);
+.filter(([t,v])=>t==="escape"?v>=42:v>=20);
 
 }
 
-/* =========================
+/* =========================================================
 
    AIスコア
 
-========================= */
+========================================================= */
 
 function score(b){
 
@@ -2236,11 +2376,11 @@ score:score(i+1)
 
 }
 
-/* =========================
+/* =========================================================
 
    除外
 
-========================= */
+========================================================= */
 
 function scoreAverage(a){
 
@@ -2284,11 +2424,11 @@ return classification(b,a).type==="third";
 
 }
 
-/* =========================
+/* =========================================================
 
    ランキング
 
-========================= */
+========================================================= */
 
 function renderRanking(a){
 
@@ -2418,23 +2558,23 @@ ${s.count?s.rate.toFixed(1)+"%":"-"}
 
 }
 
-/* =========================
+/* =========================================================
 
    見通し
 
-========================= */
+========================================================= */
 
 function renderOverview(o){
 
 let reason=
 
-o.escape<45
+o.escape<42
 
-?`イン逃げ期待は${o.escape.toFixed(1)}%。45%以下なのでイン逃げ一本では見ない。`
+?`イン逃げ期待は${o.escape.toFixed(1)}%。42%未満なのでイン逃げ一本では見ない。`
 
 :o.escape<50
 
-?`イン逃げ期待は${o.escape.toFixed(1)}%。45〜50%なので相手展開も重視。`
+?`イン逃げ期待は${o.escape.toFixed(1)}%。42〜50%なので相手展開も重視。`
 
 :o.escape<60
 
@@ -2466,7 +2606,7 @@ ${["escape","sashi","maki","makiSashi"].map(t=>`
 
 <div class="overviewBox ${
 
-o[t]>=(t==="escape"?50:20)?"main":""
+o[t]>=(t==="escape"?42:20)?"main":""
 
 }">
 
@@ -2508,17 +2648,17 @@ let headline=
 
 o.escape>=60
 
-?"🔥 1号艇のイン逃げが鉄板級。"
+?"🔥 1号艇のイン逃げが鉄板級。":
 
-:o.escape>=50
+o.escape>=50
 
-?"1号艇のイン逃げを中心視。"
+?"1号艇のイン逃げを中心視。":
 
-:o.escape<=45
+o.escape<42
 
-?"1号艇のイン逃げ信頼度は低め。"
+?"1号艇のイン逃げ信頼度は低め。":
 
-:"イン逃げは五分以上。相手展開も比較。";
+"イン逃げは五分以上。相手展開も比較。";
 
 $("attack").innerHTML=`
 
@@ -2588,11 +2728,11 @@ b=>`${b}号艇→${course(b)}コース`
 
 }
 
-/* =========================
+/* =========================================================
 
    除外表示
 
-========================= */
+========================================================= */
 
 function renderExclusions(a){
 
@@ -2708,11 +2848,11 @@ $("exclusions").innerHTML=html;
 
 }
 
-/* =========================
+/* =========================================================
 
    買い目
 
-========================= */
+========================================================= */
 
 function candidate(a,b,rankings,type,mode="recovery"){
 
@@ -2762,7 +2902,7 @@ o.sashi*.75+
 
 18;
 
-if(o.escape<=45)raw+=10;
+if(o.escape<42)raw+=10;
 
 }
 
@@ -2776,7 +2916,7 @@ suitability(a,type)*.9+
 
 o.maki*.75;
 
-if(o.escape<=45)raw+=10;
+if(o.escape<42)raw+=10;
 
 }
 
@@ -2790,7 +2930,7 @@ suitability(a,type)*.9+
 
 o.makiSashi*.75;
 
-if(o.escape<=45)raw+=10;
+if(o.escape<42)raw+=10;
 
 }
 
@@ -3122,11 +3262,11 @@ suitability(b,t)>=15
 
 }
 
-/* =========================
+/* =========================================================
 
    ⭐
 
-========================= */
+========================================================= */
 
 function starCount(){
 
@@ -3158,7 +3298,7 @@ b<=20000?10:12;
 
 }
 
-function starKeys(b){
+function starKeys(bets){
 
 let all=[
 
@@ -3174,7 +3314,7 @@ let all=[
 
 "under"
 
-].flatMap(k=>b[k]);
+].flatMap(k=>bets[k]);
 
 all.sort(
 
@@ -3282,11 +3422,11 @@ $("totalProbability").textContent=
 
 }
 
-/* =========================
+/* =========================================================
 
    予想
 
-========================= */
+========================================================= */
 
 function bestBoat(type){
 
@@ -3332,7 +3472,7 @@ o.escape>=50
 
 ?"イン逃げ中心":
 
-o.escape<=45
+o.escape<42
 
 ?"イン逃げは中心視しない":
 
@@ -3388,17 +3528,17 @@ x=>`${x}号艇=${course(x)}コース`
 
 <strong>AI評価</strong><br>
 
-全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・同コース過去10走を総合評価。
+全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・今回と同じ進入コースの過去7走を総合評価。
 
 </div>`;
 
 }
 
-/* =========================
+/* =========================================================
 
    AI解析
 
-========================= */
+========================================================= */
 
 async function runAnalysis(){
 
@@ -3422,9 +3562,15 @@ manualCourses[b]=+$("course"+b).value;
 
 }
 
+/*
+
+今回の進入を確定してから過去7走を検索
+
+*/
+
 $("message").innerHTML=
 
-'<span class="loading">🤖 過去10走を取得中...</span>';
+'<span class="loading">🤖 今回の進入と同じ過去7走を高速取得中...</span>';
 
 await loadHistory();
 
@@ -3478,15 +3624,17 @@ $("message").innerHTML=`
 
 ${typeName(dominant(o))}<br>
 
-📈 同コース過去10走：
+📈 今回と同コースの過去7走：
 
 ${counts.join(" / ")}走取得<br>
+
+⚡ 60日以内を高速検索<br>
 
 ⚙️ モーター2連率を評価<br>
 
 🛥️ 進入コースをAI評価へ反映<br>
 
-🎯 差しは「攻め艇→1号艇残り」を基本評価<br>
+🎯 過去7走は決まり手込み<br>
 
 🚫 平均-20pt以下は完全除外<br>
 
