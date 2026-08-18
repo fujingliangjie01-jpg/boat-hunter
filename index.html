@@ -300,15 +300,41 @@ color:#000
 
 .n1{background:#fff}
 
-.n2{background:#222;color:#fff;border:1px solid #777}
+.n2{
 
-.n3{background:#e22;color:#fff}
+background:#222;
 
-.n4{background:#248cff;color:#fff}
+color:#fff;
+
+border:1px solid #777
+
+}
+
+.n3{
+
+background:#e22;
+
+color:#fff
+
+}
+
+.n4{
+
+background:#248cff;
+
+color:#fff
+
+}
 
 .n5{background:#e5d000}
 
-.n6{background:#20a747;color:#fff}
+.n6{
+
+background:#20a747;
+
+color:#fff
+
+}
 
 .racerName{
 
@@ -1262,7 +1288,11 @@ const num=v=>{
 
 if(v==null||v==="")return 0;
 
-let x=parseFloat(String(v).replace(/[%,秒,]/g,""));
+let x=parseFloat(
+
+String(v).replace(/[%,秒,]/g,"")
+
+);
 
 return Number.isFinite(x)?x:0;
 
@@ -1292,7 +1322,11 @@ racers.find(x=>num(x.entry_number)===b);
 
 const preview=b=>
 
-previewRacers[b]||previewRacers[String(b)]||{};
+previewRacers[b]||
+
+previewRacers[String(b)]||
+
+{};
 
 /* =========================
 
@@ -1370,7 +1404,9 @@ return r.json();
 
 function directRace(data,v,r){
 
-let x=data?.programs?.stadiums?.[String(v)]?.races?.[String(r)];
+let x=
+
+data?.programs?.stadiums?.[String(v)]?.races?.[String(r)];
 
 if(x)return x;
 
@@ -1754,7 +1790,7 @@ String(d.getDate()).padStart(2,"0")
 
 function historyKey(){
 
-return"bh-history-v2-"+
+return"bh-history-v3-"+
 
 today().ymd+"-"+
 
@@ -1762,7 +1798,17 @@ $("venue").value;
 
 }
 
+/* =========================
+
+   決まり手
+
+   ★ここを強化
+
+========================= */
+
 function decision(n){
+
+let v=num(n);
 
 return({
 
@@ -1778,7 +1824,229 @@ return({
 
 6:"恵まれ"
 
-}[num(n)]||"-");
+}[v]||"-");
+
+}
+
+/*
+
+APIによって決まり手の項目名が違うため、
+
+複数パターンをすべて確認する。
+
+*/
+
+function getDecision(x,parent){
+
+let values=[
+
+x?.technique_number,
+
+x?.technique,
+
+x?.winning_technique,
+
+x?.winning_technique_number,
+
+x?.technique_no,
+
+x?.technique_name,
+
+x?.winning_technique_name,
+
+x?.decision,
+
+x?.decision_number,
+
+x?.decision_name,
+
+x?.kimarite,
+
+x?.kimarite_number,
+
+x?.kimarite_name,
+
+x?.result_technique,
+
+x?.result_technique_number,
+
+x?.result_method,
+
+x?.winning_method,
+
+parent?.technique_number,
+
+parent?.technique,
+
+parent?.winning_technique,
+
+parent?.winning_technique_number,
+
+parent?.technique_no,
+
+parent?.technique_name,
+
+parent?.winning_technique_name,
+
+parent?.decision,
+
+parent?.decision_number,
+
+parent?.decision_name,
+
+parent?.kimarite,
+
+parent?.kimarite_number,
+
+parent?.kimarite_name,
+
+parent?.result_technique,
+
+parent?.result_technique_number,
+
+parent?.result_method,
+
+parent?.winning_method
+
+];
+
+for(let v of values){
+
+if(v!=null&&v!==""){
+
+/*
+
+文字列の場合はそのまま判定
+
+*/
+
+let s=String(v).trim();
+
+if(
+
+s==="逃げ"||
+
+s==="差し"||
+
+s==="まくり"||
+
+s==="まくり差し"||
+
+s==="抜き"||
+
+s==="恵まれ"
+
+){
+
+return s;
+
+}
+
+/*
+
+数値の場合
+
+*/
+
+let n=num(v);
+
+if(n>=1&&n<=6){
+
+return decision(n);
+
+}
+
+/*
+
+英語・ローマ字表記にも対応
+
+*/
+
+let lower=s.toLowerCase();
+
+if(
+
+lower.includes("makurizashi")||
+
+lower.includes("maki_sashi")||
+
+lower.includes("maki-sashi")||
+
+lower.includes("まくり差")
+
+){
+
+return"まくり差し";
+
+}
+
+if(
+
+lower.includes("makuri")||
+
+lower.includes("まくり")
+
+){
+
+return"まくり";
+
+}
+
+if(
+
+lower.includes("sashi")||
+
+lower.includes("差し")
+
+){
+
+return"差し";
+
+}
+
+if(
+
+lower.includes("nige")||
+
+lower.includes("escape")||
+
+lower.includes("逃げ")
+
+){
+
+return"逃げ";
+
+}
+
+if(
+
+lower.includes("nuki")||
+
+lower.includes("抜き")
+
+){
+
+return"抜き";
+
+}
+
+if(
+
+lower.includes("megumare")||
+
+lower.includes("恵まれ")
+
+){
+
+return"恵まれ";
+
+}
+
+}
+
+}
+
+return"-";
 
 }
 
@@ -1850,29 +2118,15 @@ x?.race_date||
 
 x?.racedate||
 
+x?.raceDate||
+
 parent?.date||
 
 parent?.race_date||
 
+parent?.racedate||
+
 ""
-
-);
-
-}
-
-function getDecision(x,parent){
-
-return decision(
-
-x?.technique_number||
-
-x?.technique||
-
-x?.winning_technique||
-
-parent?.technique_number||
-
-parent?.technique
 
 );
 
@@ -1916,6 +2170,12 @@ return x;
 
 }
 
+/* =========================
+
+   履歴追加
+
+========================= */
+
 function addHistory(data,targets,wanted){
 
 function pushResult(x,parent){
@@ -1944,13 +2204,21 @@ if(
 
 if(targets[no].boats[c].length>=10)return;
 
+/*
+
+★ 決まり手をここで必ず取得
+
+*/
+
+let dec=getDecision(x,parent);
+
 let item={
 
 date:getResultDate(x,parent),
 
 place,
 
-decision:getDecision(x,parent)
+decision:dec
 
 };
 
@@ -2040,6 +2308,12 @@ scan(data,null);
 
 }
 
+/* =========================
+
+   履歴取得
+
+========================= */
+
 async function loadHistory(){
 
 let key=historyKey();
@@ -2060,11 +2334,13 @@ let complete=racers.every(r=>{
 
 let no=getRacerNumber(r);
 
-return Object.values(
+let c=course(num(r.entry_number));
 
-cached[no]?.boats||{}
+return(
 
-).some(a=>a.length>=10);
+cached[no]?.boats?.[c]?.length>=10
+
+);
 
 });
 
@@ -2076,15 +2352,9 @@ if(complete)return;
 
 let targets=emptyHistory();
 
-let wanted=new Set(
-
-Object.keys(targets).map(Number)
-
-);
-
 for(let start=1;start<=60;start+=5){
 
-wanted=new Set(
+let wanted=new Set(
 
 racers
 
@@ -2092,15 +2362,17 @@ racers
 
 .filter(no=>{
 
-return racers.some(r=>{
+let rr=racers.find(
 
-let rr=getRacerNumber(r);
+r=>getRacerNumber(r)===no
 
-if(rr!==no)return false;
+);
+
+if(!rr)return false;
 
 let c=course(
 
-num(r.entry_number)
+num(rr.entry_number)
 
 );
 
@@ -2110,8 +2382,6 @@ targets[no]?.boats?.[c]?.length||0
 
 )<10;
 
-});
-
 })
 
 );
@@ -2120,7 +2390,11 @@ let complete=racers.every(r=>{
 
 let no=getRacerNumber(r);
 
-let c=course(num(r.entry_number));
+let c=course(
+
+num(r.entry_number)
+
+);
 
 return(
 
@@ -2183,20 +2457,6 @@ wanted
 );
 
 }
-
-});
-
-complete=racers.every(r=>{
-
-let no=getRacerNumber(r);
-
-let c=course(num(r.entry_number));
-
-return(
-
-targets[no]?.boats?.[c]?.length||0
-
-)>=10;
 
 });
 
@@ -2382,7 +2642,7 @@ ${i+1}.
 
 ${esc(
 
-String(x.date)
+String(x.date||"")
 
 .slice(5,10)
 
@@ -2408,7 +2668,15 @@ x.place===1
 
 ${x.place}着
 
-${x.decision!=="-"?"/ "+x.decision:""}
+${
+
+x.decision&&x.decision!=="-"
+
+?"/ "+esc(x.decision)
+
+:""
+
+}
 
 </span>
 
@@ -2736,7 +3004,7 @@ w.water_temperature
 
 /* =========================
 
-   決まり手
+   決まり手適性
 
 ========================= */
 
@@ -3898,12 +4166,6 @@ x=>x.boat===b
 
 if(!A||!B)return null;
 
-/*
-
-  除外艇は絶対禁止
-
-*/
-
 if(
 
 isExcluded(a,rankings)||
@@ -3915,16 +4177,6 @@ isExcluded(b,rankings)
 return null;
 
 }
-
-/*
-
-  的中重視では
-
-  「3着までなら」の艇を
-
-  2着に入れない
-
-*/
 
 if(
 
@@ -3964,57 +4216,15 @@ if(type==="sashi"){
 
 /*
 
-  =========================================
+差しの基本形：
 
-  ★ 差しの基本形を修正
-
-  =========================================
-
-  差しは基本的に
-
-  「攻め艇 → 1号艇残り」
-
-  を中心にする。
-
-  例：
-
-  2→1
-
-  3→1
-
-  4→1
-
-  5→1
-
-  6→1
-
-  1号艇がインで残るケースを
-
-  差しの基本買い目として評価する。
-
-  したがって、
-
-  2→3
-
-  3→4
-
-  4→2
-
-  のような2着が1号艇以外の買い目は
-
-  「回収率重視・差し」には入れない。
+攻め艇 → 1号艇残り
 
 */
 
 if(course(a)===1)return null;
 
 if(course(b)!==1)return null;
-
-/*
-
-  差し適性を評価
-
-*/
 
 raw+=
 
@@ -4024,21 +4234,7 @@ suitability(a,type)*.9+
 
 o.sashi*.75;
 
-/*
-
-  1号艇残りを強く評価
-
-*/
-
 raw+=18;
-
-/*
-
-  イン逃げ信頼度が低い場合は
-
-  差し展開をさらに評価
-
-*/
 
 if(o.escape<=45)raw+=10;
 
@@ -4206,12 +4402,6 @@ under:[]
 
 let used=new Set();
 
-/*
-
-  まず的中重視
-
-*/
-
 let hp=[
 
 "escape",
@@ -4237,12 +4427,6 @@ t=>pool(r,t,"hit")
 );
 
 let top=r[0]?.boat;
-
-/*
-
-  本命艇絡みを優先
-
-*/
 
 for(
 
@@ -4288,12 +4472,6 @@ used.add(x.key);
 
 }
 
-/*
-
-  的中重視にイン逃げがあるか
-
-*/
-
 let hitHasEscape=
 
 result.hit.some(
@@ -4301,14 +4479,6 @@ result.hit.some(
 x=>course(x.a)===1
 
 );
-
-/*
-
-  回収重視
-
-  全買い目重複禁止
-
-*/
 
 for(
 
@@ -4327,14 +4497,6 @@ let type of
 ]
 
 ){
-
-/*
-
-  的中重視にイン逃げがある場合、
-
-  回収重視・イン逃げは作らない
-
-*/
 
 if(
 
@@ -4372,12 +4534,6 @@ used.add(x.key);
 
 }
 
-/*
-
-  穴目
-
-*/
-
 let o=overview();
 
 let first=r[0];
@@ -4385,12 +4541,6 @@ let first=r[0];
 let uc=[];
 
 r.slice(1).forEach(t=>{
-
-/*
-
-  除外艇は穴目にも絶対入れない
-
-*/
 
 if(
 
@@ -4491,12 +4641,6 @@ used.add(x.key);
 }
 
 }
-
-/*
-
-  全買い目の確率
-
-*/
 
 let all=[
 
