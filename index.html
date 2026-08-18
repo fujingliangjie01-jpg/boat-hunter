@@ -260,17 +260,29 @@ th{color:#d4af37}
 
 <select id="race">
 
-<option value="1">1R</option><option value="2">2R</option>
+<option value="1">1R</option>
 
-<option value="3">3R</option><option value="4">4R</option>
+<option value="2">2R</option>
 
-<option value="5">5R</option><option value="6">6R</option>
+<option value="3">3R</option>
 
-<option value="7">7R</option><option value="8">8R</option>
+<option value="4">4R</option>
 
-<option value="9">9R</option><option value="10">10R</option>
+<option value="5">5R</option>
 
-<option value="11">11R</option><option value="12">12R</option>
+<option value="6">6R</option>
+
+<option value="7">7R</option>
+
+<option value="8">8R</option>
+
+<option value="9">9R</option>
+
+<option value="10">10R</option>
+
+<option value="11">11R</option>
+
+<option value="12">12R</option>
 
 </select>
 
@@ -388,17 +400,53 @@ AI買い目確率合計<br>
 
 </div>
 
-<div class="pickBox"><div class="pickTitle">🟢 的中率重視</div><div id="hitPicks"></div></div>
+<div class="pickBox">
 
-<div class="pickBox"><div class="pickTitle">🟡 回収率重視・イン逃げ</div><div id="escapePicks"></div></div>
+<div class="pickTitle">🟢 的中率重視</div>
 
-<div class="pickBox"><div class="pickTitle">🟡 回収率重視・差し</div><div id="sashiPicks"></div></div>
+<div id="hitPicks"></div>
 
-<div class="pickBox"><div class="pickTitle">🟡 回収率重視・まくり</div><div id="makiPicks"></div></div>
+</div>
 
-<div class="pickBox"><div class="pickTitle">🟡 回収率重視・まくり差し</div><div id="makiSashiPicks"></div></div>
+<div class="pickBox">
 
-<div class="pickBox"><div class="pickTitle">🔥 穴目</div><div id="underPicks"></div></div>
+<div class="pickTitle">🟡 回収率重視・イン逃げ</div>
+
+<div id="escapePicks"></div>
+
+</div>
+
+<div class="pickBox">
+
+<div class="pickTitle">🟡 回収率重視・差し</div>
+
+<div id="sashiPicks"></div>
+
+</div>
+
+<div class="pickBox">
+
+<div class="pickTitle">🟡 回収率重視・まくり</div>
+
+<div id="makiPicks"></div>
+
+</div>
+
+<div class="pickBox">
+
+<div class="pickTitle">🟡 回収率重視・まくり差し</div>
+
+<div id="makiSashiPicks"></div>
+
+</div>
+
+<div class="pickBox">
+
+<div class="pickTitle">🔥 穴目</div>
+
+<div id="underPicks"></div>
+
+</div>
 
 </div>
 
@@ -440,7 +488,15 @@ return Number.isFinite(x)?x:0;
 
 const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({
 
-"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+"&":"&amp;",
+
+"<":"&lt;",
+
+">":"&gt;",
+
+'"':"&quot;",
+
+"'":"&#039;"
 
 }[m]));
 
@@ -468,7 +524,11 @@ let p=new Intl.DateTimeFormat("ja-JP",{
 
 timeZone:"Asia/Tokyo",
 
-year:"numeric",month:"2-digit",day:"2-digit"
+year:"numeric",
+
+month:"2-digit",
+
+day:"2-digit"
 
 }).formatToParts(new Date());
 
@@ -702,7 +762,7 @@ x?.course_number
 
 );
 
-if(!entry && i<6)entry=i+1;
+if(!entry&&i<6)entry=i+1;
 
 return{
 
@@ -748,8 +808,6 @@ const urls=[
 
 ];
 
-let errors=[];
-
 for(const url of urls){
 
 try{
@@ -770,11 +828,7 @@ return{data,race,base:url};
 
 }
 
-}catch(e){
-
-errors.push(url+" : "+e.message);
-
-}
+}catch(e){}
 
 }
 
@@ -1012,9 +1066,17 @@ function decision(n){
 
 return({
 
-1:"逃げ",2:"差し",3:"まくり",
+1:"逃げ",
 
-4:"まくり差し",5:"抜き",6:"恵まれ"
+2:"差し",
+
+3:"まくり",
+
+4:"まくり差し",
+
+5:"抜き",
+
+6:"恵まれ"
 
 }[num(n)]||"-");
 
@@ -1052,7 +1114,9 @@ return x;
 
 function addResultRace(race,targets,wanted){
 
-let result=race?.result||
+let result=
+
+race?.result||
 
 race?.results||
 
@@ -1154,11 +1218,15 @@ let list=Array.isArray(races)
 
 list.forEach(race=>{
 
-if(race?.result||
+if(
+
+race?.result||
 
 race?.results||
 
-race?.race_result){
+race?.race_result
+
+){
 
 addResultRace(race,targets,wanted);
 
@@ -1244,7 +1312,13 @@ Object.keys(targets).map(Number)
 
 );
 
-for(let daysAgo=1;daysAgo<=120;daysAgo++){
+/*
+
+  ★ ここを120日→60日に変更
+
+*/
+
+for(let daysAgo=1;daysAgo<=60;daysAgo++){
 
 if(historyComplete(targets))break;
 
@@ -1440,13 +1514,29 @@ return`
 
 <div class="historyStats">
 
-<div class="historyStat">1着<strong>${s.first}</strong></div>
+<div class="historyStat">
 
-<div class="historyStat">2着<strong>${s.second}</strong></div>
+1着<strong>${s.first}</strong>
 
-<div class="historyStat">3着<strong>${s.third}</strong></div>
+</div>
 
-<div class="historyStat">3連対率<strong>${s.rate.toFixed(1)}%</strong></div>
+<div class="historyStat">
+
+2着<strong>${s.second}</strong>
+
+</div>
+
+<div class="historyStat">
+
+3着<strong>${s.third}</strong>
+
+</div>
+
+<div class="historyStat">
+
+3連対率<strong>${s.rate.toFixed(1)}%</strong>
+
+</div>
 
 </div>
 
@@ -1500,7 +1590,13 @@ function rank(n){
 
 return({
 
-1:"A1",2:"A2",3:"B1",4:"B2"
+1:"A1",
+
+2:"A2",
+
+3:"B1",
+
+4:"B2"
 
 }[num(n)]||"-");
 
@@ -1570,7 +1666,11 @@ return`
 
 <div class="number n${b}">${b}</div>
 
-<div class="racerName">${esc(r.name||r.racer_name||"-")}</div>
+<div class="racerName">
+
+${esc(r.name||r.racer_name||"-")}
+
+</div>
 
 </div>
 
@@ -1578,7 +1678,17 @@ return`
 
 級別：
 
-${rank(r.rank_number||r.class_number||r.rank||r.class)}<br>
+${rank(
+
+r.rank_number||
+
+r.class_number||
+
+r.rank||
+
+r.class
+
+)}<br>
 
 登録番号：
 
@@ -1590,7 +1700,13 @@ ${num(r.age)||"-"}歳<br>
 
 全国勝率：
 
-${num(r.national_win_rate||r.win_rate_national).toFixed(2)}<br>
+${num(
+
+r.national_win_rate||
+
+r.win_rate_national
+
+).toFixed(2)}<br>
 
 全国2連率：
 
@@ -1606,7 +1722,13 @@ r.national_top2_percent
 
 当地勝率：
 
-${num(r.local_win_rate||r.win_rate_local).toFixed(2)}<br>
+${num(
+
+r.local_win_rate||
+
+r.win_rate_local
+
+).toFixed(2)}<br>
 
 当地2連率：
 
@@ -1624,7 +1746,13 @@ r.local_top2_percent
 
 <div class="tech">
 
-<div><span>今回進入</span>${course(b)}</div>
+<div>
+
+<span>今回進入</span>
+
+${course(b)}
+
+</div>
 
 <div>
 
@@ -1646,17 +1774,35 @@ p.entry_course
 
 <span>モーター</span>
 
-${num(r.motor_number||r.motor_no)||"-"}
+${num(
+
+r.motor_number||
+
+r.motor_no
+
+)||"-"}
 
 </div>
 
-<div><span>モーター2連</span>${m.toFixed(1)}%</div>
+<div>
+
+<span>モーター2連</span>
+
+${m.toFixed(1)}%
+
+</div>
 
 <div>
 
 <span>平均ST</span>
 
-${num(r.average_start_timing||r.average_st).toFixed(2)}
+${num(
+
+r.average_start_timing||
+
+r.average_st
+
+).toFixed(2)}
 
 </div>
 
@@ -1664,7 +1810,13 @@ ${num(r.average_start_timing||r.average_st).toFixed(2)}
 
 <span>直前ST</span>
 
-${num(p.start_timing||p.st).toFixed(2)}
+${num(
+
+p.start_timing||
+
+p.st
+
+).toFixed(2)}
 
 </div>
 
@@ -1672,7 +1824,13 @@ ${num(p.start_timing||p.st).toFixed(2)}
 
 <span>展示</span>
 
-${num(p.exhibition_time||p.exhibition).toFixed(2)}
+${num(
+
+p.exhibition_time||
+
+p.exhibition
+
+).toFixed(2)}
 
 </div>
 
@@ -1692,13 +1850,21 @@ $("raceInfo").innerHTML+=`
 
 🌤️ 天候<br>
 
-風速：${num(w.wind_speed||w.wind)}m<br>
+風速：
 
-波高：${num(w.wave_height||w.wave)}cm<br>
+${num(w.wind_speed||w.wind)}m<br>
 
-気温：${num(w.air_temperature||w.temperature).toFixed(1)}℃<br>
+波高：
 
-水温：${num(w.water_temperature).toFixed(1)}℃
+${num(w.wave_height||w.wave)}cm<br>
+
+気温：
+
+${num(w.air_temperature||w.temperature).toFixed(1)}℃<br>
+
+水温：
+
+${num(w.water_temperature).toFixed(1)}℃
 
 </div>`;
 
@@ -1714,13 +1880,43 @@ function decisions(r){
 
 return{
 
-escape:num(r.escape_rate||r.nige_rate||r.win_by_escape_rate),
+escape:num(
 
-sashi:num(r.sashi_rate||r.win_by_sashi_rate),
+r.escape_rate||
 
-maki:num(r.maki_rate||r.makuri_rate||r.win_by_maki_rate),
+r.nige_rate||
 
-makiSashi:num(r.maki_sashi_rate||r.makurisashi_rate||r.win_by_maki_sashi_rate)
+r.win_by_escape_rate
+
+),
+
+sashi:num(
+
+r.sashi_rate||
+
+r.win_by_sashi_rate
+
+),
+
+maki:num(
+
+r.maki_rate||
+
+r.makuri_rate||
+
+r.win_by_maki_rate
+
+),
+
+makiSashi:num(
+
+r.maki_sashi_rate||
+
+r.makurisashi_rate||
+
+r.win_by_maki_sashi_rate
+
+)
 
 };
 
@@ -1790,13 +1986,21 @@ function overview(){
 
 let v={
 
-escape:0,sashi:0,maki:0,makiSashi:0
+escape:0,
+
+sashi:0,
+
+maki:0,
+
+makiSashi:0
 
 };
 
 for(let b=1;b<=6;b++){
 
-for(let t in v)v[t]+=suitability(b,t);
+for(let t in v)
+
+v[t]+=suitability(b,t);
 
 }
 
@@ -1824,7 +2028,9 @@ return v;
 
 function dominant(o){
 
-return Object.entries(o).sort((a,b)=>b[1]-a[1])[0][0];
+return Object.entries(o)
+
+.sort((a,b)=>b[1]-a[1])[0][0];
 
 }
 
@@ -1914,19 +2120,47 @@ r.average_st
 
 );
 
-if(ast>0)s+=Math.max(0,.30-ast)*20;
+if(ast>0)
 
-let st=num(p.start_timing||p.st);
+s+=Math.max(0,.30-ast)*20;
 
-if(st>0)s+=Math.max(0,.25-st)*15;
+let st=num(
 
-let ex=num(p.exhibition_time||p.exhibition);
+p.start_timing||
 
-if(ex>0)s+=Math.max(0,6.8-ex)*5;
+p.st
+
+);
+
+if(st>0)
+
+s+=Math.max(0,.25-st)*15;
+
+let ex=num(
+
+p.exhibition_time||
+
+p.exhibition
+
+);
+
+if(ex>0)
+
+s+=Math.max(0,6.8-ex)*5;
 
 s+=({
 
-1:10,2:6,3:5,4:3,5:1,6:0
+1:10,
+
+2:6,
+
+3:5,
+
+4:3,
+
+5:1,
+
+6:0
 
 }[course(b)]||0);
 
@@ -1970,7 +2204,9 @@ let o=overview();
 
 let d=dominant(o);
 
-if(course(b)!==1)s+=suitability(b,d)*.35;
+if(course(b)!==1)
+
+s+=suitability(b,d)*.35;
 
 Object.entries(o).forEach(([t,v])=>{
 
@@ -2016,15 +2252,21 @@ function classification(boat,a){
 
 let x=a.find(z=>z.boat===boat);
 
-if(!x)return{type:"normal",diff:0,average:0};
+if(!x)
+
+return{type:"normal",diff:0,average:0};
 
 let avg=scoreAverage(a);
 
 let diff=x.score-avg;
 
-if(diff<=-20)return{type:"exclude",diff,average:avg};
+if(diff<=-20)
 
-if(diff<-15)return{type:"third",diff,average:avg};
+return{type:"exclude",diff,average:avg};
+
+if(diff<-15)
+
+return{type:"third",diff,average:avg};
 
 return{type:"normal",diff,average:avg};
 
@@ -2056,11 +2298,23 @@ $("ranking").innerHTML=`
 
 <tr>
 
-<th>順位</th><th>艇</th><th>選手</th><th>AI</th>
+<th>順位</th>
 
-<th>進入</th><th>全国勝率</th><th>当地勝率</th>
+<th>艇</th>
 
-<th>モーター2連</th><th>同コース3連対</th>
+<th>選手</th>
+
+<th>AI</th>
+
+<th>進入</th>
+
+<th>全国勝率</th>
+
+<th>当地勝率</th>
+
+<th>モーター2連</th>
+
+<th>同コース3連対</th>
 
 </tr>
 
@@ -2090,21 +2344,71 @@ return`
 
 <td>${i+1}</td>
 
-<td><strong>${x.boat}</strong>${status}</td>
+<td>
 
-<td>${esc(r?.name||r?.racer_name||"-")}</td>
+<strong>${x.boat}</strong>
 
-<td><strong>${x.score.toFixed(1)}</strong></td>
+${status}
+
+</td>
+
+<td>
+
+${esc(r?.name||r?.racer_name||"-")}
+
+</td>
+
+<td>
+
+<strong>${x.score.toFixed(1)}</strong>
+
+</td>
 
 <td>${course(x.boat)}</td>
 
-<td>${num(r?.national_win_rate||r?.win_rate_national).toFixed(2)}</td>
+<td>
 
-<td>${num(r?.local_win_rate||r?.win_rate_local).toFixed(2)}</td>
+${num(
 
-<td>${num(r?.motor_top_2_percent||r?.motor_2ren_rate||r?.motor_2ren).toFixed(1)}%</td>
+r?.national_win_rate||
 
-<td>${s.count?s.rate.toFixed(1)+"%":"-"}</td>
+r?.win_rate_national
+
+).toFixed(2)}
+
+</td>
+
+<td>
+
+${num(
+
+r?.local_win_rate||
+
+r?.win_rate_local
+
+).toFixed(2)}
+
+</td>
+
+<td>
+
+${num(
+
+r?.motor_top_2_percent||
+
+r?.motor_2ren_rate||
+
+r?.motor_2ren
+
+).toFixed(1)}%
+
+</td>
+
+<td>
+
+${s.count?s.rate.toFixed(1)+"%":"-"}
+
+</td>
 
 </tr>`;
 
@@ -2144,7 +2448,11 @@ if(mt.length){
 
 reason+=`<br>中心候補：${
 
-mt.map(x=>typeName(x[0])+" "+x[1].toFixed(1)+"%").join(" / ")
+mt.map(
+
+x=>typeName(x[0])+" "+x[1].toFixed(1)+"%"
+
+).join(" / ")
 
 }`;
 
@@ -2162,9 +2470,17 @@ o[t]>=(t==="escape"?50:20)?"main":""
 
 }">
 
-<div class="label">${typeName(t)}</div>
+<div class="label">
 
-<div class="value">${o[t].toFixed(1)}%</div>
+${typeName(t)}
+
+</div>
+
+<div class="value">
+
+${o[t].toFixed(1)}%
+
+</div>
 
 </div>
 
@@ -2208,25 +2524,45 @@ $("attack").innerHTML=`
 
 <div class="attackBox">
 
-<div class="attackMain">${headline}</div>
+<div class="attackMain">
+
+${headline}
+
+</div>
 
 <div class="attackSub">
 
-逃げ：${o.escape.toFixed(1)}%<br>
+逃げ：
 
-差し：${o.sashi.toFixed(1)}%<br>
+${o.escape.toFixed(1)}%<br>
 
-まくり：${o.maki.toFixed(1)}%<br>
+差し：
 
-まくり差し：${o.makiSashi.toFixed(1)}%<br><br>
+${o.sashi.toFixed(1)}%<br>
 
-<strong style="color:#d4af37">今回の中心展開</strong><br>
+まくり：
+
+${o.maki.toFixed(1)}%<br>
+
+まくり差し：
+
+${o.makiSashi.toFixed(1)}%<br><br>
+
+<strong style="color:#d4af37">
+
+今回の中心展開
+
+</strong><br>
 
 ${
 
 mt.length
 
-?mt.map(x=>typeName(x[0])+" "+x[1].toFixed(1)+"%").join(" / ")
+?mt.map(
+
+x=>typeName(x[0])+" "+x[1].toFixed(1)+"%"
+
+).join(" / ")
 
 :typeName(main)
 
@@ -2234,11 +2570,15 @@ mt.length
 
 <br><br>
 
-<strong style="color:#d4af37">進入</strong><br>
+<strong style="color:#d4af37">
 
-${[1,2,3,4,5,6].map(b=>
+進入
 
-`${b}号艇→${course(b)}コース`
+</strong><br>
+
+${[1,2,3,4,5,6].map(
+
+b=>`${b}号艇→${course(b)}コース`
 
 ).join(" / ")}
 
@@ -2286,13 +2626,23 @@ html+=`
 
 <div class="exclusion">
 
-<strong>${x.boat}号艇 ${esc(x.racer?.name||"-")}</strong><br>
+<strong>
 
-AI：${x.score.toFixed(1)}<br>
+${x.boat}号艇 ${esc(x.racer?.name||"-")}
 
-6艇平均：${avg.toFixed(1)}<br>
+</strong><br>
 
-平均との差：${x.classification.diff.toFixed(1)}pt<br>
+AI：
+
+${x.score.toFixed(1)}<br>
+
+6艇平均：
+
+${avg.toFixed(1)}<br>
+
+平均との差：
+
+${x.classification.diff.toFixed(1)}pt<br>
 
 🚫 <strong>除外</strong><br>
 
@@ -2308,17 +2658,29 @@ html+=`
 
 <div class="exclusionKeep">
 
-<strong>${x.boat}号艇 ${esc(x.racer?.name||"-")}</strong><br>
+<strong>
 
-AI：${x.score.toFixed(1)}<br>
+${x.boat}号艇 ${esc(x.racer?.name||"-")}
 
-6艇平均：${avg.toFixed(1)}<br>
+</strong><br>
 
-平均との差：${x.classification.diff.toFixed(1)}pt<br>
+AI：
+
+${x.score.toFixed(1)}<br>
+
+6艇平均：
+
+${avg.toFixed(1)}<br>
+
+平均との差：
+
+${x.classification.diff.toFixed(1)}pt<br>
 
 🟡 <strong>3着までなら</strong><br>
 
-的中重視では<strong>2着には入れない</strong>。<br>
+的中重視では
+
+<strong>2着には入れない</strong>。<br>
 
 回収重視・穴目では使用可能。
 
@@ -2334,7 +2696,9 @@ html=`
 
 今回は平均点から20pt以上低い除外艇なし。<br>
 
-6艇平均：${avg.toFixed(1)}pt
+6艇平均：
+
+${avg.toFixed(1)}pt
 
 </div>`;
 
@@ -2360,9 +2724,17 @@ let B=rankings.find(x=>x.boat===b);
 
 if(!A||!B)return null;
 
-if(isExcluded(a,rankings)||isExcluded(b,rankings))return null;
+if(
 
-if(mode==="hit"&&isThirdOnly(b,rankings))return null;
+isExcluded(a,rankings)||
+
+isExcluded(b,rankings)
+
+)return null;
+
+if(mode==="hit"&&isThirdOnly(b,rankings))
+
+return null;
 
 let o=overview();
 
@@ -2382,7 +2754,13 @@ if(course(a)===1)return null;
 
 if(course(b)!==1)return null;
 
-raw+=10+suitability(a,type)*.9+o.sashi*.75+18;
+raw+=10+
+
+suitability(a,type)*.9+
+
+o.sashi*.75+
+
+18;
 
 if(o.escape<=45)raw+=10;
 
@@ -2392,7 +2770,11 @@ if(type==="maki"){
 
 if(course(a)===1)return null;
 
-raw+=8+suitability(a,type)*.9+o.maki*.75;
+raw+=8+
+
+suitability(a,type)*.9+
+
+o.maki*.75;
 
 if(o.escape<=45)raw+=10;
 
@@ -2402,7 +2784,11 @@ if(type==="makiSashi"){
 
 if(course(a)===1)return null;
 
-raw+=10+suitability(a,type)*.9+o.makiSashi*.75;
+raw+=10+
+
+suitability(a,type)*.9+
+
+o.makiSashi*.75;
 
 if(o.escape<=45)raw+=10;
 
@@ -2424,7 +2810,13 @@ let ra=rankings.findIndex(x=>x.boat===a)+1;
 
 let rb=rankings.findIndex(x=>x.boat===b)+1;
 
-raw+=ra===1?8:ra===2?5:ra===3?3:0;
+raw+=
+
+ra===1?8:
+
+ra===2?5:
+
+ra===3?3:0;
 
 if(rb<=3)raw+=2;
 
@@ -2482,7 +2874,13 @@ let used=new Set();
 
 let hp=[
 
-"escape","sashi","maki","makiSashi"
+"escape",
+
+"sashi",
+
+"maki",
+
+"makiSashi"
 
 ].flatMap(t=>pool(r,t,"hit"))
 
@@ -2490,7 +2888,11 @@ let hp=[
 
 let top=r[0]?.boat;
 
-for(let x of hp.filter(x=>x.a===top||x.b===top)){
+for(let x of hp.filter(
+
+x=>x.a===top||x.b===top
+
+)){
 
 if(result.hit.length>=2)break;
 
@@ -2524,13 +2926,27 @@ x=>course(x.a)===1
 
 );
 
-for(let type of ["escape","sashi","maki","makiSashi"]){
+for(let type of [
 
-if(type==="escape"&&hitHasEscape)continue;
+"escape",
+
+"sashi",
+
+"maki",
+
+"makiSashi"
+
+]){
+
+if(type==="escape"&&hitHasEscape)
+
+continue;
 
 for(let x of pool(r,type,"recovery")){
 
-if(result[type].length>=4)break;
+if(result[type].length>=4)
+
+break;
 
 if(!used.has(x.key)){
 
@@ -2552,11 +2968,15 @@ let uc=[];
 
 r.slice(1).forEach(t=>{
 
-if(isExcluded(t.boat,r))return;
+if(isExcluded(t.boat,r))
+
+return;
 
 let c=classification(t.boat,r);
 
-let thirdBoost=c.type==="third"?15:0;
+let thirdBoost=
+
+c.type==="third"?15:0;
 
 if(
 
@@ -2580,7 +3000,15 @@ if(isExcluded(b,r))continue;
 
 let x=candidate(
 
-t.boat,b,r,dominant(o),"recovery"
+t.boat,
+
+b,
+
+r,
+
+dominant(o),
+
+"recovery"
 
 );
 
@@ -2602,7 +3030,9 @@ uc.sort((a,b)=>b.raw-a.raw);
 
 for(let x of uc){
 
-if(result.under.length>=2)break;
+if(result.under.length>=2)
+
+break;
 
 if(!used.has(x.key)){
 
@@ -2616,11 +3046,23 @@ used.add(x.key);
 
 let all=[
 
-"hit","escape","sashi","maki","makiSashi","under"
+"hit",
+
+"escape",
+
+"sashi",
+
+"maki",
+
+"makiSashi",
+
+"under"
 
 ].flatMap(k=>result[k]);
 
-let total=all.reduce((s,x)=>s+x.raw,0)||1;
+let total=
+
+all.reduce((s,x)=>s+x.raw,0)||1;
 
 all.forEach(x=>{
 
@@ -2628,7 +3070,15 @@ x.probability=x.raw/total*100;
 
 });
 
-result.total=all.reduce((s,x)=>s+x.probability,0);
+result.total=
+
+all.reduce(
+
+(s,x)=>s+x.probability,
+
+0
+
+);
 
 return result;
 
@@ -2662,7 +3112,11 @@ return Object.entries(o).some(
 
 ([t,v])=>
 
-t!=="escape"&&v>=20&&suitability(b,t)>=15
+t!=="escape"&&
+
+v>=20&&
+
+suitability(b,t)>=15
 
 );
 
@@ -2680,7 +3134,11 @@ let b=Math.max(
 
 100,
 
-Math.floor(Number($("budget").value||100)/100)*100
+Math.floor(
+
+Number($("budget").value||100)/100
+
+)*100
 
 );
 
@@ -2700,15 +3158,29 @@ b<=20000?10:12;
 
 }
 
-function starKeys(bets){
+function starKeys(b){
 
 let all=[
 
-"hit","escape","sashi","maki","makiSashi","under"
+"hit",
 
-].flatMap(k=>bets[k]);
+"escape",
 
-all.sort((a,b)=>b.probability-a.probability);
+"sashi",
+
+"maki",
+
+"makiSashi",
+
+"under"
+
+].flatMap(k=>b[k]);
+
+all.sort(
+
+(a,b)=>b.probability-a.probability
+
+);
 
 return new Set(
 
@@ -2750,13 +3222,25 @@ return`
 
 <div class="pickLeft">
 
-<span class="star">${stars.has(x.key)?"⭐":""}</span>
+<span class="star">
 
-<strong>${x.a} → ${x.b}</strong>
+${stars.has(x.key)?"⭐":""}
+
+</span>
+
+<strong>
+
+${x.a} → ${x.b}
+
+</strong>
 
 </div>
 
-<span class="prob">${p.toFixed(1)}%</span>
+<span class="prob">
+
+${p.toFixed(1)}%
+
+</span>
 
 </div>`;
 
@@ -2772,7 +3256,11 @@ Math.max(
 
 100,
 
-Math.floor(Number($("budget").value||100)/100)*100
+Math.floor(
+
+Number($("budget").value||100)/100
+
+)*100
 
 ).toLocaleString()+"円";
 
@@ -2836,11 +3324,17 @@ let d=dominant(o);
 
 let text=
 
-o.escape>=60?"イン逃げ鉄板級":
+o.escape>=60
 
-o.escape>=50?"イン逃げ中心":
+?"イン逃げ鉄板級":
 
-o.escape<=45?"イン逃げは中心視しない":
+o.escape>=50
+
+?"イン逃げ中心":
+
+o.escape<=45
+
+?"イン逃げは中心視しない":
 
 "イン逃げは警戒";
 
@@ -2850,19 +3344,25 @@ return`
 
 <strong>🔥 本命</strong><br>
 
-${a.boat}号艇 ${esc(a.racer?.name||"-")}
+${a.boat}号艇
+
+${esc(a.racer?.name||"-")}
 
 <br><br>
 
 <strong>🥈 対抗</strong><br>
 
-${b.boat}号艇 ${esc(b.racer?.name||"-")}
+${b.boat}号艇
+
+${esc(b.racer?.name||"-")}
 
 <br><br>
 
 <strong>🎯 単穴</strong><br>
 
-${c.boat}号艇 ${esc(c.racer?.name||"-")}
+${c.boat}号艇
+
+${esc(c.racer?.name||"-")}
 
 <br><br>
 
@@ -2942,7 +3442,9 @@ renderAttack(o);
 
 renderExclusions(r);
 
-$("forecast").innerHTML=forecast(r,o);
+$("forecast").innerHTML=
+
+forecast(r,o);
 
 currentBets=buildBets(r);
 
@@ -2972,7 +3474,9 @@ $("message").innerHTML=`
 
 ✅ AI解析完了<br>
 
-🔥 主攻め：${typeName(dominant(o))}<br>
+🔥 主攻め：
+
+${typeName(dominant(o))}<br>
 
 📈 同コース過去10走：
 
@@ -3008,7 +3512,9 @@ esc(e.message)+
 
 $("budget").oninput=()=>{
 
-if(currentBets)renderBets(currentBets);
+if(currentBets)
+
+renderBets(currentBets);
 
 };
 
