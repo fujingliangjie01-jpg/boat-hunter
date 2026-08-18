@@ -2402,7 +2402,7 @@ return`
 
 }
 
-function renderPicks(id,list,bets){
+function renderBetRows(id,list,bets,type){
 
 if(!list?.length){
 
@@ -2414,7 +2414,17 @@ return;
 
 let stars=starKeys(bets);
 
-$(id).innerHTML=list.map(x=>{
+$(id).innerHTML=`
+
+<div class="betHeader">
+
+<div>2連単</div>
+
+<div>3着候補</div>
+
+</div>
+
+${list.map(x=>{
 
 let p=x.probability||0;
 
@@ -2424,26 +2434,73 @@ p>=5.5?"strong":
 
 p<=4.9?"weak":"";
 
+/* =====================================================
+
+   3着候補
+
+   2着艇と同じ艇を3着候補に出さない
+
+===================================================== */
+
+let ranking=(bets.ranking||[]).filter(r=>{
+
+let boat=Number(r.boat);
+
+/*
+
+   2着艇は3着候補から完全除外
+
+*/
+
+if(boat===Number(x.b))return false;
+
+/*
+
+   1着艇も3着候補にはしない
+
+   ※3連単として同じ艇を重複させない
+
+*/
+
+if(boat===Number(x.a))return false;
+
+return true;
+
+});
+
+let third=renderThirdCandidates(x,ranking,type);
+
 return`
 
-<div class="pick ${cls}">
+<div class="betRow ${cls}">
 
-<div class="pickLeft">
+<div>
+
+<div class="bet2">
 
 <span class="star">${stars.has(x.key)?"⭐":""}</span>
 
-<strong>${x.a} → ${x.b}</strong>
+<span class="bet2Number">${x.a} → ${x.b}</span>
 
 </div>
 
-<span class="prob">${p.toFixed(1)}%</span>
+<div style="text-align:center;margin-top:4px">
+
+<span class="betPercent">AI確率 ${p.toFixed(1)}%</span>
+
+</div>
+
+</div>
+
+<div>${third}</div>
 
 </div>`;
 
-}).join("");
+}).join("")}
+
+`;
 
 }
-
 /* =========================================================
 
    買い目生成
