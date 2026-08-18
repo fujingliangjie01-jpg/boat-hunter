@@ -312,37 +312,13 @@ th{color:#d4af37}
 
 <h3>🛥️ 今回の進入コース</h3>
 
-<!--
-
-  ★ここを修正
-
-  HTMLだけで最初から1〜6コースを表示する。
-
-  JavaScriptが途中で止まっても空欄にならない。
-
--->
-
 <div class="courseGrid">
 
 <div class="courseBox">
 
 <label>1号艇</label>
 
-<select id="course1">
-
-<option value="1" selected>1コース</option>
-
-<option value="2">2コース</option>
-
-<option value="3">3コース</option>
-
-<option value="4">4コース</option>
-
-<option value="5">5コース</option>
-
-<option value="6">6コース</option>
-
-</select>
+<select id="course1"></select>
 
 </div>
 
@@ -350,21 +326,7 @@ th{color:#d4af37}
 
 <label>2号艇</label>
 
-<select id="course2">
-
-<option value="1">1コース</option>
-
-<option value="2" selected>2コース</option>
-
-<option value="3">3コース</option>
-
-<option value="4">4コース</option>
-
-<option value="5">5コース</option>
-
-<option value="6">6コース</option>
-
-</select>
+<select id="course2"></select>
 
 </div>
 
@@ -372,21 +334,7 @@ th{color:#d4af37}
 
 <label>3号艇</label>
 
-<select id="course3">
-
-<option value="1">1コース</option>
-
-<option value="2">2コース</option>
-
-<option value="3" selected>3コース</option>
-
-<option value="4">4コース</option>
-
-<option value="5">5コース</option>
-
-<option value="6">6コース</option>
-
-</select>
+<select id="course3"></select>
 
 </div>
 
@@ -394,21 +342,7 @@ th{color:#d4af37}
 
 <label>4号艇</label>
 
-<select id="course4">
-
-<option value="1">1コース</option>
-
-<option value="2">2コース</option>
-
-<option value="3">3コース</option>
-
-<option value="4" selected>4コース</option>
-
-<option value="5">5コース</option>
-
-<option value="6">6コース</option>
-
-</select>
+<select id="course4"></select>
 
 </div>
 
@@ -416,21 +350,7 @@ th{color:#d4af37}
 
 <label>5号艇</label>
 
-<select id="course5">
-
-<option value="1">1コース</option>
-
-<option value="2">2コース</option>
-
-<option value="3">3コース</option>
-
-<option value="4">4コース</option>
-
-<option value="5" selected>5コース</option>
-
-<option value="6">6コース</option>
-
-</select>
+<select id="course5"></select>
 
 </div>
 
@@ -438,21 +358,7 @@ th{color:#d4af37}
 
 <label>6号艇</label>
 
-<select id="course6">
-
-<option value="1">1コース</option>
-
-<option value="2">2コース</option>
-
-<option value="3">3コース</option>
-
-<option value="4">4コース</option>
-
-<option value="5">5コース</option>
-
-<option value="6" selected>6コース</option>
-
-</select>
+<select id="course6"></select>
 
 </div>
 
@@ -590,9 +496,7 @@ AI買い目確率合計<br>
 
    API
 
-   ★出走表取得の基準ロジック
-
-   ★ここは変更しない
+   ★出走表取得部分は変更しない
 
 ========================================================= */
 
@@ -616,7 +520,17 @@ let currentBets=null;
 
 const HISTORY_RACES=7;
 
-const HISTORY_DAYS=60;
+/*
+
+  ★変更点
+
+  同じコースを走った過去7走を探すため、
+
+  以前の60日ではなく180日まで検索する。
+
+*/
+
+const HISTORY_DAYS=180;
 
 const $=id=>document.getElementById(id);
 
@@ -724,7 +638,7 @@ return r.json();
 
    API探索
 
-   ★ここは変更しない
+   ★ここは元コードそのまま
 
 ========================================================= */
 
@@ -926,7 +840,7 @@ entry_number:entry
 
    当日出走表
 
-   ★ここは変更しない
+   ★絶対に変更しない
 
 ========================================================= */
 
@@ -986,7 +900,7 @@ throw Error("APIから6艇の出走表を取得できませんでした");
 
    進入
 
-   ★ここだけ今回修正
+   ★初期値を必ず1～6にする
 
 ========================================================= */
 
@@ -996,13 +910,21 @@ for(let b=1;b<=6;b++){
 
 let e=$("course"+b);
 
-if(!e)continue;
+e.innerHTML="";
 
-manualCourses[b]=Number(e.value)||b;
+for(let c=1;c<=6;c++){
+
+e.add(new Option(c+"コース",c));
+
+}
+
+e.value=String(b);
+
+manualCourses[b]=b;
 
 e.onchange=()=>{
 
-manualCourses[b]=Number(e.value)||b;
+manualCourses[b]=Number(e.value);
 
 };
 
@@ -1014,11 +936,7 @@ function resetCourses(){
 
 for(let b=1;b<=6;b++){
 
-let e=$("course"+b);
-
-if(!e)continue;
-
-e.value=String(b);
+$("course"+b).value=String(b);
 
 manualCourses[b]=b;
 
@@ -1034,7 +952,7 @@ $("message").innerHTML=
 
    出走表取得
 
-   ★ここは変更しない
+   ★元コード維持
 
 ========================================================= */
 
@@ -1098,7 +1016,7 @@ p.entry
 
 if(c>=1&&c<=6){
 
-$("course"+b).value=c;
+$("course"+b).value=String(c);
 
 manualCourses[b]=c;
 
@@ -1112,7 +1030,7 @@ $("raceCard").style.display="block";
 
 $("message").innerHTML=
 
-'<span class="success">✅ 出走表取得成功<br>AI解析時に過去7走を取得します</span>';
+'<span class="success">✅ 出走表取得成功<br>AI解析時に同コース過去7走を取得します</span>';
 
 }catch(e){
 
@@ -1234,7 +1152,29 @@ return({
 
    過去7走
 
+   ★ここが今回の変更部分
+
 ========================================================= */
+
+/*
+
+  今回の進入コースと同じコースを走ったレースだけを
+
+  過去データから拾う。
+
+  例：
+
+  今回 4号艇 → 4コース
+
+  ↓
+
+  その選手が過去に4コースを走ったレースだけを
+
+  新しい順に7走集める。
+
+  「直近7走の中から探す」のではない。
+
+*/
 
 function emptyHistory(){
 
@@ -1314,6 +1254,8 @@ race.date||
 
 race.race_date||
 
+race.date_time||
+
 "";
 
 list.forEach(x=>{
@@ -1330,7 +1272,19 @@ if(no<=0||c<1||c>6||place<1||place>6)return;
 
 if(!targets[no])return;
 
+/*
+
+  ★今回の進入コースと同じコースだけ保存
+
+*/
+
 if(c!==targets[no].course)return;
+
+/*
+
+  すでに7走集まっている選手は追加しない
+
+*/
 
 if(targets[no].boats[c].length>=HISTORY_RACES)return;
 
@@ -1368,17 +1322,37 @@ decision:decision(technique)
 
 }
 
+/*
+
+  ★今回の会場だけでなく、
+
+  API内に存在する全会場のレースを確認する。
+
+  これにより、
+
+  「最近7走は4コースを走っていない」
+
+  場合でも、過去に4コースを走ったレースを
+
+  他場から探せる。
+
+*/
+
 function collectHistoryFromDay(data,targets,wanted){
 
 let stadiums=data?.programs?.stadiums;
 
 if(!stadiums)return;
 
-let stadium=stadiums[String($("venue").value)];
+let stadiumList=Array.isArray(stadiums)
 
-if(!stadium)return;
+?stadiums
 
-let races=stadium.races;
+:Object.values(stadiums);
+
+stadiumList.forEach(stadium=>{
+
+let races=stadium?.races;
 
 if(!races)return;
 
@@ -1411,6 +1385,8 @@ wanted
 );
 
 }
+
+});
 
 });
 
@@ -1460,7 +1436,11 @@ arr.splice(HISTORY_RACES);
 
 /* =========================================================
 
-   高速過去データ取得
+   過去データ取得
+
+   ★直近7走ではなく
+
+   ★「今回と同じコース」を7走集める
 
 ========================================================= */
 
@@ -1468,13 +1448,21 @@ async function loadHistory(){
 
 let key=
 
-"bh-history-v5-"+today().ymd+
+"bh-history-course-v6-"+
 
-"-"+$("venue").value+
+today().ymd+
 
-"-"+racers.map(r=>getRacerNumber(r)).join("-")+
+"-"+
 
-"-"+Object.values(manualCourses).join("");
+$("venue").value+
+
+"-"+
+
+racers.map(r=>getRacerNumber(r)).join("-")+
+
+"-"+
+
+Object.values(manualCourses).join("");
 
 try{
 
@@ -1502,6 +1490,18 @@ Object.keys(targets).map(Number)
 
 );
 
+/*
+
+  180日を検索。
+
+  10日単位で並列取得するので、
+
+  1日ずつ待つ方式より高速。
+
+  各日について V1 → V3 → V2 の順で試す。
+
+*/
+
 for(let start=1;start<=HISTORY_DAYS;start+=10){
 
 if(historyComplete(targets))break;
@@ -1526,7 +1526,13 @@ await Promise.all(
 
 days.map(async daysAgo=>{
 
-if(historyComplete(targets))return;
+/*
+
+  すでに7走集まっている選手は、
+
+  その後の追加処理をしても最終的に7走だけ残す。
+
+*/
 
 let d=new Date();
 
@@ -1549,6 +1555,12 @@ for(const url of urls){
 try{
 
 let data=await json(url);
+
+/*
+
+  ★全会場から検索
+
+*/
 
 collectHistoryFromDay(
 
@@ -1590,9 +1602,27 @@ $("message").innerHTML=
 
 `<span class="loading">
 
-🤖 同コース過去7走取得中... ${Math.min(start+9,HISTORY_DAYS)}日前まで確認<br>
+🤖 ${
 
-現在：${counts.join(" / ")}走
+counts.every(x=>x>=7)
+
+?"同コース過去7走を取得完了":
+
+"同コース過去7走を検索中..."
+
+}<br>
+
+現在：
+
+${counts.join(" / ")}走<br>
+
+対象：
+
+今回と同じ進入コース<br>
+
+検索：
+
+過去${Math.min(start+9,HISTORY_DAYS)}日
 
 </span>`;
 
@@ -1708,7 +1738,7 @@ return`
 
 <span style="color:#777">
 
-今回の${c}コースと同じ進入の過去結果を取得できていません
+${c}コースを走った過去データを取得できていません
 
 </span>
 
@@ -3660,13 +3690,15 @@ manualCourses[b]=+$("course"+b).value;
 
 /*
 
-今回の進入を確定してから過去7走を検索
+  ★今回の進入を確定してから
+
+  同じコースの過去7走を検索
 
 */
 
 $("message").innerHTML=
 
-'<span class="loading">🤖 今回の進入と同じ過去7走を高速取得中...</span>';
+'<span class="loading">🤖 同じコースを走った過去7走を検索中...</span>';
 
 await loadHistory();
 
@@ -3724,7 +3756,9 @@ ${typeName(dominant(o))}<br>
 
 ${counts.join(" / ")}走取得<br>
 
-⚡ 60日以内を高速検索<br>
+🔎 同じコースを走ったレースを検索<br>
+
+⚡ 過去180日まで検索<br>
 
 ⚙️ モーター2連率を評価<br>
 
@@ -3764,9 +3798,7 @@ renderBets(currentBets);
 
 /*
 
-★HTML側ですでに1〜6コースが入っているため、
-
-★ここでは値とchangeイベントだけ初期化。
+  ★最初に必ず進入入力を作る
 
 */
 
