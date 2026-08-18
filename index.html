@@ -14,163 +14,981 @@
 
 *{box-sizing:border-box}
 
-body{margin:0;background:#080808;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{
 
-header{background:linear-gradient(135deg,#080808,#211a07);border-bottom:1px solid #b8952e;padding:18px;text-align:center}
+margin:0;
 
-header h1{margin:0;color:#d4af37;font-size:28px;letter-spacing:3px}
+background:#080808;
 
-header p{margin:5px 0 0;font-size:12px;color:#999}
+color:#fff;
 
-.container{max-width:1000px;margin:auto;padding:14px}
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
 
-.card{background:#111;border:1px solid #292929;border-radius:12px;padding:14px;margin-bottom:14px}
+}
 
-h2{margin:0 0 12px;font-size:17px;color:#d4af37}
+header{
 
-h3{font-size:14px;color:#d4af37;margin:14px 0 8px}
+background:linear-gradient(135deg,#080808,#211a07);
 
-label{font-size:11px;color:#aaa;display:block;margin-bottom:5px}
+border-bottom:1px solid #b8952e;
 
-select,input{width:100%;background:#181818;color:#fff;border:1px solid #444;border-radius:8px;padding:10px;font-size:14px}
+padding:18px;
 
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+text-align:center
 
-button{width:100%;padding:13px;border:0;border-radius:9px;font-size:14px;font-weight:bold}
+}
 
-.mainBtn{margin-top:12px;background:linear-gradient(135deg,#d4af37,#8b6914);color:#000}
+header h1{
 
-.subBtn{margin-top:8px;background:#222;border:1px solid #555;color:#fff}
+margin:0;
 
-.resetBtn{margin-top:8px;background:#171717;border:1px solid #777;color:#fff}
+color:#d4af37;
 
-.message{margin-top:10px;font-size:12px;line-height:1.6;color:#aaa}
+font-size:28px;
 
-.info{background:#151515;border:1px solid #333;border-radius:8px;padding:10px;font-size:11px;line-height:1.7;margin-bottom:10px}
+letter-spacing:3px
 
-.courseGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+}
 
-.courseBox{background:#171717;padding:8px;border-radius:8px;border:1px solid #333}
+header p{
 
-.racers{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+margin:5px 0 0;
 
-.racer{background:#171717;border:1px solid #333;border-radius:9px;padding:9px}
+font-size:12px;
 
-.racerTop{display:flex;align-items:center;gap:8px}
+color:#999
 
-.number{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-weight:bold;color:#000}
+}
 
-.n1{background:#fff}.n2{background:#222;color:#fff;border:1px solid #777}.n3{background:#e22;color:#fff}.n4{background:#248cff;color:#fff}.n5{background:#e5d000}.n6{background:#20a747;color:#fff}
+.container{
 
-.racerName{font-weight:bold}
+max-width:1000px;
 
-.small{font-size:10px;color:#aaa;line-height:1.6;margin-top:6px}
+margin:auto;
 
-.tech{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:7px}
+padding:14px
 
-.tech div{background:#101010;border:1px solid #292929;border-radius:6px;padding:6px;font-size:10px;text-align:center}
+}
 
-.tech span{display:block;color:#888;margin-bottom:2px}
+.card{
 
-.history{margin-top:8px;background:#0d0d0d;border:1px solid #292929;border-radius:8px;padding:8px}
+background:#111;
 
-.historyTitle{color:#d4af37;font-weight:bold;font-size:11px;margin-bottom:6px}
+border:1px solid #292929;
 
-.historyStats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:6px}
+border-radius:12px;
 
-.historyStat{background:#151515;border-radius:5px;padding:5px 2px;text-align:center;font-size:9px;color:#aaa}
+padding:14px;
 
-.historyStat strong{display:block;font-size:12px;color:#d4af37;margin-top:2px}
+margin-bottom:14px
 
-.historyList{font-size:9px;color:#aaa;line-height:1.6;max-height:180px;overflow-y:auto}
+}
 
-.historyItem{display:flex;justify-content:space-between;border-bottom:1px solid #222;padding:3px 0}
+h2{
 
-.historyItem:last-child{border-bottom:0}
+margin:0 0 12px;
 
-.historyGood{color:#4cd964;font-weight:bold}
+font-size:17px;
 
-.historyBad{color:#777}
+color:#d4af37
 
-.historyMiddle{color:#ffd84d;font-weight:bold}
+}
 
-.historyDecision{color:#d4af37;font-weight:bold}
+h3{
 
-table{width:100%;border-collapse:collapse;font-size:11px}
+font-size:14px;
 
-th,td{padding:7px 3px;border-bottom:1px solid #292929;text-align:center}
+color:#d4af37;
 
-th{color:#d4af37}
+margin:14px 0 8px
 
-.strategy{background:#171717;border-left:3px solid #d4af37;padding:9px;font-size:11px;line-height:1.7;margin-top:8px}
+}
 
-.attackBox{background:#211a07;border:1px solid #8a6d1c;border-radius:9px;padding:10px;font-size:11px;line-height:1.8;margin-top:8px}
+label{
 
-.attackMain{font-size:15px;font-weight:bold;color:#ffd84d}
+font-size:11px;
 
-.attackSub{color:#aaa;margin-top:4px}
+color:#aaa;
 
-.exclusion{background:#241414;border-left:3px solid #e55;padding:8px;font-size:11px;margin-top:6px;line-height:1.6}
+display:block;
 
-.exclusionKeep{background:#171707;border-left:3px solid #d4af37;padding:8px;font-size:11px;margin-top:6px;line-height:1.6}
+margin-bottom:5px
 
-.pickBox{background:#151515;border:1px solid #333;border-radius:9px;padding:10px;margin-top:9px}
+}
 
-.pickTitle{color:#d4af37;font-weight:bold;font-size:14px;margin-bottom:6px}
+select,input{
 
-.pick{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #292929;font-size:12px}
+width:100%;
 
-.pick:last-child{border-bottom:0}
+background:#181818;
 
-.pickLeft{display:flex;align-items:center;gap:5px}
+color:#fff;
 
-.star{width:18px;min-width:18px;color:#ffd84d;font-size:15px;font-weight:bold}
+border:1px solid #444;
 
-.prob{color:#ffd84d;font-weight:bold}
+border-radius:8px;
 
-.pick.veryStrong .prob,.pick.veryStrong strong{color:#ff3b30}
+padding:10px;
 
-.pick.veryStrong .prob{font-size:15px;font-weight:900}
+font-size:14px
 
-.pick.strong .prob,.pick.strong strong{color:#ffd84d}
+}
 
-.pick.strong .prob{font-size:14px;font-weight:900}
+.grid2{
 
-.pick.weak{opacity:.38}
+display:grid;
 
-.total{background:#1c1709;border:1px solid #8a6d1c;border-radius:8px;padding:10px;text-align:center;color:#d4af37;font-weight:bold;margin-bottom:8px}
+grid-template-columns:1fr 1fr;
 
-.budgetInfo{background:#151515;border:1px solid #333;border-radius:8px;padding:9px;margin-top:8px;font-size:11px;line-height:1.6;color:#aaa}
+gap:10px
 
-.budgetStrong{color:#d4af37;font-weight:bold}
+}
 
-.noPick{font-size:11px;color:#777;padding:8px 0;line-height:1.6}
+button{
 
-.overviewGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px}
+width:100%;
 
-.overviewBox{background:#101010;border:1px solid #333;border-radius:8px;padding:8px;text-align:center}
+padding:13px;
 
-.overviewBox .label{font-size:10px;color:#888}
+border:0;
 
-.overviewBox .value{font-size:16px;font-weight:bold;color:#d4af37;margin-top:3px}
+border-radius:9px;
 
-.overviewBox.main{border-color:#8a6d1c;background:#1c1709}
+font-size:14px;
 
-.overviewReason{font-size:11px;color:#aaa;line-height:1.7;margin-top:8px}
+font-weight:bold
 
-.footer{text-align:center;color:#555;font-size:10px;padding:20px}
+}
 
-.loading{color:#d4af37}.success{color:#4cd964}.error{color:#ff5555}
+.mainBtn{
+
+margin-top:12px;
+
+background:linear-gradient(135deg,#d4af37,#8b6914);
+
+color:#000
+
+}
+
+.subBtn{
+
+margin-top:8px;
+
+background:#222;
+
+border:1px solid #555;
+
+color:#fff
+
+}
+
+.resetBtn{
+
+margin-top:8px;
+
+background:#171717;
+
+border:1px solid #777;
+
+color:#fff
+
+}
+
+.message{
+
+margin-top:10px;
+
+font-size:12px;
+
+line-height:1.6;
+
+color:#aaa
+
+}
+
+.info{
+
+background:#151515;
+
+border:1px solid #333;
+
+border-radius:8px;
+
+padding:10px;
+
+font-size:11px;
+
+line-height:1.7;
+
+margin-bottom:10px
+
+}
+
+.courseGrid{
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:8px
+
+}
+
+.courseBox{
+
+background:#171717;
+
+padding:8px;
+
+border-radius:8px;
+
+border:1px solid #333
+
+}
+
+.racers{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:8px
+
+}
+
+.racer{
+
+background:#171717;
+
+border:1px solid #333;
+
+border-radius:9px;
+
+padding:9px
+
+}
+
+.racerTop{
+
+display:flex;
+
+align-items:center;
+
+gap:8px
+
+}
+
+.number{
+
+width:30px;
+
+height:30px;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:6px;
+
+font-weight:bold;
+
+color:#000
+
+}
+
+.n1{background:#fff}
+
+.n2{background:#222;color:#fff;border:1px solid #777}
+
+.n3{background:#e22;color:#fff}
+
+.n4{background:#248cff;color:#fff}
+
+.n5{background:#e5d000}
+
+.n6{background:#20a747;color:#fff}
+
+.racerName{
+
+font-weight:bold
+
+}
+
+.small{
+
+font-size:10px;
+
+color:#aaa;
+
+line-height:1.6;
+
+margin-top:6px
+
+}
+
+.tech{
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:5px;
+
+margin-top:7px
+
+}
+
+.tech div{
+
+background:#101010;
+
+border:1px solid #292929;
+
+border-radius:6px;
+
+padding:6px;
+
+font-size:10px;
+
+text-align:center
+
+}
+
+.tech span{
+
+display:block;
+
+color:#888;
+
+margin-bottom:2px
+
+}
+
+.history{
+
+margin-top:8px;
+
+background:#0d0d0d;
+
+border:1px solid #292929;
+
+border-radius:8px;
+
+padding:8px
+
+}
+
+.historyTitle{
+
+color:#d4af37;
+
+font-weight:bold;
+
+font-size:11px;
+
+margin-bottom:6px
+
+}
+
+.historyStats{
+
+display:grid;
+
+grid-template-columns:repeat(4,1fr);
+
+gap:4px;
+
+margin-bottom:6px
+
+}
+
+.historyStat{
+
+background:#151515;
+
+border-radius:5px;
+
+padding:5px 2px;
+
+text-align:center;
+
+font-size:9px;
+
+color:#aaa
+
+}
+
+.historyStat strong{
+
+display:block;
+
+font-size:12px;
+
+color:#d4af37;
+
+margin-top:2px
+
+}
+
+.historyList{
+
+font-size:9px;
+
+color:#aaa;
+
+line-height:1.6;
+
+max-height:180px;
+
+overflow-y:auto
+
+}
+
+.historyItem{
+
+display:flex;
+
+justify-content:space-between;
+
+border-bottom:1px solid #222;
+
+padding:3px 0
+
+}
+
+.historyItem:last-child{
+
+border-bottom:0
+
+}
+
+.historyGood{
+
+color:#4cd964;
+
+font-weight:bold
+
+}
+
+.historyBad{
+
+color:#777
+
+}
+
+.historyMiddle{
+
+color:#ffd84d;
+
+font-weight:bold
+
+}
+
+.historyDecision{
+
+color:#d4af37;
+
+font-weight:bold
+
+}
+
+.formHistory{
+
+margin-top:8px;
+
+background:#0d0d0d;
+
+border:1px solid #292929;
+
+border-radius:8px;
+
+padding:8px
+
+}
+
+.formTitle{
+
+color:#d4af37;
+
+font-weight:bold;
+
+font-size:11px;
+
+margin-bottom:6px
+
+}
+
+.formGood{
+
+color:#4cd964;
+
+font-weight:bold
+
+}
+
+.formMiddle{
+
+color:#ffd84d;
+
+font-weight:bold
+
+}
+
+.formBad{
+
+color:#777
+
+}
+
+.venueBox{
+
+background:#171707;
+
+border:1px solid #6e5817;
+
+border-radius:8px;
+
+padding:9px;
+
+margin-top:8px;
+
+font-size:10px;
+
+line-height:1.7
+
+}
+
+table{
+
+width:100%;
+
+border-collapse:collapse;
+
+font-size:11px
+
+}
+
+th,td{
+
+padding:7px 3px;
+
+border-bottom:1px solid #292929;
+
+text-align:center
+
+}
+
+th{
+
+color:#d4af37
+
+}
+
+.strategy{
+
+background:#171717;
+
+border-left:3px solid #d4af37;
+
+padding:9px;
+
+font-size:11px;
+
+line-height:1.7;
+
+margin-top:8px
+
+}
+
+.attackBox{
+
+background:#211a07;
+
+border:1px solid #8a6d1c;
+
+border-radius:9px;
+
+padding:10px;
+
+font-size:11px;
+
+line-height:1.8;
+
+margin-top:8px
+
+}
+
+.attackMain{
+
+font-size:15px;
+
+font-weight:bold;
+
+color:#ffd84d
+
+}
+
+.attackSub{
+
+color:#aaa;
+
+margin-top:4px
+
+}
+
+.exclusion{
+
+background:#241414;
+
+border-left:3px solid #e55;
+
+padding:8px;
+
+font-size:11px;
+
+margin-top:6px;
+
+line-height:1.6
+
+}
+
+.exclusionKeep{
+
+background:#171707;
+
+border-left:3px solid #d4af37;
+
+padding:8px;
+
+font-size:11px;
+
+margin-top:6px;
+
+line-height:1.6
+
+}
+
+.exclusionRecover{
+
+background:#171707;
+
+border-left:3px solid #ffd84d;
+
+padding:8px;
+
+font-size:11px;
+
+margin-top:6px;
+
+line-height:1.6
+
+}
+
+.pickBox{
+
+background:#151515;
+
+border:1px solid #333;
+
+border-radius:9px;
+
+padding:10px;
+
+margin-top:9px
+
+}
+
+.pickTitle{
+
+color:#d4af37;
+
+font-weight:bold;
+
+font-size:14px;
+
+margin-bottom:6px
+
+}
+
+.pick{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+gap:8px;
+
+padding:7px 0;
+
+border-bottom:1px solid #292929;
+
+font-size:12px
+
+}
+
+.pick:last-child{
+
+border-bottom:0
+
+}
+
+.pickLeft{
+
+display:flex;
+
+align-items:center;
+
+gap:5px
+
+}
+
+.star{
+
+width:18px;
+
+min-width:18px;
+
+color:#ffd84d;
+
+font-size:15px;
+
+font-weight:bold
+
+}
+
+.prob{
+
+color:#ffd84d;
+
+font-weight:bold
+
+}
+
+.pick.veryStrong .prob,
+
+.pick.veryStrong strong{
+
+color:#ff3b30
+
+}
+
+.pick.veryStrong .prob{
+
+font-size:15px;
+
+font-weight:900
+
+}
+
+.pick.strong .prob,
+
+.pick.strong strong{
+
+color:#ffd84d
+
+}
+
+.pick.strong .prob{
+
+font-size:14px;
+
+font-weight:900
+
+}
+
+.pick.weak{
+
+opacity:.38
+
+}
+
+.pickRecovery{
+
+border-left:3px solid #ffd84d;
+
+padding-left:6px
+
+}
+
+.pickRecovery .prob{
+
+color:#ffd84d
+
+}
+
+.total{
+
+background:#1c1709;
+
+border:1px solid #8a6d1c;
+
+border-radius:8px;
+
+padding:10px;
+
+text-align:center;
+
+color:#d4af37;
+
+font-weight:bold;
+
+margin-bottom:8px
+
+}
+
+.budgetInfo{
+
+background:#151515;
+
+border:1px solid #333;
+
+border-radius:8px;
+
+padding:9px;
+
+margin-top:8px;
+
+font-size:11px;
+
+line-height:1.6;
+
+color:#aaa
+
+}
+
+.budgetStrong{
+
+color:#d4af37;
+
+font-weight:bold
+
+}
+
+.noPick{
+
+font-size:11px;
+
+color:#777;
+
+padding:8px 0;
+
+line-height:1.6
+
+}
+
+.overviewGrid{
+
+display:grid;
+
+grid-template-columns:repeat(4,1fr);
+
+gap:7px;
+
+margin-top:8px
+
+}
+
+.overviewBox{
+
+background:#101010;
+
+border:1px solid #333;
+
+border-radius:8px;
+
+padding:8px;
+
+text-align:center
+
+}
+
+.overviewBox .label{
+
+font-size:10px;
+
+color:#888
+
+}
+
+.overviewBox .value{
+
+font-size:16px;
+
+font-weight:bold;
+
+color:#d4af37;
+
+margin-top:3px
+
+}
+
+.overviewBox.main{
+
+border-color:#8a6d1c;
+
+background:#1c1709
+
+}
+
+.overviewReason{
+
+font-size:11px;
+
+color:#aaa;
+
+line-height:1.7;
+
+margin-top:8px
+
+}
+
+.footer{
+
+text-align:center;
+
+color:#555;
+
+font-size:10px;
+
+padding:20px
+
+}
+
+.loading{color:#d4af37}
+
+.success{color:#4cd964}
+
+.error{color:#ff5555}
 
 @media(max-width:600px){
 
-.grid2{grid-template-columns:1fr}
+.grid2{
 
-.courseGrid{grid-template-columns:repeat(2,1fr)}
+grid-template-columns:1fr
 
-.racers{grid-template-columns:1fr}
+}
 
-.overviewGrid{grid-template-columns:repeat(2,1fr)}
+.courseGrid{
+
+grid-template-columns:repeat(2,1fr)
+
+}
+
+.racers{
+
+grid-template-columns:1fr
+
+}
+
+.overviewGrid{
+
+grid-template-columns:repeat(2,1fr)
+
+}
 
 }
 
@@ -432,7 +1250,7 @@ AI買い目確率合計<br>
 
 <span style="color:#777">薄字＝確率4.9%以下</span><br>
 
-※的中率・回収率・展開・選手適性を総合評価
+※的中率・回収率・展開・選手適性・場特性・直近7走を総合評価
 
 </div>
 
@@ -516,19 +1334,13 @@ let manualCourses={};
 
 let historyData={};
 
+let recentHistoryData={};
+
 let currentBets=null;
 
 const HISTORY_RACES=7;
 
-/*
-
-  ★変更点
-
-  同じコースを走った過去7走を探すため、
-
-  以前の60日ではなく180日まで検索する。
-
-*/
+const RECENT_RACES=7;
 
 const HISTORY_DAYS=180;
 
@@ -638,7 +1450,7 @@ return r.json();
 
    API探索
 
-   ★ここは元コードそのまま
+   ★元コード維持
 
 ========================================================= */
 
@@ -840,7 +1652,7 @@ entry_number:entry
 
    当日出走表
 
-   ★絶対に変更しない
+   ★変更なし
 
 ========================================================= */
 
@@ -899,8 +1711,6 @@ throw Error("APIから6艇の出走表を取得できませんでした");
 /* =========================================================
 
    進入
-
-   ★初期値を必ず1～6にする
 
 ========================================================= */
 
@@ -970,6 +1780,8 @@ $("predictionCard").style.display="none";
 
 historyData={};
 
+recentHistoryData={};
+
 currentBets=null;
 
 try{
@@ -1030,7 +1842,7 @@ $("raceCard").style.display="block";
 
 $("message").innerHTML=
 
-'<span class="success">✅ 出走表取得成功<br>AI解析時に同コース過去7走を取得します</span>';
+'<span class="success">✅ 出走表取得成功<br>AI解析時に同コース過去7走・直近7走を取得します</span>';
 
 }catch(e){
 
@@ -1150,31 +1962,33 @@ return({
 
 /* =========================================================
 
-   過去7走
-
-   ★ここが今回の変更部分
+   決まり手
 
 ========================================================= */
 
-/*
+function getTechnique(x){
 
-  今回の進入コースと同じコースを走ったレースだけを
+return num(
 
-  過去データから拾う。
+x?.technique_number||
 
-  例：
+x?.technique||
 
-  今回 4号艇 → 4コース
+x?.decision||
 
-  ↓
+x?.decision_number
 
-  その選手が過去に4コースを走ったレースだけを
+);
 
-  新しい順に7走集める。
+}
 
-  「直近7走の中から探す」のではない。
+/* =========================================================
 
-*/
+   過去7走
+
+   ★既存ロジック維持
+
+========================================================= */
 
 function emptyHistory(){
 
@@ -1272,19 +2086,7 @@ if(no<=0||c<1||c>6||place<1||place>6)return;
 
 if(!targets[no])return;
 
-/*
-
-  ★今回の進入コースと同じコースだけ保存
-
-*/
-
 if(c!==targets[no].course)return;
-
-/*
-
-  すでに7走集まっている選手は追加しない
-
-*/
 
 if(targets[no].boats[c].length>=HISTORY_RACES)return;
 
@@ -1321,22 +2123,6 @@ decision:decision(technique)
 });
 
 }
-
-/*
-
-  ★今回の会場だけでなく、
-
-  API内に存在する全会場のレースを確認する。
-
-  これにより、
-
-  「最近7走は4コースを走っていない」
-
-  場合でも、過去に4コースを走ったレースを
-
-  他場から探せる。
-
-*/
 
 function collectHistoryFromDay(data,targets,wanted){
 
@@ -1436,11 +2222,471 @@ arr.splice(HISTORY_RACES);
 
 /* =========================================================
 
+   直近7走
+
+   ★今回追加
+
+========================================================= */
+
+function emptyRecentHistory(){
+
+let x={};
+
+racers.forEach(r=>{
+
+let no=getRacerNumber(r);
+
+if(no){
+
+x[no]=[];
+
+}
+
+});
+
+return x;
+
+}
+
+function addRecentResultRace(race,targets,wanted){
+
+let result=
+
+race?.result||
+
+race?.results||
+
+race?.race_result;
+
+if(!result)return;
+
+let resultRacers=
+
+result.racers||
+
+result.entries||
+
+result.participants;
+
+if(!resultRacers)return;
+
+let list=Array.isArray(resultRacers)
+
+?resultRacers
+
+:Object.values(resultRacers);
+
+let date=
+
+result.date||
+
+race.date||
+
+race.race_date||
+
+race.date_time||
+
+"";
+
+list.forEach(x=>{
+
+let no=getResultRacerNumber(x);
+
+if(!wanted.has(no))return;
+
+let place=getPlace(x);
+
+let c=getCourse(x);
+
+if(no<=0||place<1||place>6)return;
+
+if(!targets[no])return;
+
+if(targets[no].length>=RECENT_RACES)return;
+
+targets[no].push({
+
+date,
+
+place,
+
+course:c,
+
+decision:decision(getTechnique(x))
+
+});
+
+});
+
+}
+
+function collectRecentFromDay(data,targets,wanted){
+
+let stadiums=data?.programs?.stadiums;
+
+if(!stadiums)return;
+
+let stadiumList=Array.isArray(stadiums)
+
+?stadiums
+
+:Object.values(stadiums);
+
+stadiumList.forEach(stadium=>{
+
+let races=stadium?.races;
+
+if(!races)return;
+
+let list=Array.isArray(races)
+
+?races
+
+:Object.values(races);
+
+list.forEach(race=>{
+
+if(
+
+race?.result||
+
+race?.results||
+
+race?.race_result
+
+){
+
+addRecentResultRace(
+
+race,
+
+targets,
+
+wanted
+
+);
+
+}
+
+});
+
+});
+
+}
+
+function recentHistoryComplete(targets){
+
+return racers.every(r=>{
+
+let no=getRacerNumber(r);
+
+return(
+
+targets[no]?.length||0
+
+)>=RECENT_RACES;
+
+});
+
+}
+
+function sortRecentHistory(targets){
+
+Object.values(targets).forEach(arr=>{
+
+arr.sort((a,b)=>
+
+String(b.date).localeCompare(String(a.date))
+
+);
+
+if(arr.length>RECENT_RACES){
+
+arr.splice(RECENT_RACES);
+
+}
+
+});
+
+}
+
+async function loadRecentHistory(){
+
+let key=
+
+"bh-history-recent-v2-"+
+
+today().ymd+
+
+"-"+
+
+$("venue").value+
+
+"-"+
+
+racers.map(r=>getRacerNumber(r)).join("-");
+
+try{
+
+let cached=JSON.parse(
+
+sessionStorage.getItem(key)||"null"
+
+);
+
+if(cached&&recentHistoryComplete(cached)){
+
+recentHistoryData=cached;
+
+return;
+
+}
+
+}catch(e){}
+
+let targets=emptyRecentHistory();
+
+let wanted=new Set(
+
+Object.keys(targets).map(Number)
+
+);
+
+for(let start=1;start<=HISTORY_DAYS;start+=10){
+
+if(recentHistoryComplete(targets))break;
+
+let days=[];
+
+for(
+
+let daysAgo=start;
+
+daysAgo<start+10&&daysAgo<=HISTORY_DAYS;
+
+daysAgo++
+
+){
+
+days.push(daysAgo);
+
+}
+
+await Promise.all(
+
+days.map(async daysAgo=>{
+
+let d=new Date();
+
+d.setDate(d.getDate()-daysAgo);
+
+let p=dateInfo(d);
+
+const urls=[
+
+`${API_V1}/${p.year}/${p.ymd}.json`,
+
+`${API_V3}/${p.year}/${p.ymd}.json`,
+
+`${API_V2}/${p.year}/${p.ymd}.json`
+
+];
+
+for(const url of urls){
+
+try{
+
+let data=await json(url);
+
+collectRecentFromDay(
+
+data,
+
+targets,
+
+wanted
+
+);
+
+break;
+
+}catch(e){}
+
+}
+
+})
+
+);
+
+sortRecentHistory(targets);
+
+let counts=racers.map(r=>
+
+targets[getRacerNumber(r)]?.length||0
+
+);
+
+$("message").innerHTML=
+
+`<span class="loading">
+
+🤖 選手の直近7走を検索中...<br>
+
+現在：${counts.join(" / ")}走<br>
+
+検索：過去${Math.min(start+9,HISTORY_DAYS)}日
+
+</span>`;
+
+}
+
+sortRecentHistory(targets);
+
+recentHistoryData=targets;
+
+try{
+
+sessionStorage.setItem(
+
+key,
+
+JSON.stringify(recentHistoryData)
+
+);
+
+}catch(e){}
+
+}
+
+function recentHistory(b){
+
+let r=racer(b);
+
+if(!r)return[];
+
+let no=getRacerNumber(r);
+
+return(
+
+recentHistoryData[no]||[]
+
+).slice(0,RECENT_RACES);
+
+}
+
+function recentStats(b){
+
+let a=recentHistory(b);
+
+let first=a.filter(x=>x.place===1).length;
+
+let second=a.filter(x=>x.place===2).length;
+
+let third=a.filter(x=>x.place===3).length;
+
+let rate=a.length
+
+?(first+second+third)/a.length*100
+
+:0;
+
+let avg=a.length
+
+?a.reduce((s,x)=>s+x.place,0)/a.length
+
+:0;
+
+let top3=first+second+third;
+
+let momentum=0;
+
+if(a.length){
+
+let recent=a.slice(0,3);
+
+let older=a.slice(3);
+
+let recentAvg=recent.length
+
+?recent.reduce((s,x)=>s+x.place,0)/recent.length
+
+:0;
+
+let olderAvg=older.length
+
+?older.reduce((s,x)=>s+x.place,0)/older.length
+
+:recentAvg;
+
+momentum=olderAvg-recentAvg;
+
+}
+
+return{
+
+count:a.length,
+
+first,
+
+second,
+
+third,
+
+rate,
+
+avg,
+
+momentum
+
+};
+
+}
+
+function recentScore(b){
+
+let s=recentStats(b);
+
+if(!s.count)return 0;
+
+let v=0;
+
+v+=s.first*3.5;
+
+v+=s.second*2.3;
+
+v+=s.third*1.4;
+
+v+=s.rate*.12;
+
+if(s.avg>0){
+
+v+=
+
+s.avg<=2?5:
+
+s.avg<=2.8?3:
+
+s.avg<=3.5?1:
+
+s.avg>=4.5?-3:0;
+
+}
+
+if(s.momentum>=1.0)v+=4;
+
+else if(s.momentum>=.5)v+=2;
+
+else if(s.momentum<=-1.0)v-=3;
+
+else if(s.momentum<=-.5)v-=1;
+
+return v;
+
+}
+
+/* =========================================================
+
    過去データ取得
-
-   ★直近7走ではなく
-
-   ★「今回と同じコース」を7走集める
 
 ========================================================= */
 
@@ -1448,7 +2694,7 @@ async function loadHistory(){
 
 let key=
 
-"bh-history-course-v6-"+
+"bh-history-course-v7-"+
 
 today().ymd+
 
@@ -1490,18 +2736,6 @@ Object.keys(targets).map(Number)
 
 );
 
-/*
-
-  180日を検索。
-
-  10日単位で並列取得するので、
-
-  1日ずつ待つ方式より高速。
-
-  各日について V1 → V3 → V2 の順で試す。
-
-*/
-
 for(let start=1;start<=HISTORY_DAYS;start+=10){
 
 if(historyComplete(targets))break;
@@ -1526,14 +2760,6 @@ await Promise.all(
 
 days.map(async daysAgo=>{
 
-/*
-
-  すでに7走集まっている選手は、
-
-  その後の追加処理をしても最終的に7走だけ残す。
-
-*/
-
 let d=new Date();
 
 d.setDate(d.getDate()-daysAgo);
@@ -1555,12 +2781,6 @@ for(const url of urls){
 try{
 
 let data=await json(url);
-
-/*
-
-  ★全会場から検索
-
-*/
 
 collectHistoryFromDay(
 
@@ -1612,17 +2832,11 @@ counts.every(x=>x>=7)
 
 }<br>
 
-現在：
+現在：${counts.join(" / ")}走<br>
 
-${counts.join(" / ")}走<br>
+対象：今回と同じ進入コース<br>
 
-対象：
-
-今回と同じ進入コース<br>
-
-検索：
-
-過去${Math.min(start+9,HISTORY_DAYS)}日
+検索：過去${Math.min(start+9,HISTORY_DAYS)}日
 
 </span>`;
 
@@ -1836,6 +3050,140 @@ ${x.decision!=="-"?" / "+esc(x.decision):""}
 
 /* =========================================================
 
+   直近7走表示
+
+========================================================= */
+
+function renderRecentHistory(b){
+
+let a=recentHistory(b);
+
+let s=recentStats(b);
+
+if(!a.length){
+
+return`
+
+<div class="formHistory">
+
+<div class="formTitle">
+
+🔥 選手直近7走
+
+</div>
+
+<div style="font-size:9px;color:#777">
+
+直近7走の結果を取得できていません
+
+</div>
+
+</div>`;
+
+}
+
+let trend=
+
+s.momentum>=.5
+
+?"📈 上昇"
+
+:s.momentum<=-.5
+
+?"📉 下降"
+
+:"➡️ 安定";
+
+return`
+
+<div class="formHistory">
+
+<div class="formTitle">
+
+🔥 選手直近${a.length}走
+
+</div>
+
+<div class="historyStats">
+
+<div class="historyStat">
+
+平均着順
+
+<strong>${s.avg.toFixed(2)}</strong>
+
+</div>
+
+<div class="historyStat">
+
+3連対率
+
+<strong>${s.rate.toFixed(1)}%</strong>
+
+</div>
+
+<div class="historyStat">
+
+1着
+
+<strong>${s.first}</strong>
+
+</div>
+
+<div class="historyStat">
+
+調子
+
+<strong>${trend}</strong>
+
+</div>
+
+</div>
+
+<div class="historyList">
+
+${a.map((x,i)=>`
+
+<div class="historyItem">
+
+<span>
+
+${i+1}. ${esc(String(x.date).slice(5,10).replace("-","/"))}
+
+</span>
+
+<span class="${
+
+x.place===1?"formGood":
+
+x.place<=3?"formMiddle":"formBad"
+
+}">
+
+${x.place}着
+
+<span class="historyDecision">
+
+${x.course?` / ${x.course}コース`:""}
+
+${x.decision!=="-"?" / "+esc(x.decision):""}
+
+</span>
+
+</span>
+
+</div>
+
+`).join("")}
+
+</div>
+
+</div>`;
+
+}
+
+/* =========================================================
+
    級別
 
 ========================================================= */
@@ -1853,6 +3201,486 @@ return({
 4:"B2"
 
 }[num(n)]||"-");
+
+}
+
+/* =========================================================
+
+   場特性
+
+   ★今回追加
+
+========================================================= */
+
+const VENUE_TRAITS={
+
+1:{
+
+name:"桐生",
+
+inner:1.02,
+
+maki:1.04,
+
+sashi:1.00,
+
+makiSashi:1.03,
+
+note:"ナイター水面。外の攻めと展開差しを警戒。"
+
+},
+
+2:{
+
+name:"戸田",
+
+inner:.90,
+
+maki:1.06,
+
+sashi:1.04,
+
+makiSashi:1.07,
+
+note:"インの信頼度が低めで、センター勢の攻めを重視。"
+
+},
+
+3:{
+
+name:"江戸川",
+
+inner:.90,
+
+maki:1.05,
+
+sashi:1.03,
+
+makiSashi:1.05,
+
+note:"荒れ水面になりやすく、展開・波への対応力を重視。"
+
+},
+
+4:{
+
+name:"平和島",
+
+inner:.92,
+
+maki:1.04,
+
+sashi:1.05,
+
+makiSashi:1.05,
+
+note:"イン過信禁物。差し・まくり差しを重視。"
+
+},
+
+5:{
+
+name:"多摩川",
+
+inner:1.05,
+
+maki:1.00,
+
+sashi:1.00,
+
+makiSashi:1.01,
+
+note:"比較的走りやすい水面で、インの安定感を評価。"
+
+},
+
+6:{
+
+name:"浜名湖",
+
+inner:1.01,
+
+maki:1.02,
+
+sashi:1.01,
+
+makiSashi:1.03,
+
+note:"広い水面。センターからの攻めと展開差しを評価。"
+
+},
+
+7:{
+
+name:"蒲郡",
+
+inner:1.04,
+
+maki:1.02,
+
+sashi:1.00,
+
+makiSashi:1.02,
+
+note:"ナイター。イン優勢を基本に機力上位の攻めを評価。"
+
+},
+
+8:{
+
+name:"常滑",
+
+inner:1.02,
+
+maki:1.03,
+
+sashi:1.02,
+
+makiSashi:1.03,
+
+note:"風の影響を受けやすく、センター攻めを警戒。"
+
+},
+
+9:{
+
+name:"津",
+
+inner:1.03,
+
+maki:1.02,
+
+sashi:1.01,
+
+makiSashi:1.03,
+
+note:"インの安定感を基本にセンター勢の攻めを評価。"
+
+},
+
+10:{
+
+name:"三国",
+
+inner:1.04,
+
+maki:1.02,
+
+sashi:1.01,
+
+makiSashi:1.02,
+
+note:"イン中心。風が強い場合は展開変化を警戒。"
+
+},
+
+11:{
+
+name:"びわこ",
+
+inner:.94,
+
+maki:1.05,
+
+sashi:1.04,
+
+makiSashi:1.05,
+
+note:"水面変化が大きく、イン一本より展開を重視。"
+
+},
+
+12:{
+
+name:"住之江",
+
+inner:1.05,
+
+maki:1.00,
+
+sashi:1.01,
+
+makiSashi:1.01,
+
+note:"インの信頼度が高め。強いセンター勢のみ警戒。"
+
+},
+
+13:{
+
+name:"尼崎",
+
+inner:1.04,
+
+maki:1.01,
+
+sashi:1.02,
+
+makiSashi:1.02,
+
+note:"イン中心。2コース差し・センター攻めを相手評価。"
+
+},
+
+14:{
+
+name:"鳴門",
+
+inner:1.01,
+
+maki:1.04,
+
+sashi:1.02,
+
+makiSashi:1.04,
+
+note:"潮流・風の影響を受けるため、展開力を重視。"
+
+},
+
+15:{
+
+name:"丸亀",
+
+inner:1.04,
+
+maki:1.02,
+
+sashi:1.01,
+
+makiSashi:1.03,
+
+note:"ナイター。イン優勢を基本にセンター攻めを評価。"
+
+},
+
+16:{
+
+name:"児島",
+
+inner:1.02,
+
+maki:1.03,
+
+sashi:1.02,
+
+makiSashi:1.03,
+
+note:"潮・風の影響を考慮し、機力と展開を重視。"
+
+},
+
+17:{
+
+name:"宮島",
+
+inner:1.03,
+
+maki:1.02,
+
+sashi:1.02,
+
+makiSashi:1.03,
+
+note:"潮流の影響を受けやすく、差し・まくり差しを警戒。"
+
+},
+
+18:{
+
+name:"徳山",
+
+inner:1.07,
+
+maki:.99,
+
+sashi:1.00,
+
+makiSashi:1.01,
+
+note:"インの信頼度が高い水面。1号艇を中心視。"
+
+},
+
+19:{
+
+name:"下関",
+
+inner:1.05,
+
+maki:1.01,
+
+sashi:1.00,
+
+makiSashi:1.02,
+
+note:"ナイター。イン優勢を基本に機力上位の攻めを評価。"
+
+},
+
+20:{
+
+name:"若松",
+
+inner:1.04,
+
+maki:1.02,
+
+sashi:1.01,
+
+makiSashi:1.03,
+
+note:"ナイター。イン中心だがセンターの機力攻めを警戒。"
+
+},
+
+21:{
+
+name:"芦屋",
+
+inner:1.06,
+
+maki:1.00,
+
+sashi:1.01,
+
+makiSashi:1.01,
+
+note:"インの信頼度が高く、1号艇を強く評価。"
+
+},
+
+22:{
+
+name:"福岡",
+
+inner:.94,
+
+maki:1.05,
+
+sashi:1.04,
+
+makiSashi:1.06,
+
+note:"イン過信禁物。センター勢の攻め・展開差しを重視。"
+
+},
+
+23:{
+
+name:"唐津",
+
+inner:1.05,
+
+maki:1.01,
+
+sashi:1.00,
+
+makiSashi:1.02,
+
+note:"イン優勢。外枠は展開が向いた場合に評価。"
+
+},
+
+24:{
+
+name:"大村",
+
+inner:1.09,
+
+maki:.98,
+
+sashi:1.00,
+
+makiSashi:1.00,
+
+note:"全国屈指のイン有利水面。1号艇を強く評価。"
+
+}
+
+};
+
+function venueTrait(){
+
+return VENUE_TRAITS[
+
+Number($("venue").value)
+
+]||{
+
+name:"競艇場",
+
+inner:1,
+
+maki:1,
+
+sashi:1,
+
+makiSashi:1,
+
+note:"標準評価"
+
+};
+
+}
+
+function venueScore(b,type){
+
+let v=venueTrait();
+
+let c=course(b);
+
+let base=0;
+
+if(type==="escape"){
+
+base=
+
+c===1
+
+?(v.inner-1)*100
+
+:0;
+
+}
+
+if(type==="sashi"){
+
+base=
+
+c===2
+
+?(v.sashi-1)*80
+
+:0;
+
+}
+
+if(type==="maki"){
+
+base=
+
+(c===3||c===4)
+
+?(v.maki-1)*100
+
+:0;
+
+}
+
+if(type==="makiSashi"){
+
+base=
+
+(c===3||c===4||c===5)
+
+?(v.makiSashi-1)*90
+
+:0;
+
+}
+
+return base;
 
 }
 
@@ -2096,6 +3924,8 @@ p.exhibition
 
 ${renderHistory(b)}
 
+${renderRecentHistory(b)}
+
 </div>`;
 
 }).join("");
@@ -2123,6 +3953,36 @@ ${num(w.air_temperature||w.temperature).toFixed(1)}℃<br>
 水温：
 
 ${num(w.water_temperature).toFixed(1)}℃
+
+</div>
+
+<div class="venueBox">
+
+🏟️ <strong>${venueTrait().name}の場特性</strong><br>
+
+${esc(venueTrait().note)}<br>
+
+イン：
+
+${venueTrait().inner.toFixed(2)}
+
+　
+
+まくり：
+
+${venueTrait().maki.toFixed(2)}
+
+　
+
+差し：
+
+${venueTrait().sashi.toFixed(2)}
+
+　
+
+まくり差し：
+
+${venueTrait().makiSashi.toFixed(2)}
 
 </div>`;
 
@@ -2236,6 +4096,260 @@ v+=d.makiSashi*1.55;
 
 }
 
+v+=venueScore(b,type);
+
+return v;
+
+}
+
+/* =========================================================
+
+   まくり展開
+
+   ★今回の重要追加
+
+========================================================= */
+
+function makiCandidates(){
+
+let arr=[];
+
+for(let b=1;b<=6;b++){
+
+if(course(b)===1)continue;
+
+let r=racer(b);
+
+let p=preview(b);
+
+let c=course(b);
+
+let ast=num(
+
+r?.average_start_timing||
+
+r?.average_st
+
+);
+
+let st=num(
+
+p?.start_timing||
+
+p?.st
+
+);
+
+let motor=num(
+
+r?.motor_top_2_percent||
+
+r?.motor_2ren_rate||
+
+r?.motor_2ren
+
+);
+
+let ex=num(
+
+p?.exhibition_time||
+
+p?.exhibition
+
+);
+
+let d=decisions(r||{});
+
+let hs=hstats(b);
+
+let rs=recentStats(b);
+
+let v=0;
+
+if(c===3)v+=22;
+
+if(c===4)v+=26;
+
+if(c===5)v+=8;
+
+if(c===6)v+=2;
+
+v+=d.maki*1.8;
+
+v+=venueScore(b,"maki")*1.5;
+
+if(ast>0)
+
+v+=Math.max(0,.30-ast)*22;
+
+if(st>0)
+
+v+=Math.max(0,.25-st)*28;
+
+if(motor>=40)v+=7;
+
+else if(motor>=35)v+=4;
+
+else if(motor<20)v-=4;
+
+if(ex>0)
+
+v+=Math.max(0,6.8-ex)*4;
+
+if(hs.count)
+
+v+=hs.rate*.08;
+
+if(rs.count)
+
+v+=recentScore(b)*.35;
+
+arr.push({
+
+boat:b,
+
+score:v
+
+});
+
+}
+
+return arr.sort((a,b)=>b.score-a.score);
+
+}
+
+function bestMaki(){
+
+let a=makiCandidates();
+
+return a[0]||null;
+
+}
+
+function makiStrength(){
+
+let m=bestMaki();
+
+if(!m)return{
+
+boat:0,
+
+score:0,
+
+level:"なし"
+
+};
+
+return{
+
+...m,
+
+level:
+
+m.score>=55
+
+?"強い":
+
+m.score>=42
+
+?"有力":
+
+m.score>=30
+
+?"警戒":
+
+"弱い"
+
+};
+
+}
+
+function makiFollowBoats(){
+
+let m=makiStrength();
+
+if(!m.boat||m.score<30)return[];
+
+let c=course(m.boat);
+
+let result=[];
+
+if(c===3||c===4){
+
+for(let b=1;b<=6;b++){
+
+if(b===m.boat)continue;
+
+let cb=course(b);
+
+if(cb>c){
+
+result.push(b);
+
+}
+
+}
+
+}
+
+return result;
+
+}
+
+function makiInsideRemain(){
+
+let m=makiStrength();
+
+if(!m.boat)return 0;
+
+if(m.score<42)return 0;
+
+let one=course(1);
+
+if(one!==1)return 0;
+
+let r=racer(1);
+
+let p=preview(1);
+
+let v=0;
+
+v+=18;
+
+let ast=num(
+
+r?.average_start_timing||
+
+r?.average_st
+
+);
+
+let st=num(
+
+p?.start_timing||
+
+p?.st
+
+);
+
+if(st>0)
+
+v+=Math.max(0,.25-st)*20;
+
+let motor=num(
+
+r?.motor_top_2_percent||
+
+r?.motor_2ren_rate||
+
+r?.motor_2ren
+
+);
+
+if(motor>=35)v+=5;
+
+if(makiStrength().score<50)v+=4;
+
 return v;
 
 }
@@ -2277,6 +4391,16 @@ v.escape+=course(1)===1
 ?42+num(r?.national_win_rate)*2.2
 
 :8;
+
+let vt=venueTrait();
+
+v.escape*=vt.inner;
+
+v.maki*=vt.maki;
+
+v.sashi*=vt.sashi;
+
+v.makiSashi*=vt.makiSashi;
 
 let total=
 
@@ -2446,6 +4570,40 @@ hs.rate<20?-2:0;
 
 }
 
+/* ★直近7走 */
+
+let rs=recentStats(b);
+
+if(rs.count){
+
+s+=recentScore(b);
+
+if(rs.rate>=60)s+=4;
+
+else if(rs.rate>=40)s+=2;
+
+else if(rs.rate<20)s-=2;
+
+}
+
+/* ★場特性 */
+
+let o=overview();
+
+let d=dominant(o);
+
+s+=venueScore(b,d)*2;
+
+Object.entries(o).forEach(([t,v])=>{
+
+if(v>=20){
+
+s+=venueScore(b,t)*.6;
+
+}
+
+});
+
 let rk=rank(
 
 r.rank_number||
@@ -2465,10 +4623,6 @@ rk==="A1"?5:
 rk==="A2"?2:
 
 rk==="B2"?-2:0;
-
-let o=overview();
-
-let d=dominant(o);
 
 if(course(b)!==1)
 
@@ -2520,7 +4674,15 @@ let x=a.find(z=>z.boat===boat);
 
 if(!x)
 
-return{type:"normal",diff:0,average:0};
+return{
+
+type:"normal",
+
+diff:0,
+
+average:0
+
+};
 
 let avg=scoreAverage(a);
 
@@ -2528,13 +4690,37 @@ let diff=x.score-avg;
 
 if(diff<=-22)
 
-return{type:"exclude",diff,average:avg};
+return{
+
+type:"exclude",
+
+diff,
+
+average:avg
+
+};
 
 if(diff<-12)
 
-return{type:"third",diff,average:avg};
+return{
 
-return{type:"normal",diff,average:avg};
+type:"third",
+
+diff,
+
+average:avg
+
+};
+
+return{
+
+type:"normal",
+
+diff,
+
+average:avg
+
+};
 
 }
 
@@ -2547,6 +4733,86 @@ return classification(b,a).type==="exclude";
 function isThirdOnly(b,a){
 
 return classification(b,a).type==="third";
+
+}
+
+/* =========================================================
+
+   展開による除外解除
+
+   ★今回の重要部分
+
+========================================================= */
+
+function isMakiRecoveryBoat(b,a){
+
+let m=makiStrength();
+
+if(!m.boat||m.score<30)return false;
+
+if(b===m.boat)return false;
+
+let mbCourse=course(m.boat);
+
+let bCourse=course(b);
+
+if(!(mbCourse===3||mbCourse===4))return false;
+
+if(bCourse<=mbCourse)return false;
+
+let c=classification(b,a);
+
+if(c.type!=="exclude"&&c.type!=="third")return false;
+
+return true;
+
+}
+
+function recoveryReason(b,a){
+
+let m=makiStrength();
+
+if(isMakiRecoveryBoat(b,a)){
+
+return `${m.boat}号艇まくり展開時の後ろで展開復活`;
+
+}
+
+if(
+
+m.boat&&
+
+m.score>=42&&
+
+b===1&&
+
+course(1)===1
+
+){
+
+return `${m.boat}号艇まくり時の1号艇残り目`;
+
+}
+
+return "";
+
+}
+
+function canUseForThird(b,a){
+
+if(!isExcluded(b,a))return true;
+
+return isMakiRecoveryBoat(b,a);
+
+}
+
+function canUseForSecond(b,a){
+
+if(isExcluded(b,a))return false;
+
+if(isThirdOnly(b,a))return false;
+
+return true;
 
 }
 
@@ -2582,6 +4848,8 @@ $("ranking").innerHTML=`
 
 <th>同コース3連対</th>
 
+<th>直近7走</th>
+
 </tr>
 
 ${a.map((x,i)=>{
@@ -2590,19 +4858,29 @@ let r=x.racer;
 
 let s=hstats(x.boat);
 
+let rs=recentStats(x.boat);
+
 let c=classification(x.boat,a);
 
-let status=
+let status="";
 
-c.type==="exclude"
+if(c.type==="exclude"){
 
-?"<br><span style='color:#ff5555;font-size:9px'>🚫除外</span>":
+status=
 
-c.type==="third"
+isMakiRecoveryBoat(x.boat,a)
 
-?"<br><span style='color:#ffd84d;font-size:9px'>△3着まで</span>":
+?"<br><span style='color:#ffd84d;font-size:9px'>🟡展開復活候補</span>":
 
-"";
+"<br><span style='color:#ff5555;font-size:9px'>🚫除外</span>";
+
+}else if(c.type==="third"){
+
+status=
+
+"<br><span style='color:#ffd84d;font-size:9px'>△3着まで</span>";
+
+}
 
 return`
 
@@ -2676,6 +4954,16 @@ ${s.count?s.rate.toFixed(1)+"%":"-"}
 
 </td>
 
+<td>
+
+${rs.count
+
+?rs.avg.toFixed(2)+"着 / "+rs.rate.toFixed(0)+"%"
+
+:"-"}
+
+</td>
+
 </tr>`;
 
 }).join("")}
@@ -2721,6 +5009,18 @@ x=>typeName(x[0])+" "+x[1].toFixed(1)+"%"
 ).join(" / ")
 
 }`;
+
+}
+
+let vt=venueTrait();
+
+reason+=`<br>場特性：${esc(vt.note)}`;
+
+let m=makiStrength();
+
+if(m.boat&&m.score>=30){
+
+reason+=`<br>まくり展開：${m.boat}号艇 ${m.level}`;
 
 }
 
@@ -2786,6 +5086,10 @@ o.escape<42
 
 "イン逃げは五分以上。相手展開も比較。";
 
+let m=makiStrength();
+
+let recovery=makiFollowBoats();
+
 $("attack").innerHTML=`
 
 <div class="attackBox">
@@ -2838,6 +5142,36 @@ x=>typeName(x[0])+" "+x[1].toFixed(1)+"%"
 
 <strong style="color:#d4af37">
 
+主攻め
+
+</strong><br>
+
+${m.boat
+
+?`${m.boat}号艇 / まくり期待度 ${m.score.toFixed(1)} / ${m.level}`
+
+:"まくり強度なし"}
+
+${recovery.length
+
+?`<br>→ まくった場合の後ろ：${recovery.map(x=>x+"号艇").join("・")}`
+
+:""}
+
+<br><br>
+
+<strong style="color:#d4af37">
+
+場特性
+
+</strong><br>
+
+${esc(venueTrait().note)}
+
+<br><br>
+
+<strong style="color:#d4af37">
+
 進入
 
 </strong><br>
@@ -2868,17 +5202,45 @@ let excluded=[];
 
 let thirdOnly=[];
 
+let recovered=[];
+
 a.forEach(x=>{
 
 let c=classification(x.boat,a);
 
 if(c.type==="exclude"){
 
-excluded.push({...x,classification:c});
+if(isMakiRecoveryBoat(x.boat,a)){
+
+recovered.push({
+
+...x,
+
+classification:c
+
+});
+
+}else{
+
+excluded.push({
+
+...x,
+
+classification:c
+
+});
+
+}
 
 }else if(c.type==="third"){
 
-thirdOnly.push({...x,classification:c});
+thirdOnly.push({
+
+...x,
+
+classification:c
+
+});
 
 }
 
@@ -2954,7 +5316,47 @@ ${x.classification.diff.toFixed(1)}pt<br>
 
 });
 
-if(!excluded.length&&!thirdOnly.length){
+recovered.forEach(x=>{
+
+let m=makiStrength();
+
+html+=`
+
+<div class="exclusionRecover">
+
+<strong>
+
+${x.boat}号艇 ${esc(x.racer?.name||"-")}
+
+</strong><br>
+
+AI：
+
+${x.score.toFixed(1)}<br>
+
+6艇平均：
+
+${avg.toFixed(1)}<br>
+
+平均との差：
+
+${x.classification.diff.toFixed(1)}pt<br>
+
+🟡 <strong>通常評価では除外</strong><br>
+
+🔥 <strong>まくり展開なら3着候補へ復活</strong><br>
+
+${m.boat}号艇の${m.level}まくり想定。<br>
+
+→ ${m.boat}号艇まくり時の後ろとして
+
+${x.boat}号艇を展開候補に採用。
+
+</div>`;
+
+});
+
+if(!excluded.length&&!thirdOnly.length&&!recovered.length){
 
 html=`
 
@@ -2990,19 +5392,59 @@ let B=rankings.find(x=>x.boat===b);
 
 if(!A||!B)return null;
 
-if(
+let o=overview();
 
-isExcluded(a,rankings)||
+let aExcluded=isExcluded(a,rankings);
 
-isExcluded(b,rankings)
+let bExcluded=isExcluded(b,rankings);
 
-)return null;
+let aRecovery=isMakiRecoveryBoat(a,rankings);
+
+let bRecovery=isMakiRecoveryBoat(b,rankings);
+
+/*
+
+ ★通常の除外艇は使用不可
+
+ ★ただし、まくり展開で後ろになる艇は3着専用で復活
+
+*/
+
+if(aExcluded&&!aRecovery)
+
+return null;
+
+if(bExcluded&&!bRecovery)
+
+return null;
+
+/*
+
+ ★復活艇は2着には入れない
+
+*/
+
+if(aRecovery)
+
+return null;
+
+if(bRecovery&&mode==="hit")
+
+return null;
+
+/*
+
+ ★3着専用判定
+
+ 2艇買い目の現仕様では、
+
+ 復活艇がbに入る場合のみ許可。
+
+*/
 
 if(mode==="hit"&&isThirdOnly(b,rankings))
 
 return null;
-
-let o=overview();
 
 let raw=A.score*1.35+B.score*.75;
 
@@ -3010,7 +5452,11 @@ if(type==="escape"){
 
 if(course(a)!==1)return null;
 
-raw+=30+o.escape*.9+suitability(a,type)*.7;
+raw+=30+
+
+o.escape*.9+
+
+suitability(a,type)*.7;
 
 }
 
@@ -3060,7 +5506,51 @@ if(o.escape<42)raw+=10;
 
 }
 
+/*
+
+ ★まくりの後ろ
+
+*/
+
+if(type==="maki"||type==="makiSashi"){
+
+let m=makiStrength();
+
+if(
+
+m.boat===a&&
+
+bRecovery
+
+){
+
+raw+=25;
+
+}
+
+}
+
+/*
+
+ ★1号艇残り目
+
+*/
+
+if(
+
+makiInsideRemain()>0&&
+
+b===1
+
+){
+
+raw+=makiInsideRemain();
+
+}
+
 raw+=hscore(a)*1.3;
+
+raw+=recentScore(a)*.8;
 
 raw+=num(
 
@@ -3086,13 +5576,35 @@ ra===3?3:0;
 
 if(rb<=3)raw+=2;
 
+/*
+
+ ★場特性
+
+*/
+
+raw+=venueScore(a,type)*1.2;
+
+if(bRecovery){
+
+raw+=18;
+
+}
+
 return{
 
 key:`${a}-${b}`,
 
 a,b,
 
-raw:Math.max(.01,raw)
+raw:Math.max(.01,raw),
+
+recovery:bRecovery,
+
+recoveryReason:bRecovery
+
+?recoveryReason(b,rankings)
+
+:""
 
 };
 
@@ -3106,7 +5618,11 @@ for(let x=1;x<=6;x++){
 
 for(let y=1;y<=6;y++){
 
-let z=candidate(x,y,r,type,mode);
+let z=candidate(
+
+x,y,r,type,mode
+
+);
 
 if(z)a.push(z);
 
@@ -3117,6 +5633,12 @@ if(z)a.push(z);
 return a.sort((a,b)=>b.raw-a.raw);
 
 }
+
+/* =========================================================
+
+   買い目構築
+
+========================================================= */
 
 function buildBets(r){
 
@@ -3226,6 +5748,14 @@ used.add(x.key);
 
 }
 
+/*
+
+ ★穴目
+
+ ★通常除外でも展開復活艇を拾う
+
+*/
+
 let o=overview();
 
 let first=r[0];
@@ -3234,15 +5764,17 @@ let uc=[];
 
 r.slice(1).forEach(t=>{
 
-if(isExcluded(t.boat,r))
-
-return;
+let recovery=isMakiRecoveryBoat(t.boat,r);
 
 let c=classification(t.boat,r);
 
 let thirdBoost=
 
-c.type==="third"?15:0;
+c.type==="third"?15:
+
+recovery?30:
+
+0;
 
 if(
 
@@ -3252,9 +5784,13 @@ strongMotor(t.boat)||
 
 goodHistory(t.boat)||
 
+goodRecent(t.boat)||
+
 goodAttack(t.boat,o)||
 
-c.type==="third"
+c.type==="third"||
+
+recovery
 
 ){
 
@@ -3262,7 +5798,13 @@ for(let b=1;b<=6;b++){
 
 if(b===t.boat)continue;
 
-if(isExcluded(b,r))continue;
+if(
+
+isExcluded(b,r)&&
+
+!isMakiRecoveryBoat(b,r)
+
+)continue;
 
 let x=candidate(
 
@@ -3369,6 +5911,22 @@ function goodHistory(b){
 let s=hstats(b);
 
 return s.count>=5&&s.rate>=40;
+
+}
+
+function goodRecent(b){
+
+let s=recentStats(b);
+
+return s.count>=5&&(
+
+s.rate>=40||
+
+s.avg<=3.2||
+
+s.momentum>=.5
+
+);
 
 }
 
@@ -3482,9 +6040,11 @@ p>=5.5?"strong":
 
 p<=4.9?"weak":"";
 
+let recovery=x.recovery;
+
 return`
 
-<div class="pick ${cls}">
+<div class="pick ${cls} ${recovery?"pickRecovery":""}">
 
 <div class="pickLeft">
 
@@ -3499,6 +6059,16 @@ ${stars.has(x.key)?"⭐":""}
 ${x.a} → ${x.b}
 
 </strong>
+
+${recovery
+
+?`<span style="font-size:9px;color:#ffd84d">
+
+🔥展開復活
+
+</span>`
+
+:""}
 
 </div>
 
@@ -3588,6 +6158,8 @@ let c=r[2];
 
 let d=dominant(o);
 
+let m=makiStrength();
+
 let text=
 
 o.escape>=60
@@ -3642,6 +6214,48 @@ ${text}
 
 <br><br>
 
+<strong>🏟️ 場特性</strong><br>
+
+${esc(venueTrait().note)}
+
+<br><br>
+
+<strong>🔥 まくり展開</strong><br>
+
+${
+
+m.boat
+
+?`${m.boat}号艇の${m.level}まくり。`
+
+:"強いまくり候補なし。"
+
+}
+
+${
+
+makiFollowBoats().length
+
+?`<br>後ろの展開候補：
+
+${makiFollowBoats().map(x=>x+"号艇").join("・")}`
+
+:""
+
+}
+
+${
+
+makiInsideRemain()>0
+
+?`<br>1号艇残り目も警戒。`
+
+:""
+
+}
+
+<br><br>
+
 <strong>今回の進入</strong><br>
 
 ${[1,2,3,4,5,6].map(
@@ -3654,7 +6268,7 @@ x=>`${x}号艇=${course(x)}コース`
 
 <strong>AI評価</strong><br>
 
-全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・今回と同じ進入コースの過去7走を総合評価。
+全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・場特性・同コース過去7走・選手直近7走を総合評価。
 
 </div>`;
 
@@ -3690,9 +6304,7 @@ manualCourses[b]=+$("course"+b).value;
 
 /*
 
-  ★今回の進入を確定してから
-
-  同じコースの過去7走を検索
+ ★今回の進入を確定
 
 */
 
@@ -3701,6 +6313,12 @@ $("message").innerHTML=
 '<span class="loading">🤖 同じコースを走った過去7走を検索中...</span>';
 
 await loadHistory();
+
+$("message").innerHTML=
+
+'<span class="loading">🤖 選手の直近7走を検索中...</span>';
+
+await loadRecentHistory();
 
 renderRace();
 
@@ -3742,6 +6360,14 @@ historyData[no]?.boats?.[c]?.length||0
 
 });
 
+let recentCounts=racers.map(x=>
+
+recentHistoryData[getRacerNumber(x)]?.length||0
+
+);
+
+let m=makiStrength();
+
 $("message").innerHTML=`
 
 <span class="success">
@@ -3752,13 +6378,35 @@ $("message").innerHTML=`
 
 ${typeName(dominant(o))}<br>
 
-📈 今回と同コースの過去7走：
+${m.boat
+
+?`💥 まくり候補：
+
+${m.boat}号艇 / ${m.level}`
+
+:""}
+
+${makiFollowBoats().length
+
+?`<br>➡️ まくり後ろ：
+
+${makiFollowBoats().join("・")}号艇`
+
+:""}
+
+<br>
+
+📈 同コース過去7走：
 
 ${counts.join(" / ")}走取得<br>
 
-🔎 同じコースを走ったレースを検索<br>
+🔥 選手直近7走：
 
-⚡ 過去180日まで検索<br>
+${recentCounts.join(" / ")}走取得<br>
+
+🏟️ 場特性：
+
+${esc(venueTrait().name)}を評価<br>
 
 ⚙️ モーター2連率を評価<br>
 
@@ -3766,9 +6414,13 @@ ${counts.join(" / ")}走取得<br>
 
 🎯 過去7走は決まり手込み<br>
 
+🔥 直近7走の選手調子を評価<br>
+
 🚫 平均-20pt以下は完全除外<br>
 
-△ 平均-15pt未満は3着まで
+△ 平均-15pt未満は3着まで<br>
+
+🟡 まくり展開時は後ろの艇を3着候補へ復活
 
 </span>`;
 
@@ -3798,7 +6450,7 @@ renderBets(currentBets);
 
 /*
 
-  ★最初に必ず進入入力を作る
+ ★最初に必ず進入入力を作る
 
 */
 
