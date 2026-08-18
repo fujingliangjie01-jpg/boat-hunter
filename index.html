@@ -12,7 +12,11 @@
 
 <style>
 
-*{box-sizing:border-box}
+*{
+
+box-sizing:border-box
+
+}
 
 body{
 
@@ -300,41 +304,15 @@ color:#000
 
 .n1{background:#fff}
 
-.n2{
+.n2{background:#222;color:#fff;border:1px solid #777}
 
-background:#222;
+.n3{background:#e22;color:#fff}
 
-color:#fff;
-
-border:1px solid #777
-
-}
-
-.n3{
-
-background:#e22;
-
-color:#fff
-
-}
-
-.n4{
-
-background:#248cff;
-
-color:#fff
-
-}
+.n4{background:#248cff;color:#fff}
 
 .n5{background:#e5d000}
 
-.n6{
-
-background:#20a747;
-
-color:#fff
-
-}
+.n6{background:#20a747;color:#fff}
 
 .racerName{
 
@@ -466,7 +444,7 @@ color:#aaa;
 
 line-height:1.6;
 
-max-height:150px;
+max-height:180px;
 
 overflow-y:auto
 
@@ -880,11 +858,31 @@ padding:20px
 
 }
 
-.loading{color:#d4af37}
+.loading{
 
-.success{color:#4cd964}
+color:#d4af37
 
-.error{color:#ff5555}
+}
+
+.success{
+
+color:#4cd964
+
+}
+
+.error{
+
+color:#ff5555
+
+}
+
+.historyDecision{
+
+color:#d4af37;
+
+font-weight:bold
+
+}
 
 @media(max-width:600px){
 
@@ -1260,9 +1258,13 @@ BOAT HUNTER © 2026
 
 <script>
 
+const API_V1=
+
+"https://boatraceopenapi.github.io/api/v1";
+
 const API=[
 
-"https://boatraceopenapi.github.io/api/v1",
+API_V1,
 
 "https://boatraceopenapi.github.io/programs/v3",
 
@@ -1300,7 +1302,11 @@ return Number.isFinite(x)?x:0;
 
 const esc=v=>
 
-String(v??"").replace(/[&<>"']/g,m=>({
+String(v??"").replace(
+
+/[&<>"']/g,
+
+m=>({
 
 "&":"&amp;",
 
@@ -1312,13 +1318,21 @@ String(v??"").replace(/[&<>"']/g,m=>({
 
 "'":"&#039;"
 
-}[m]));
+}[m])
 
-const course=b=>Number(manualCourses[b]||b);
+);
+
+const course=b=>
+
+Number(manualCourses[b]||b);
 
 const racer=b=>
 
-racers.find(x=>num(x.entry_number)===b);
+racers.find(
+
+x=>num(x.entry_number)===b
+
+);
 
 const preview=b=>
 
@@ -1354,17 +1368,35 @@ day:"2-digit"
 
 ).formatToParts(new Date());
 
-let y=p.find(x=>x.type==="year").value;
+return{
 
-let m=p.find(x=>x.type==="month").value;
+year:p.find(x=>x.type==="year").value,
 
-let d=p.find(x=>x.type==="day").value;
+ymd:
+
+p.find(x=>x.type==="year").value+
+
+p.find(x=>x.type==="month").value+
+
+p.find(x=>x.type==="day").value
+
+};
+
+}
+
+function dateInfo(d){
 
 return{
 
-year:y,
+year:String(d.getFullYear()),
 
-ymd:y+m+d
+ymd:
+
+String(d.getFullYear())+
+
+String(d.getMonth()+1).padStart(2,"0")+
+
+String(d.getDate()).padStart(2,"0")
 
 };
 
@@ -1372,7 +1404,7 @@ ymd:y+m+d
 
 /* =========================
 
-   JSON取得
+   JSON
 
 ========================= */
 
@@ -1390,7 +1422,15 @@ cache:"no-store"
 
 );
 
-if(!r.ok)throw Error("HTTP "+r.status);
+if(!r.ok){
+
+throw Error(
+
+"HTTP "+r.status
+
+);
+
+}
 
 return r.json();
 
@@ -1406,7 +1446,11 @@ function directRace(data,v,r){
 
 let x=
 
-data?.programs?.stadiums?.[String(v)]?.races?.[String(r)];
+data?.programs?.
+
+stadiums?.[String(v)]?.
+
+races?.[String(r)];
 
 if(x)return x;
 
@@ -1424,7 +1468,9 @@ let found=null;
 
 function walk(o){
 
-if(found||!o||typeof o!=="object")return;
+if(found||!o||
+
+typeof o!=="object")return;
 
 if(
 
@@ -1478,6 +1524,12 @@ return found;
 
 }
 
+/* =========================
+
+   当日出走表
+
+========================= */
+
 async function loadDaily(){
 
 let t=today();
@@ -1520,7 +1572,15 @@ try{
 
 let data=await json(q.url);
 
-let race=directRace(data,v,r);
+let race=directRace(
+
+data,
+
+v,
+
+r
+
+);
 
 if(race){
 
@@ -1598,13 +1658,19 @@ i+1
 
 .filter(
 
-r=>r.entry_number>=1&&r.entry_number<=6
+r=>
+
+r.entry_number>=1&&
+
+r.entry_number<=6
 
 )
 
 .sort(
 
-(a,b)=>a.entry_number-b.entry_number
+(a,b)=>
+
+a.entry_number-b.entry_number
 
 );
 
@@ -1670,7 +1736,7 @@ $("message").innerHTML=
 
 /* =========================
 
-   出走表
+   出走表取得
 
 ========================= */
 
@@ -1685,6 +1751,8 @@ $("raceCard").style.display="none";
 $("analysisCard").style.display="none";
 
 $("predictionCard").style.display="none";
+
+historyData={};
 
 try{
 
@@ -1746,7 +1814,7 @@ $("raceCard").style.display="block";
 
 $("message").innerHTML=
 
-'<span class="success">✅ 出走表取得成功<br>過去10走はAI解析時に取得します</span>';
+'<span class="success">✅ 出走表取得成功<br>AI解析時に過去10走を取得します</span>';
 
 }catch(e){
 
@@ -1764,291 +1832,45 @@ esc(e.message)+
 
 }
 
-/* =========================
+/* =====================================================
 
    過去10走
 
-========================= */
+   API v1 正式構造対応
 
-function dateInfo(d){
-
-return{
-
-year:String(d.getFullYear()),
-
-ymd:
-
-String(d.getFullYear())+
-
-String(d.getMonth()+1).padStart(2,"0")+
-
-String(d.getDate()).padStart(2,"0")
-
-};
-
-}
-
-function historyKey(){
-
-return"bh-history-v3-"+
-
-today().ymd+"-"+
-
-$("venue").value;
-
-}
-
-/* =========================
-
-   決まり手
-
-   ★ここを強化
-
-========================= */
-
-function decision(n){
-
-let v=num(n);
-
-return({
-
-1:"逃げ",
-
-2:"差し",
-
-3:"まくり",
-
-4:"まくり差し",
-
-5:"抜き",
-
-6:"恵まれ"
-
-}[v]||"-");
-
-}
+===================================================== */
 
 /*
 
-APIによって決まり手の項目名が違うため、
+API v1:
 
-複数パターンをすべて確認する。
+programs
 
-*/
+ └ stadiums
 
-function getDecision(x,parent){
+    └ stadium_number
 
-let values=[
+       └ races
 
-x?.technique_number,
+          └ race_number
 
-x?.technique,
+             └ result
 
-x?.winning_technique,
+                ├ technique_number
 
-x?.winning_technique_number,
+                └ racers
 
-x?.technique_no,
+                   ├ entry_number
 
-x?.technique_name,
+                   ├ number
 
-x?.winning_technique_name,
+                   ├ course_number
 
-x?.decision,
+                   └ place_number
 
-x?.decision_number,
-
-x?.decision_name,
-
-x?.kimarite,
-
-x?.kimarite_number,
-
-x?.kimarite_name,
-
-x?.result_technique,
-
-x?.result_technique_number,
-
-x?.result_method,
-
-x?.winning_method,
-
-parent?.technique_number,
-
-parent?.technique,
-
-parent?.winning_technique,
-
-parent?.winning_technique_number,
-
-parent?.technique_no,
-
-parent?.technique_name,
-
-parent?.winning_technique_name,
-
-parent?.decision,
-
-parent?.decision_number,
-
-parent?.decision_name,
-
-parent?.kimarite,
-
-parent?.kimarite_number,
-
-parent?.kimarite_name,
-
-parent?.result_technique,
-
-parent?.result_technique_number,
-
-parent?.result_method,
-
-parent?.winning_method
-
-];
-
-for(let v of values){
-
-if(v!=null&&v!==""){
-
-/*
-
-文字列の場合はそのまま判定
+ここを直接読む。
 
 */
-
-let s=String(v).trim();
-
-if(
-
-s==="逃げ"||
-
-s==="差し"||
-
-s==="まくり"||
-
-s==="まくり差し"||
-
-s==="抜き"||
-
-s==="恵まれ"
-
-){
-
-return s;
-
-}
-
-/*
-
-数値の場合
-
-*/
-
-let n=num(v);
-
-if(n>=1&&n<=6){
-
-return decision(n);
-
-}
-
-/*
-
-英語・ローマ字表記にも対応
-
-*/
-
-let lower=s.toLowerCase();
-
-if(
-
-lower.includes("makurizashi")||
-
-lower.includes("maki_sashi")||
-
-lower.includes("maki-sashi")||
-
-lower.includes("まくり差")
-
-){
-
-return"まくり差し";
-
-}
-
-if(
-
-lower.includes("makuri")||
-
-lower.includes("まくり")
-
-){
-
-return"まくり";
-
-}
-
-if(
-
-lower.includes("sashi")||
-
-lower.includes("差し")
-
-){
-
-return"差し";
-
-}
-
-if(
-
-lower.includes("nige")||
-
-lower.includes("escape")||
-
-lower.includes("逃げ")
-
-){
-
-return"逃げ";
-
-}
-
-if(
-
-lower.includes("nuki")||
-
-lower.includes("抜き")
-
-){
-
-return"抜き";
-
-}
-
-if(
-
-lower.includes("megumare")||
-
-lower.includes("恵まれ")
-
-){
-
-return"恵まれ";
-
-}
-
-}
-
-}
-
-return"-";
-
-}
 
 function getRacerNumber(x){
 
@@ -2070,6 +1892,22 @@ x?.registrationNo
 
 }
 
+function getResultRacerNumber(x){
+
+return num(
+
+x?.number||
+
+x?.racer_number||
+
+x?.registration_number||
+
+x?.player_number
+
+);
+
+}
+
 function getPlace(x){
 
 return num(
@@ -2078,13 +1916,11 @@ x?.place_number||
 
 x?.place||
 
-x?.rank||
-
-x?.result||
-
 x?.finish_position||
 
-x?.arrival
+x?.arrival||
+
+x?.rank
 
 );
 
@@ -2100,35 +1936,29 @@ x?.course||
 
 x?.entry_course||
 
-x?.entry||
-
-x?.courseNo
+x?.entry
 
 );
 
 }
 
-function getResultDate(x,parent){
+function decision(n){
 
-return(
+return({
 
-x?.date||
+1:"逃げ",
 
-x?.race_date||
+2:"差し",
 
-x?.racedate||
+3:"まくり",
 
-x?.raceDate||
+4:"まくり差し",
 
-parent?.date||
+5:"抜き",
 
-parent?.race_date||
+6:"恵まれ"
 
-parent?.racedate||
-
-""
-
-);
+}[num(n)]||"-");
 
 }
 
@@ -2170,23 +2000,53 @@ return x;
 
 }
 
-/* =========================
+/* 1レース分の結果を追加 */
 
-   履歴追加
+function addResultRace(race,targets,wanted){
 
-========================= */
+if(!race||!race.result)return;
 
-function addHistory(data,targets,wanted){
+let result=race.result;
 
-function pushResult(x,parent){
+let technique=
 
-let no=getRacerNumber(x);
+decision(
+
+result.technique_number
+
+);
+
+let resultRacers=
+
+result.racers;
+
+if(!resultRacers)return;
+
+let list=Array.isArray(resultRacers)
+
+?resultRacers
+
+:Object.values(resultRacers);
+
+let date=
+
+result.date||
+
+race.date||
+
+"";
+
+list.forEach(x=>{
+
+let no=getResultRacerNumber(x);
 
 if(!wanted.has(no))return;
 
 let c=getCourse(x);
 
 let place=getPlace(x);
+
+if(no<=0)return;
 
 if(c<1||c>6)return;
 
@@ -2202,195 +2062,97 @@ if(
 
 )return;
 
-if(targets[no].boats[c].length>=10)return;
+if(
 
-/*
+targets[no].boats[c].length>=10
 
-★ 決まり手をここで必ず取得
+)return;
 
-*/
+targets[no].boats[c].push({
 
-let dec=getDecision(x,parent);
-
-let item={
-
-date:getResultDate(x,parent),
+date,
 
 place,
 
-decision:dec
+course:c,
 
-};
-
-targets[no].boats[c].push(item);
-
-}
-
-function scan(o,parent=null){
-
-if(!o||typeof o!=="object")return;
-
-if(Array.isArray(o)){
-
-for(let item of o){
-
-scan(item,parent);
-
-}
-
-return;
-
-}
-
-if(
-
-getRacerNumber(o)>0&&
-
-(getCourse(o)>0||getPlace(o)>0)
-
-){
-
-pushResult(o,parent);
-
-}
-
-if(o.result&&typeof o.result==="object"){
-
-scan(o.result,o);
-
-}
-
-if(o.racers){
-
-scan(o.racers,o);
-
-}
-
-if(o.entries){
-
-scan(o.entries,o);
-
-}
-
-if(o.results){
-
-scan(o.results,o);
-
-}
-
-for(let k of Object.keys(o)){
-
-if(
-
-k==="result"||
-
-k==="racers"||
-
-k==="entries"||
-
-k==="results"
-
-)continue;
-
-let v=o[k];
-
-if(v&&typeof v==="object"){
-
-scan(v,o);
-
-}
-
-}
-
-}
-
-scan(data,null);
-
-}
-
-/* =========================
-
-   履歴取得
-
-========================= */
-
-async function loadHistory(){
-
-let key=historyKey();
-
-try{
-
-let cached=JSON.parse(
-
-sessionStorage.getItem(key)||"null"
-
-);
-
-if(cached){
-
-historyData=cached;
-
-let complete=racers.every(r=>{
-
-let no=getRacerNumber(r);
-
-let c=course(num(r.entry_number));
-
-return(
-
-cached[no]?.boats?.[c]?.length>=10
-
-);
+decision:technique
 
 });
 
-if(complete)return;
+});
 
 }
 
-}catch(e){}
+/* 当日の1日分のJSONから結果を探す */
 
-let targets=emptyHistory();
+function collectHistoryFromDay(
 
-for(let start=1;start<=60;start+=5){
+data,
 
-let wanted=new Set(
+targets,
 
-racers
+wanted
 
-.map(r=>getRacerNumber(r))
+){
 
-.filter(no=>{
+let stadiums=
 
-let rr=racers.find(
+data?.programs?.stadiums;
 
-r=>getRacerNumber(r)===no
+if(!stadiums)return;
+
+let stadium=
+
+stadiums[String(
+
+$("venue").value
+
+)];
+
+if(!stadium)return;
+
+let races=stadium.races;
+
+if(!races)return;
+
+let list=Array.isArray(races)
+
+?Object.values(races)
+
+:Object.values(races);
+
+list.forEach(race=>{
+
+if(race?.result){
+
+addResultRace(
+
+race,
+
+targets,
+
+wanted
 
 );
 
-if(!rr)return false;
+}
 
-let c=course(
+});
 
-num(rr.entry_number)
+}
 
-);
+/* 各艇が現在の進入コースで10走取れたか */
 
-return(
+function historyComplete(targets){
 
-targets[no]?.boats?.[c]?.length||0
-
-)<10;
-
-})
-
-);
-
-let complete=racers.every(r=>{
+return racers.every(r=>{
 
 let no=getRacerNumber(r);
 
-let c=course(
+let c=
+
+course(
 
 num(r.entry_number)
 
@@ -2404,49 +2166,135 @@ targets[no]?.boats?.[c]?.length||0
 
 });
 
-if(complete)break;
+}
 
-let jobs=[];
+/* 同コース履歴を日付順に整える */
 
-for(
+function sortHistory(targets){
 
-let i=0;
+Object.values(targets).forEach(player=>{
 
-i<5&&start+i<=60;
+Object.values(player.boats).forEach(arr=>{
 
-i++
+arr.sort(
 
-){
+(a,b)=>
+
+String(b.date)
+
+.localeCompare(
+
+String(a.date)
+
+)
+
+);
+
+if(arr.length>10){
+
+arr.splice(10);
+
+}
+
+});
+
+});
+
+}
+
+/* =====================================================
+
+   過去10走取得
+
+===================================================== */
+
+async function loadHistory(){
+
+let key=
+
+"bh-history-v3-"+
+
+today().ymd+
+
+"-"+
+
+$("venue").value+
+
+"-"+
+
+racers.map(
+
+r=>getRacerNumber(r)
+
+).join("-")+
+
+"-"+
+
+Object.values(manualCourses).join("");
+
+try{
+
+let cached=
+
+JSON.parse(
+
+sessionStorage.getItem(key)||"null"
+
+);
+
+if(cached&&historyComplete(cached)){
+
+historyData=cached;
+
+return;
+
+}
+
+}catch(e){}
+
+let targets=emptyHistory();
+
+let wanted=new Set(
+
+Object.keys(targets).map(Number)
+
+);
+
+/*
+
+最大120日まで確認。
+
+1日ずつAPI v1を取得し、
+
+結果のあるレースだけ解析する。
+
+*/
+
+let fetchedDays=0;
+
+for(let daysAgo=1;daysAgo<=120;daysAgo++){
+
+if(historyComplete(targets))break;
 
 let d=new Date();
 
 d.setDate(
 
-d.getDate()-start-i
+d.getDate()-daysAgo
 
 );
 
 let p=dateInfo(d);
 
-jobs.push(
+let url=
 
-json(
+`${API_V1}/${p.year}/${p.ymd}.json`;
 
-`${API[0]}/${p.year}/${p.ymd}.json`
+try{
 
-).catch(()=>null)
+let data=await json(url);
 
-);
-
-}
-
-let datas=await Promise.all(jobs);
-
-datas.forEach(data=>{
-
-if(data){
-
-addHistory(
+collectHistoryFromDay(
 
 data,
 
@@ -2456,15 +2304,59 @@ wanted
 
 );
 
+fetchedDays++;
+
+sortHistory(targets);
+
+}catch(e){
+
+/*
+
+その日が404等でも処理継続
+
+*/
+
 }
+
+if(
+
+daysAgo%5===0||
+
+historyComplete(targets)
+
+){
+
+let counts=racers.map(r=>{
+
+let no=getRacerNumber(r);
+
+let c=course(
+
+num(r.entry_number)
+
+);
+
+return(
+
+targets[no]?.boats?.[c]?.length||0
+
+);
 
 });
 
-historyData=targets;
+$("message").innerHTML=
 
-renderRace();
+`<span class="loading">
 
-if(complete)break;
+🤖 過去10走取得中... ${daysAgo}日前まで確認<br>
+
+現在：
+
+${counts.join(" / ")}走
+
+</span>`;
+
+}
 
 await new Promise(
 
@@ -2473,6 +2365,8 @@ resolve=>setTimeout(resolve,0)
 );
 
 }
+
+sortHistory(targets);
 
 historyData=targets;
 
@@ -2492,7 +2386,7 @@ JSON.stringify(historyData)
 
 /* =========================
 
-   履歴
+   履歴取得
 
 ========================= */
 
@@ -2502,7 +2396,9 @@ let r=racer(b);
 
 if(!r)return[];
 
-let no=getRacerNumber(r);
+let no=
+
+getRacerNumber(r);
 
 let c=course(b);
 
@@ -2518,11 +2414,29 @@ function hstats(b){
 
 let a=history(b);
 
-let f=a.filter(x=>x.place===1).length;
+let f=
 
-let s=a.filter(x=>x.place===2).length;
+a.filter(
 
-let t=a.filter(x=>x.place===3).length;
+x=>x.place===1
+
+).length;
+
+let s=
+
+a.filter(
+
+x=>x.place===2
+
+).length;
+
+let t=
+
+a.filter(
+
+x=>x.place===3
+
+).length;
 
 return{
 
@@ -2564,6 +2478,12 @@ s.rate*.2
 
 }
 
+/* =========================
+
+   履歴表示
+
+========================= */
+
 function renderHistory(b){
 
 let a=history(b);
@@ -2584,11 +2504,17 @@ return`
 
 <div class="historyList">
 
-同コース過去結果なし
+<span style="color:#777">
+
+まだ同コース過去結果を取得できていません
+
+</span>
 
 </div>
 
-</div>`;
+</div>
+
+`;
 
 }
 
@@ -2606,25 +2532,33 @@ return`
 
 <div class="historyStat">
 
-1着<strong>${s.first}</strong>
+1着
+
+<strong>${s.first}</strong>
 
 </div>
 
 <div class="historyStat">
 
-2着<strong>${s.second}</strong>
+2着
+
+<strong>${s.second}</strong>
 
 </div>
 
 <div class="historyStat">
 
-3着<strong>${s.third}</strong>
+3着
+
+<strong>${s.third}</strong>
 
 </div>
 
 <div class="historyStat">
 
-3連対率<strong>${s.rate.toFixed(1)}%</strong>
+3連対率
+
+<strong>${s.rate.toFixed(1)}%</strong>
 
 </div>
 
@@ -2642,7 +2576,7 @@ ${i+1}.
 
 ${esc(
 
-String(x.date||"")
+String(x.date)
 
 .slice(5,10)
 
@@ -2668,9 +2602,9 @@ x.place===1
 
 ${x.place}着
 
-${
+<span class="historyDecision">
 
-x.decision&&x.decision!=="-"
+${x.decision!=="-"
 
 ?"/ "+esc(x.decision)
 
@@ -2680,19 +2614,23 @@ x.decision&&x.decision!=="-"
 
 </span>
 
+</span>
+
 </div>
 
 `).join("")}
 
 </div>
 
-</div>`;
+</div>
+
+`;
 
 }
 
 /* =========================
 
-   出走表表示
+   級別
 
 ========================= */
 
@@ -2711,6 +2649,12 @@ return({
 }[num(n)]||"-");
 
 }
+
+/* =========================
+
+   出走表表示
+
+========================= */
 
 function renderRace(){
 
@@ -2754,15 +2698,21 @@ raceData.distance_m
 
 )}m<br>
 
-API：boatraceopenapi
+API：
 
-</div>`;
+boatraceopenapi v1
+
+</div>
+
+`;
 
 $("racers").innerHTML=
 
 racers.map(r=>{
 
-let b=num(r.entry_number);
+let b=
+
+num(r.entry_number);
 
 let p=preview(b);
 
@@ -2810,15 +2760,7 @@ r.rank
 
 登録番号：
 
-${num(
-
-r.number||
-
-r.registration_number||
-
-r.racer_number
-
-)||"-"}<br>
+${getRacerNumber(r)||"-"}<br>
 
 年齢：
 
@@ -2948,11 +2890,15 @@ p.exhibition
 
 ${renderHistory(b)}
 
-</div>`;
+</div>
+
+`;
 
 }).join("");
 
-let w=raceData.preview||{};
+let w=
+
+raceData.preview||{};
 
 $("raceInfo").innerHTML+=`
 
@@ -2998,13 +2944,15 @@ w.water_temperature
 
 ).toFixed(1)}℃
 
-</div>`;
+</div>
+
+`;
 
 }
 
 /* =========================
 
-   決まり手適性
+   決まり手
 
 ========================= */
 
@@ -3158,7 +3106,9 @@ v.escape+=
 
 course(1)===1
 
-?45+num(r?.national_win_rate)*2.2
+?45+
+
+num(r?.national_win_rate)*2.2
 
 :8;
 
@@ -3170,7 +3120,9 @@ Object.values(v)
 
 Object.keys(v).forEach(k=>{
 
-v[k]=v[k]/total*100;
+v[k]=
+
+v[k]/total*100;
 
 });
 
@@ -3182,7 +3134,11 @@ function dominant(o){
 
 return Object.entries(o)
 
-.sort((a,b)=>b[1]-a[1])[0][0];
+.sort(
+
+(a,b)=>b[1]-a[1]
+
+)[0][0];
 
 }
 
@@ -3206,7 +3162,11 @@ function mainTypes(o){
 
 return Object.entries(o)
 
-.sort((a,b)=>b[1]-a[1])
+.sort(
+
+(a,b)=>b[1]-a[1]
+
+)
 
 .filter(
 
@@ -3416,13 +3376,9 @@ let d=dominant(o);
 
 if(course(b)!==1){
 
-s+=suitability(
+s+=
 
-b,
-
-d
-
-)*.35;
+suitability(b,d)*.35;
 
 }
 
@@ -3480,7 +3436,7 @@ score:score(i+1)
 
 /* =========================
 
-   平均点による除外判定
+   除外判定
 
 ========================= */
 
@@ -3496,9 +3452,17 @@ return rankingData.reduce(
 
 }
 
-function classification(boat,rankingData){
+function classification(
 
-let x=rankingData.find(
+boat,
+
+rankingData
+
+){
+
+let x=
+
+rankingData.find(
 
 z=>z.boat===boat
 
@@ -3518,9 +3482,13 @@ average:0
 
 }
 
-let avg=scoreAverage(rankingData);
+let avg=
 
-let diff=x.score-avg;
+scoreAverage(rankingData);
+
+let diff=
+
+x.score-avg;
 
 if(diff<=-20){
 
@@ -3536,7 +3504,7 @@ average:avg
 
 }
 
-if(diff< -15){
+if(diff<-15){
 
 return{
 
@@ -3562,7 +3530,13 @@ average:avg
 
 }
 
-function isExcluded(b,rankingData){
+function isExcluded(
+
+b,
+
+rankingData
+
+){
 
 return classification(
 
@@ -3574,7 +3548,13 @@ rankingData
 
 }
 
-function isThirdOnly(b,rankingData){
+function isThirdOnly(
+
+b,
+
+rankingData
+
+){
 
 return classification(
 
@@ -3588,7 +3568,7 @@ rankingData
 
 /* =========================
 
-   ランキング表示
+   ランキング
 
 ========================= */
 
@@ -3720,11 +3700,15 @@ ${s.count?s.rate.toFixed(1)+"%":"-"}
 
 </td>
 
-</tr>`;
+</tr>
+
+`;
 
 }).join("")}
 
-</table>`;
+</table>
+
+`;
 
 }
 
@@ -3762,7 +3746,15 @@ reason+=
 
 mt.map(
 
-x=>typeName(x[0])+" "+x[1].toFixed(1)+"%"
+x=>
+
+typeName(x[0])+
+
+" "+
+
+x[1].toFixed(1)+
+
+"%"
 
 ).join(" / ")
 
@@ -3818,7 +3810,9 @@ ${o[t].toFixed(1)}%
 
 ${reason}
 
-</div>`;
+</div>
+
+`;
 
 }
 
@@ -3832,17 +3826,17 @@ let headline=
 
 o.escape>=60
 
-?"🔥 1号艇のイン逃げが鉄板級。":
+?"🔥 1号艇のイン逃げが鉄板級。"
 
-o.escape>=50
+:o.escape>=50
 
-?"1号艇のイン逃げを中心視。":
+?"1号艇のイン逃げを中心視。"
 
-o.escape<=45
+:o.escape<=45
 
-?"1号艇のイン逃げ信頼度は低め。":
+?"1号艇のイン逃げ信頼度は低め。"
 
-"イン逃げは五分以上。相手展開も比較。";
+:"イン逃げは五分以上。相手展開も比較。";
 
 $("attack").innerHTML=`
 
@@ -3876,7 +3870,15 @@ mt.length
 
 ?mt.map(
 
-x=>typeName(x[0])+" "+x[1].toFixed(1)+"%"
+x=>
+
+typeName(x[0])+
+
+" "+
+
+x[1].toFixed(1)+
+
+"%"
 
 ).join(" / ")
 
@@ -3896,7 +3898,9 @@ ${[1,2,3,4,5,6]
 
 .map(
 
-b=>`${b}号艇→${course(b)}コース`
+b=>
+
+`${b}号艇→${course(b)}コース`
 
 )
 
@@ -3904,13 +3908,15 @@ b=>`${b}号艇→${course(b)}コース`
 
 </div>
 
-</div>`;
+</div>
+
+`;
 
 }
 
 /* =========================
 
-   除外表示
+   除外
 
 ========================= */
 
@@ -3954,17 +3960,19 @@ suitability(b,t)>=15
 
 function renderExclusions(a){
 
-let avg=scoreAverage(a);
+let avg=
+
+scoreAverage(a);
 
 let excluded=[];
 
 let thirdOnly=[];
 
-let normal=[];
-
 a.forEach(x=>{
 
-let c=classification(
+let c=
+
+classification(
 
 x.boat,
 
@@ -3985,16 +3993,6 @@ classification:c
 }else if(c.type==="third"){
 
 thirdOnly.push({
-
-...x,
-
-classification:c
-
-});
-
-}else{
-
-normal.push({
 
 ...x,
 
@@ -4034,23 +4032,13 @@ ${avg.toFixed(1)}<br>
 
 ${x.classification.diff.toFixed(1)}pt<br>
 
-🚫
+🚫 <strong>除外</strong><br>
 
-<strong>
+この艇はいかなる買い目にも入りません。
 
-除外
+</div>
 
-</strong><br>
-
-この艇は
-
-<strong>
-
-いかなる買い目にも入りません。
-
-</strong>
-
-</div>`;
+`;
 
 });
 
@@ -4080,25 +4068,19 @@ ${avg.toFixed(1)}<br>
 
 ${x.classification.diff.toFixed(1)}pt<br>
 
-🟡
-
-<strong>
-
-3着までなら
-
-</strong><br>
+🟡 <strong>3着までなら</strong><br>
 
 的中重視では
 
 <strong>2着には入れない</strong>。<br>
 
-回収重視・穴目では
+回収重視・穴目では展開、
 
-展開、モーター、ST等を見て
+モーター、ST等を見て使用可能。
 
-2着候補として使用可能。
+</div>
 
-</div>`;
+`;
 
 });
 
@@ -4122,7 +4104,9 @@ html=`
 
 ${avg.toFixed(1)}pt
 
-</div>`;
+</div>
+
+`;
 
 }
 
@@ -4152,13 +4136,17 @@ mode="recovery"
 
 if(a===b)return null;
 
-let A=rankings.find(
+let A=
+
+rankings.find(
 
 x=>x.boat===a
 
 );
 
-let B=rankings.find(
+let B=
+
+rankings.find(
 
 x=>x.boat===b
 
@@ -4216,9 +4204,21 @@ if(type==="sashi"){
 
 /*
 
-差しの基本形：
+差しの基本：
 
 攻め艇 → 1号艇残り
+
+例：
+
+2→1
+
+3→1
+
+4→1
+
+5→1
+
+6→1
 
 */
 
@@ -4236,7 +4236,11 @@ o.sashi*.75;
 
 raw+=18;
 
-if(o.escape<=45)raw+=10;
+if(o.escape<=45){
+
+raw+=10;
+
+}
 
 }
 
@@ -4432,7 +4436,11 @@ for(
 
 let x of hp.filter(
 
-x=>x.a===top||x.b===top
+x=>
+
+x.a===top||
+
+x.b===top
 
 )
 
@@ -4440,11 +4448,7 @@ x=>x.a===top||x.b===top
 
 if(result.hit.length>=2)break;
 
-if(
-
-!used.has(x.key)
-
-){
+if(!used.has(x.key)){
 
 result.hit.push(x);
 
@@ -4458,11 +4462,7 @@ for(let x of hp){
 
 if(result.hit.length>=4)break;
 
-if(
-
-!used.has(x.key)
-
-){
+if(!used.has(x.key)){
 
 result.hit.push(x);
 
@@ -4518,11 +4518,7 @@ let x of pool(r,type,"recovery")
 
 if(result[type].length>=4)break;
 
-if(
-
-!used.has(x.key)
-
-){
+if(!used.has(x.key)){
 
 result[type].push(x);
 
@@ -4542,13 +4538,11 @@ let uc=[];
 
 r.slice(1).forEach(t=>{
 
-if(
+if(isExcluded(t.boat,r))return;
 
-isExcluded(t.boat,r)
+let c=
 
-)return;
-
-let c=classification(
+classification(
 
 t.boat,
 
@@ -4628,11 +4622,7 @@ for(let x of uc){
 
 if(result.under.length>=2)break;
 
-if(
-
-!used.has(x.key)
-
-){
+if(!used.has(x.key)){
 
 result.under.push(x);
 
@@ -4658,7 +4648,11 @@ let all=[
 
 ]
 
-.flatMap(k=>result[k]);
+.flatMap(
+
+k=>result[k]
+
+);
 
 let total=
 
@@ -4670,17 +4664,13 @@ all.reduce(
 
 )||1;
 
-all.forEach(
-
-x=>{
+all.forEach(x=>{
 
 x.probability=
 
 x.raw/total*100;
 
-}
-
-);
+});
 
 result.total=
 
@@ -4776,7 +4766,9 @@ k=>bets[k]
 
 all.sort(
 
-(a,b)=>b.probability-a.probability
+(a,b)=>
+
+b.probability-a.probability
 
 );
 
@@ -4786,7 +4778,11 @@ all
 
 .slice(0,starCount())
 
-.map(x=>x.key)
+.map(
+
+x=>x.key
+
+)
 
 );
 
@@ -4818,7 +4814,9 @@ return;
 
 }
 
-let stars=starKeys(bets);
+let stars=
+
+starKeys(bets);
 
 $(id).innerHTML=
 
@@ -4868,7 +4866,9 @@ ${p.toFixed(1)}%
 
 </span>
 
-</div>`;
+</div>
+
+`;
 
 }).join("");
 
@@ -4972,7 +4972,9 @@ let val=-1;
 
 for(let b=1;b<=6;b++){
 
-let x=suitability(b,type);
+let x=
+
+suitability(b,type);
 
 if(x>val){
 
@@ -5002,17 +5004,17 @@ let text=
 
 o.escape>=60
 
-?"イン逃げ鉄板級":
+?"イン逃げ鉄板級"
 
-o.escape>=50
+:o.escape>=50
 
-?"イン逃げ中心":
+?"イン逃げ中心"
 
-o.escape<=45
+:o.escape<=45
 
-?"イン逃げは中心視しない":
+?"イン逃げは中心視しない"
 
-"イン逃げは警戒";
+:"イン逃げは警戒";
 
 return`
 
@@ -5058,7 +5060,9 @@ ${[1,2,3,4,5,6]
 
 .map(
 
-x=>`${x}号艇=${course(x)}コース`
+x=>
+
+`${x}号艇=${course(x)}コース`
 
 )
 
@@ -5070,7 +5074,9 @@ x=>`${x}号艇=${course(x)}コース`
 
 全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・同コース過去10走を総合評価。
 
-</div>`;
+</div>
+
+`;
 
 }
 
@@ -5108,19 +5114,11 @@ manualCourses[b]=
 
 }
 
-if(
-
-!Object.keys(historyData).length
-
-){
-
 $("message").innerHTML=
 
-'<span class="loading">🤖 過去10走を高速取得中...</span>';
+'<span class="loading">🤖 過去10走を取得中...</span>';
 
 await loadHistory();
-
-}
 
 renderRace();
 
@@ -5154,6 +5152,28 @@ $("analysisCard").style.display="block";
 
 $("predictionCard").style.display="block";
 
+let counts=
+
+racers.map(x=>{
+
+let no=getRacerNumber(x);
+
+let c=
+
+course(
+
+num(x.entry_number)
+
+);
+
+return(
+
+historyData[no]?.boats?.[c]?.length||0
+
+);
+
+});
+
 $("message").innerHTML=`
 
 <span class="success">
@@ -5164,7 +5184,9 @@ $("message").innerHTML=`
 
 ${typeName(dominant(o))}<br>
 
-📈 同コース過去成績を反映<br>
+📈 同コース過去10走：
+
+${counts.join(" / ")}走取得<br>
 
 ⚙️ モーター2連率を評価<br>
 
@@ -5176,7 +5198,9 @@ ${typeName(dominant(o))}<br>
 
 △ 平均-15pt未満は3着まで
 
-</span>`;
+</span>
+
+`;
 
 }catch(e){
 
