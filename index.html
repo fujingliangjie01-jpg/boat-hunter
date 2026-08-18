@@ -646,12 +646,6 @@ margin-bottom:6px
 
 }
 
-/* =========================================================
-
-   買い目2連単＋3着候補
-
-========================================================= */
-
 .pickHeader{
 
 display:grid;
@@ -1116,7 +1110,17 @@ grid-template-columns:1fr 1fr
 
 <label>投資資金（100円単位）</label>
 
-<input id="budget" type="number" value="3000" min="100" step="100" inputmode="numeric">
+<input id="budget"
+
+type="number"
+
+value="3000"
+
+min="100"
+
+step="100"
+
+inputmode="numeric">
 
 <div class="budgetInfo">
 
@@ -1131,6 +1135,12 @@ grid-template-columns:1fr 1fr
 </div>
 
 </div>
+
+<!-- =========================================================
+
+     進入入力
+
+========================================================= -->
 
 <h3>🛥️ 今回の進入コース</h3>
 
@@ -1186,11 +1196,23 @@ grid-template-columns:1fr 1fr
 
 </div>
 
-<button class="resetBtn" onclick="resetCourses()">🔄 進入入力をリセット</button>
+<button class="resetBtn" onclick="resetCourses()">
 
-<button class="mainBtn" onclick="loadRaceData()">出走表を取得</button>
+🔄 進入入力をリセット
 
-<button class="subBtn" onclick="runAnalysis()">🤖 AI解析開始</button>
+</button>
+
+<button class="mainBtn" onclick="loadRaceData()">
+
+出走表を取得
+
+</button>
+
+<button class="subBtn" onclick="runAnalysis()">
+
+🤖 AI解析開始
+
+</button>
 
 <div id="message" class="message"></div>
 
@@ -1308,7 +1330,11 @@ AI買い目確率合計<br>
 
 </div>
 
-<div class="footer">BOAT HUNTER © 2026</div>
+<div class="footer">
+
+BOAT HUNTER © 2026
+
+</div>
 
 </div>
 
@@ -2724,7 +2750,7 @@ r.local_2ren_rate||
 
 r.local_top2_percent
 
-).toFixed(1}%
+).toFixed(1)}%
 
 </div>
 
@@ -3232,29 +3258,7 @@ score:score(i+1)
 
    除外・展開復活
 
-   ★今回の重要変更
-
 ========================================================= */
-
-/*
-
-  完全除外は必ず最大1艇。
-
-  まずAIスコア最下位を確認。
-
-  ただし、その艇にも強い展開根拠がある場合は
-
-  完全除外しない。
-
-  残りの低評価艇は、
-
-  展開・攻め手との位置関係・モーター・過去7走などを
-
-  総合して「展開復活」を判定する。
-
-  除外でないからといって自動的に3着候補にはしない。
-
-*/
 
 function scoreAverage(a){
 
@@ -3288,24 +3292,6 @@ return best;
 
 }
 
-/*
-
-  攻め手の後ろにいる艇を判定。
-
-  例：
-
-  4号艇が4コースからまくり
-
-  → 5号艇、6号艇が展開対象
-
-  コース順で判断するため、
-
-  「艇番の後ろ」ではなく「実際の進入コースの後ろ」
-
-  を見る。
-
-*/
-
 function boatsBehind(attacker){
 
 if(!attacker)return[];
@@ -3324,31 +3310,9 @@ return c>ac;
 
 })
 
-.sort((a,b)=>course(a)-course(b));
+.sort((a,b)=>course(a)-course(b);
 
 }
-
-/*
-
-  展開復活の根拠点。
-
-  ここでは「後ろにいる」だけでは足りない。
-
-  ・攻め手の後ろ
-
-  ・モーター
-
-  ・同コース過去7走
-
-  ・3連対率
-
-  ・展開適性
-
-  ・総合AIスコア
-
-  を合わせる。
-
-*/
 
 function recoveryScore(b,rankings,o){
 
@@ -3369,8 +3333,6 @@ v+=22;
 }
 
 }
-
-/* 攻め手別の位置関係 */
 
 if(main==="maki"){
 
@@ -3398,8 +3360,6 @@ v+=4;
 
 }
 
-/* 3着実績 */
-
 let hs=hstats(b);
 
 if(hs.count>=3){
@@ -3409,8 +3369,6 @@ v+=hs.rate*.20;
 if(hs.rate>=40)v+=7;
 
 }
-
-/* モーター */
 
 let motor=num(
 
@@ -3430,8 +3388,6 @@ else if(motor>=30)v+=4;
 
 else if(motor<20)v-=5;
 
-/* AI評価 */
-
 let x=rankings.find(z=>z.boat===b);
 
 let avg=scoreAverage(rankings);
@@ -3448,15 +3404,11 @@ else if(diff<=-28)v-=6;
 
 }
 
-/* 展開適性 */
-
 if(main!=="escape"){
 
 v+=suitability(b,main)*.35;
 
 }
-
-/* 3着に必要な最低限の能力 */
 
 if(hs.count>=5&&hs.rate>=30)
 
@@ -3465,16 +3417,6 @@ v+=5;
 return v;
 
 }
-
-/*
-
-  「展開復活」と認定する最低ライン。
-
-  ここが重要。
-
-  攻め手の後ろにいるだけでは認定しない。
-
-*/
 
 function isRecoveryCandidate(b,rankings,o){
 
@@ -3520,27 +3462,11 @@ if(suitability(b,main)>=12)evidence+=1;
 
 if(diff>=-20)evidence+=1;
 
-/*
-
-  根拠が2つ未満なら展開復活にはしない。
-
-*/
-
 if(evidence<2)return false;
 
 return rs>=24;
 
 }
-
-/*
-
-  完全除外は最大1艇。
-
-  最下位候補でも、
-
-  強い展開復活根拠があるなら除外を回避する。
-
-*/
 
 function exclusionTarget(a){
 
@@ -3621,16 +3547,6 @@ recovery:true
 };
 
 }
-
-/*
-
-  従来の低評価帯は、
-
-  除外ではなく通常扱い。
-
-  ただし買い目側で評価する。
-
-*/
 
 if(diff<-12){
 
@@ -4196,8 +4112,6 @@ $("exclusions").innerHTML=html;
 
    3着候補
 
-   ★2連単とは完全に分離
-
 ========================================================= */
 
 function thirdScore(b,first,second,rankings,type){
@@ -4228,11 +4142,7 @@ value+=4;
 
 }
 
-/* 展開 */
-
 value+=suitability(b,type)*.45;
-
-/* 過去7走 */
 
 let hs=hstats(b);
 
@@ -4243,8 +4153,6 @@ value+=hs.rate*.18;
 value+=hs.third*1.5;
 
 }
-
-/* モーター */
 
 let motor=num(
 
@@ -4258,8 +4166,6 @@ racer(b)?.motor_2ren
 
 value+=motor*.10;
 
-/* 主攻めの後ろ */
-
 let attacker=attackBoat(type);
 
 if(attacker&&boatsBehind(attacker).includes(b)){
@@ -4267,12 +4173,6 @@ if(attacker&&boatsBehind(attacker).includes(b)){
 value+=12;
 
 }
-
-/*
-
-  ただし「弱いだけ」の艇を3着候補にしない。
-
-*/
 
 let evidence=0;
 
@@ -4330,14 +4230,6 @@ recovery:isRecovery(b,rankings)
 
 arr.sort((a,b)=>b.score-a.score);
 
-/*
-
-  3着候補は最大3艇。
-
-  ただし根拠のある艇だけ。
-
-*/
-
 return arr.slice(0,3);
 
 }
@@ -4361,12 +4253,6 @@ if(!A||!B)return null;
 if(isExcluded(a,rankings)||isExcluded(b,rankings))
 
 return null;
-
-/*
-
-  通常の2連単では展開復活艇を2着に入れない。
-
-*/
 
 if(isRecovery(b,rankings))
 
@@ -4532,16 +4418,6 @@ if(isExcluded(b,r))continue;
 
 let c=classification(b,r);
 
-/*
-
-  展開復活が2着まで来る可能性がある場合だけ、
-
-  穴目で2連単に回す。
-
-  「展開復活＝穴目」ではない。
-
-*/
-
 if(c.type==="recovery"){
 
 let rs=recoveryScore(b,r,o);
@@ -4678,7 +4554,7 @@ used.add(x.key);
 
 }
 
-/* 回収率重視は各展開3点 */
+/* 回収率重視 */
 
 let o=overview();
 
@@ -4730,11 +4606,7 @@ used.add(x.key);
 
 }
 
-/*
-
-  全買い目の確率
-
-*/
+/* 全買い目の確率 */
 
 let all=[
 
@@ -4759,12 +4631,6 @@ all.reduce((s,x)=>s+x.raw,0)||1;
 all.forEach(x=>{
 
 x.probability=x.raw/total*100;
-
-/*
-
-  3着候補を各2連単に紐付ける。
-
-*/
 
 x.thirdCandidates=
 
@@ -4940,7 +4806,13 @@ ${third.length?
 
 third.map(t=>{
 
-let cc=classification(t.boat,currentRankingCache);
+let cc=classification(
+
+t.boat,
+
+currentRankingCache
+
+);
 
 return`
 
@@ -5293,6 +5165,14 @@ if(currentBets)
 renderBets(currentBets);
 
 };
+
+/* =========================================================
+
+   初期化
+
+   ★進入入力を必ず生成
+
+========================================================= */
 
 initCourses();
 
