@@ -1702,7 +1702,9 @@ ${num(p.start_timing||p.st).toFixed(2)}
 
 <span>展示</span>
 
-${num(p.exhibition_time||p.exhibition).toFixed(2)}
+${num(p.exhibition_time||p.exhibition).toFixed(2)
+
+}
 
 </div>
 
@@ -2512,13 +2514,13 @@ return best;
 
    3着候補
 
-   ★2着艇は必ず除外
+   ★2連単に入っている1着艇・2着艇を必ず除外
 
    ★完全除外艇は復活時のみ
 
 ========================================================= */
 
-function thirdCandidates(a,secondBoat,rankings,type){
+function thirdCandidates(a,firstBoat,secondBoat,rankings,type){
 
 let o=overview();
 
@@ -2530,7 +2532,15 @@ for(let b=1;b<=6;b++){
 
 /*
 
- ★2着艇を3着候補から除外
+ ★今回の2連単の1着艇を3着候補から除外
+
+*/
+
+if(b===firstBoat)continue;
+
+/*
+
+ ★今回の2連単の2着艇を3着候補から除外
 
 */
 
@@ -3514,7 +3524,7 @@ all.slice(0,starCount()).map(x=>x.key)
 
    3着候補表示
 
-   ★2着艇はthirdCandidates側でも除外
+   ★2連単の1着艇・2着艇は3着候補から除外
 
 ========================================================= */
 
@@ -3523,6 +3533,8 @@ function renderThirdCandidates(x,rankings,type){
 let list=thirdCandidates(
 
 rankings,
+
+x.a,
 
 x.b,
 
