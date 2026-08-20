@@ -44,6 +44,8 @@ button{width:100%;padding:13px;border:0;border-radius:9px;font-size:14px;font-we
 
 .resetBtn{margin-top:8px;background:#171717;border:1px solid #777;color:#fff}
 
+.topBtn{margin-top:14px;background:#171717;border:1px solid #b8952e;color:#d4af37}
+
 .message{margin-top:10px;font-size:12px;line-height:1.6;color:#aaa}
 
 .info{background:#151515;border:1px solid #333;border-radius:8px;padding:10px;font-size:11px;line-height:1.7;margin-bottom:10px}
@@ -308,7 +310,7 @@ th{color:#d4af37}
 
 ※まくられる艇は2着・3着残りを展開から再評価。<br>
 
-※展開だけでは買い目へ追加せず、AI・過去15走・機力等の根拠を必要とする。<br>
+※展開だけでは買い目へ追加せず、AI・過去20走・機力等の根拠を必要とする。<br>
 
 ※2連単の1着・2着に入っている艇は、その買い目自身の3着候補には絶対に重複させない。
 
@@ -328,6 +330,8 @@ th{color:#d4af37}
 
 <div class="pickBox"><div class="pickTitle">🔥 穴目</div><div id="underPicks"></div></div>
 
+<button class="topBtn" onclick="scrollToTop()">⬆️ ページ最上部へ戻る</button>
+
 </div>
 
 <div class="footer">BOAT HUNTER © 2026</div>
@@ -344,7 +348,7 @@ const API_V2="https://boatraceopenapi.github.io/programs/v2";
 
 let raceData=null,racers=[],previewRacers={},manualCourses={},historyData={},currentBets=null;
 
-const HISTORY_RACES=15;
+const HISTORY_RACES=20;
 
 const HISTORY_DAYS=180;
 
@@ -381,6 +385,12 @@ let r=await fetch(url,{cache:"no-store"});
 if(!r.ok)throw Error("HTTP "+r.status);
 
 return r.json()
+
+}
+
+async function scrollToTop(){
+
+window.scrollTo({top:0,behavior:"smooth"})
 
 }
 
@@ -574,7 +584,7 @@ renderRace();
 
 $("raceCard").style.display="block";
 
-$("message").innerHTML='<span class="success">✅ 出走表取得成功<br>AI解析時に同コース過去15走を取得します</span>'
+$("message").innerHTML='<span class="success">✅ 出走表取得成功<br>AI解析時に同コース過去20走を取得します</span>'
 
 }catch(e){
 
@@ -690,13 +700,21 @@ return 0
 
 }
 
+/* ===== 決まり手集計 =====
+
+   過去20走のうち「1着」のレースだけを対象に集計。
+
+   3連対率は過去20走すべてを対象にするため変更しない。
+
+*/
+
 function historicalDecisionRates(b){
 
 let a=history(b);
 
 if(!a.length)return null;
 
-let valid=a.filter(x=>x.decision&&x.decision!=="-");
+let valid=a.filter(x=>x.place===1&&x.decision&&x.decision!=="-");
 
 if(!valid.length)return null;
 
@@ -926,7 +944,7 @@ if(arr.length>HISTORY_RACES)arr.splice(HISTORY_RACES)
 
 async function loadHistory(){
 
-let key="bh-history-course-v15-"+today().ymd+"-"+$("venue").value+"-"+racers.map(r=>getRacerNumber(r)).join("-")+"-"+Object.values(manualCourses).join("");
+let key="bh-history-course-v20-"+today().ymd+"-"+$("venue").value+"-"+racers.map(r=>getRacerNumber(r)).join("-")+"-"+Object.values(manualCourses).join("");
 
 try{
 
@@ -992,7 +1010,7 @@ return targets[no]?.boats?.[c]?.length||0
 
 });
 
-$("message").innerHTML=`<span class="loading">🤖 ${counts.every(x=>x>=HISTORY_RACES)?"同コース過去15走を取得完了":"同コース過去15走を検索中..."}<br>現在：${counts.join(" / ")}走<br>対象：今回と同じ進入コース<br>検索：過去${Math.min(start+9,HISTORY_DAYS)}日</span>`
+$("message").innerHTML=`<span class="loading">🤖 ${counts.every(x=>x>=HISTORY_RACES)?"同コース過去20走を取得完了":"同コース過去20走を検索中..."}<br>現在：${counts.join(" / ")}走<br>対象：今回と同じ進入コース<br>検索：過去${Math.min(start+9,HISTORY_DAYS)}日</span>`
 
 }
 
@@ -1036,7 +1054,7 @@ function renderHistory(b){
 
 let a=history(b),s=hstats(b),c=course(b);
 
-if(!a.length)return`<div class="history"><div class="historyTitle">📈 ${c}コース過去15走</div><div class="historyList"><span style="color:#777">${c}コースを走った過去15走を取得できていません</span></div></div>`;
+if(!a.length)return`<div class="history"><div class="historyTitle">📈 ${c}コース過去20走</div><div class="historyList"><span style="color:#777">${c}コースを走った過去20走を取得できていません</span></div></div>`;
 
 return`<div class="history">
 
@@ -1058,7 +1076,7 @@ return`<div class="history">
 
 <span>${i+1}. ${esc(String(x.date).slice(5,10).replace("-","/"))}</span>
 
-<span class="${x.place===1?"historyGood":x.place<=3?"historyMiddle":"historyBad"}">${x.place}着 <span class="historyDecision">${x.decision!=="-"?" / "+esc(x.decision):""}</span></span>
+<span class="${x.place===1?"historyGood":x.place<=3?"historyMiddle":"historyBad"}">${x.place}着 <span class="historyDecision">${x.place===1&&x.decision!=="-"?" / "+esc(x.decision):""}</span></span>
 
 </div>`).join("")}</div></div>`
 
@@ -1420,9 +1438,7 @@ num(r.local_win_rate)*4+
 
 num(r.national_top_2_percent||r.national_2ren_rate)*.12;
 
-let m=num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren);
-
-s+=m*.15+(m>=40?5:m>=35?3:m>=30?1:m<20?-2:0);
+s+=num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)*.15+(num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)>=40?5:num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)>=35?3:num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)>=30?1:num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)<20?-2:0);
 
 let ast=num(r.average_start_timing||r.average_st);
 
@@ -1732,7 +1748,7 @@ revival:true,
 
 two:false,
 
-reason:`${attacker}号艇の${typeName(main)}展開。${dev.reasons.join("・")}。能力・過去15走・機力の根拠から3着まで残す`
+reason:`${attacker}号艇の${typeName(main)}展開。${dev.reasons.join("・")}。能力・過去20走・機力の根拠から3着まで残す`
 
 }
 
@@ -1742,19 +1758,7 @@ return{revival:false,two:false,reason:""}
 
 }
 
-/* ===== 3着候補 =====
-
-   重要：
-
-   secondBoat（2連単2着）だけでなく firstBoat（2連単1着）も
-
-   必ず除外する。
-
-   これにより「1着・2着に入っている艇が3着候補に重複」
-
-   することを完全に防止する。
-
-*/
+/* ===== 3着候補 ===== */
 
 function thirdCandidates(a,secondBoat,rankings,type,firstBoat){
 
@@ -1767,8 +1771,6 @@ mainAttacker=bestAttackBoat(type),
 avg=scoreAverage(rankings);
 
 for(let b=1;b<=6;b++){
-
-/* ===== 2連単の1着・2着艇は3着候補から完全除外 ===== */
 
 if(b===firstBoat||b===secondBoat)continue;
 
@@ -1838,7 +1840,7 @@ if(hs.count>=5&&hs.rate>=40){
 
 evidence++;
 
-reasons.push("同コース過去15走");
+reasons.push("同コース過去20走");
 
 raw+=hscore(b)*.8
 
@@ -1848,7 +1850,7 @@ if(f.score>=3){
 
 evidence++;
 
-reasons.push("直近15走好調");
+reasons.push("直近20走好調");
 
 raw+=f.score*1.2
 
@@ -1988,8 +1990,6 @@ if(o.escape<42)raw+=10
 
 }
 
-/* 2コースまくりは条件付き */
-
 if(type==="maki"&&course(a)===2){
 
 let rr=decisions(racer(a));
@@ -2029,8 +2029,6 @@ raw+=dev.bonus;
 if((type==="maki"||type==="makiSashi")&&promotionByMaki(b,rankings,type))
 
 raw+=10;
-
-/* 切候補は「完全除外」せず、2連単では通常通り評価 */
 
 let vt=venueTrait();
 
@@ -2188,8 +2186,6 @@ return new Set(all.slice(0,starCount()).map(x=>x.key))
 
 function renderThirdCandidates(x,rankings,type){
 
-/* ===== 2連単1着・2着の両方を3着候補から除外 ===== */
-
 let list=thirdCandidates(rankings,x.b,rankings,type,x.a);
 
 if(!list.length)
@@ -2306,22 +2302,6 @@ return`<div class="pick ${cls} ${recommend?"recommendPick":""}">
 
 }
 
-/* =========================================================
-
-   回収率重視買い目
-
-   ・差し最低1点
-
-   ・まくり最低1点
-
-   ・まくり差し最低1点
-
-   を先に確保。
-
-   その後、残り枠を全4展開の期待値順で補充。
-
-   ========================================================= */
-
 function buildBets(r){
 
 let result={
@@ -2346,8 +2326,6 @@ under:[]
 
 let used=new Set();
 
-/* ===== 的中率重視4点 ===== */
-
 let hp=[
 
 ...pool(r,"escape","hit"),
@@ -2361,8 +2339,6 @@ let hp=[
 ].sort((a,b)=>b.raw-a.raw);
 
 let top=r[0]?.boat;
-
-/* 本命上位艇を優先 */
 
 for(let x of hp.filter(x=>x.a===top||x.b===top)){
 
@@ -2392,16 +2368,6 @@ used.add(x.key)
 
 }
 
-/* ===== 回収率重視 =====
-
-   まず4展開を個別に作成。
-
-   必須3展開は最低1点を先に確保。
-
-   イン逃げは従来どおり候補が存在する場合に採用。
-
-*/
-
 const recoveryTypes=["escape","sashi","maki","makiSashi"];
 
 let recoveryPools={};
@@ -2415,8 +2381,6 @@ recoveryPools[type]=pool(r,type,"recovery")
 .sort((a,b)=>b.raw-a.raw)
 
 });
-
-/* 差し・まくり・まくり差しを最低1点ずつ確保 */
 
 ["sashi","maki","makiSashi"].forEach(type=>{
 
@@ -2432,8 +2396,6 @@ used.add(x.key)
 
 });
 
-/* イン逃げは候補がある場合、従来どおり期待値上位を確保 */
-
 let escapeFirst=recoveryPools.escape.find(z=>!used.has(z.key));
 
 if(escapeFirst){
@@ -2443,8 +2405,6 @@ result.recovery.push(escapeFirst);
 used.add(escapeFirst.key)
 
 }
-
-/* ===== 残り枠を全展開横断の期待値順で最大5点まで補充 ===== */
 
 let recoveryPool=[];
 
@@ -2472,14 +2432,6 @@ used.add(x.key)
 
 }
 
-/* ===== 万一必須展開が既存usedの影響等で不足した場合の安全補完 =====
-
-   buildBets内部で必ず各展開を再確認。
-
-   ただし候補自体が存在しない場合は無理に捏造しない。
-
-*/
-
 for(const type of ["sashi","maki","makiSashi"]){
 
 let exists=result.recovery.some(x=>x.type===type);
@@ -2499,8 +2451,6 @@ used.add(fallback.key)
 }
 
 }
-
-/* 最大5点を超えた場合は必須3展開を残しつつ削減 */
 
 if(result.recovery.length>5){
 
@@ -2528,8 +2478,6 @@ others.sort((a,b)=>b.raw-a.raw);
 
 result.recovery=[...mandatory,...others].slice(0,5);
 
-/* 削除されたキーをusedから解除 */
-
 let recoveryKeys=new Set(result.recovery.map(x=>x.key));
 
 [...used].forEach(k=>{
@@ -2550,8 +2498,6 @@ result.recovery.forEach(x=>used.add(x.key))
 
 }
 
-/* 表示用に展開別へ振り分け */
-
 result.escape=result.recovery.filter(x=>x.type==="escape");
 
 result.sashi=result.recovery.filter(x=>x.type==="sashi");
@@ -2560,21 +2506,15 @@ result.maki=result.recovery.filter(x=>x.type==="maki");
 
 result.makiSashi=result.recovery.filter(x=>x.type==="makiSashi");
 
-/* ===== その他オッズ妙味・推奨 最大7点 ===== */
-
 result.recommend=buildRecommendationBets(r,used);
 
 for(let x of result.recommend)used.add(x.key);
-
-/* ===== 穴目 ===== */
 
 let o=overview();
 
 result.under=buildUnderBets(r,o,used);
 
 for(let x of result.under)used.add(x.key);
-
-/* ===== 確率計算 ===== */
 
 let all=[
 
@@ -2712,13 +2652,11 @@ ${[1,2,3,4,5,6].map(x=>`${x}号艇=${course(x)}コース`).join(" / ")}<br><br>
 
 <strong>AI評価</strong><br>
 
-全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・まくられ率・差され率・場特性・今回と同じ進入コースの過去15走・直近15走の調子・展開連動を総合評価。
+全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・まくられ率・差され率・場特性・今回と同じ進入コースの過去20走・直近20走の調子・展開連動を総合評価。
 
 </div>`
 
 }
-
-/* ===== 切り候補表示 ===== */
 
 function renderExclusions(a){
 
@@ -2968,7 +2906,7 @@ $("course"+b).value=String(b)
 
 }
 
-$("message").innerHTML='<span class="loading">🤖 同じコースを走った過去15走を検索中...</span>';
+$("message").innerHTML='<span class="loading">🤖 同じコースを走った過去20走を検索中...</span>';
 
 await loadHistory();
 
@@ -3014,17 +2952,17 @@ $("message").innerHTML=`<span class="success">
 
 🔥 主攻め：${typeName(dominant(o))}<br>
 
-📈 今回と同コースの過去15走：${counts.join(" / ")}走取得<br>
+📈 今回と同コースの過去20走：${counts.join(" / ")}走取得<br>
 
 🏟️ 場特性：${esc(venueTrait().name)}を評価<br>
 
-📈 直近15走の調子：AIスコアへ反映<br>
+📈 直近20走の調子：AIスコアへ反映<br>
 
 🛥️ 進入コース：AI評価へ反映<br>
 
-🎯 過去15走：決まり手込み<br>
+🎯 過去20走：1着時の決まり手を集計<br>
 
-📊 選手の決まり手傾向：逃げ・逃し・差し・まくり・まくり差しを表示<br>
+📊 選手の決まり手傾向：1着時の逃げ・差し・まくり・まくり差しを集計<br>
 
 🛡️ まくられ率・差され率：選手情報・イン逃げ評価へ反映<br>
 
