@@ -1082,294 +1082,6 @@ return Number.isFinite(n)?n:null
 
 }
 
-/*
-
-  今回の決まり手評価は、今回取得した同コース過去15走だけを母数とする。
-
-  決まり手は本人が1着になったレースのみ集計。
-
-  2着・3着は決まり手率へ一切反映しない。
-
-*/
-
-function historicalDecisionRates(b){
-
-let a=history(b);
-
-if(!a.length)return null;
-
-let total=HISTORY_RACES;
-
-let counts={
-
-escape:0,
-
-sashi:0,
-
-maki:0,
-
-makiSashi:0
-
-};
-
-a.filter(x=>x.place===1).forEach(x=>{
-
-if(x.decision==="逃げ")counts.escape++;
-
-if(x.decision==="差し")counts.sashi++;
-
-if(x.decision==="まくり")counts.maki++;
-
-if(x.decision==="まくり差し")counts.makiSashi++
-
-});
-
-return{
-
-escape:counts.escape/total*100,
-
-sashi:counts.sashi/total*100,
-
-maki:counts.maki/total*100,
-
-makiSashi:counts.makiSashi/total*100
-
-}
-
-}
-
-/*
-
-  決まり手評価基準
-
-  イン逃げ：
-
-  50%＝場平均 / 65%＝期待大 / 83%＝鉄板激アツ
-
-  差し・まくり・まくり差し：
-
-  10%＝場平均 / 18%＝期待大 / 23%以上＝激アツ
-
-*/
-
-function decisionLevel(rate,type){
-
-let n=num(rate);
-
-if(type==="escape"){
-
-if(n>=83)return"鉄板激アツ";
-
-if(n>=65)return"期待大";
-
-if(n>=50)return"場平均";
-
-return"場平均未満"
-
-}
-
-if(n>=23)return"激アツ";
-
-if(n>=18)return"期待大";
-
-if(n>=10)return"場平均";
-
-return"場平均未満"
-
-}
-
-function decisionWeight(rate,type){
-
-let n=num(rate);
-
-if(type==="escape"){
-
-if(n>=83)return 1.35;
-
-if(n>=65)return 1.20;
-
-if(n>=50)return 1.00;
-
-return .75
-
-}
-
-if(n>=23)return 1.35;
-
-if(n>=18)return 1.20;
-
-if(n>=10)return 1.00;
-
-return .75
-
-}
-
-function decisions(r){
-
-let zero={
-
-escape:0,
-
-nige:0,
-
-sashi:0,
-
-maki:0,
-
-makiSashi:0,
-
-makare:0,
-
-sasare:0,
-
-nigashi:0,
-
-nigashiRate:0,
-
-makuriSashiSare:0,
-
-count:0
-
-};
-
-if(!r)return zero;
-
-let b=num(r.entry_number);
-
-let h=historicalDecisionRates(b);
-
-if(h){
-
-zero.escape=h.escape;
-
-zero.nige=h.escape;
-
-zero.sashi=h.sashi;
-
-zero.maki=h.maki;
-
-/*
-
-  2コースのまくり差し率は今回の評価対象外。
-
-  それ以外は過去15走の1着時決まり手率を使用。
-
-*/
-
-zero.makiSashi=
-
-course(b)===2?
-
-0:
-
-h.makiSashi;
-
-zero.count=history(b).length
-
-}
-
-/*
-
-  1号艇の防御評価については、APIに存在する選手情報を補助的に使用。
-
-  決まり手率の母数・集計自体には2着3着を混ぜない。
-
-*/
-
-let apiDecision=
-
-r?.decision_rates||
-
-r?.decisionRate||
-
-r?.decisions||
-
-r?.win_by||
-
-r?.winning_methods||
-
-{};
-
-zero.makare=rateValue(r,[
-
-"makare_rate",
-
-"makurare_rate",
-
-"be_makuri_rate",
-
-"being_makuri_rate",
-
-"lose_by_makuri_rate",
-
-"makare_percent",
-
-"makurare_percent",
-
-"まくられ率",
-
-()=>apiDecision?.makare_rate,
-
-()=>apiDecision?.makurare,
-
-()=>apiDecision?.makare,
-
-()=>apiDecision?.makurare_rate
-
-]);
-
-zero.sasare=rateValue(r,[
-
-"sasare_rate",
-
-"be_sashi_rate",
-
-"being_sashi_rate",
-
-"lose_by_sashi_rate",
-
-"sasare_percent",
-
-"差され率",
-
-()=>apiDecision?.sasare,
-
-()=>apiDecision?.be_sashi_rate,
-
-()=>apiDecision?.sasare_rate
-
-]);
-
-zero.makuriSashiSare=rateValue(r,[
-
-"makuri_sashi_sare_rate",
-
-"makurisashi_sare_rate",
-
-"be_makuri_sashi_rate",
-
-"being_makuri_sashi_rate",
-
-"lose_by_makuri_sashi_rate",
-
-"makuri_sashi_sare_percent",
-
-"まくり差され率",
-
-()=>apiDecision?.makuri_sashi_sare_rate,
-
-()=>apiDecision?.makurisashi_sare_rate,
-
-()=>apiDecision?.be_makuri_sashi_rate
-
-]);
-
-zero.nigashi=zero.nigashiRate=0;
-
-return zero
-
-}
-
 function rateValue(r,keys){
 
 let objects=[
@@ -1420,125 +1132,275 @@ return 0
 
 }
 
+function historicalDecisionRates(b){
+
+let a=history(b);
+
+if(!a.length)return null;
+
+let valid=a.filter(x=>x.place===1&&x.decision&&x.decision!=="-");
+
+let counts={
+
+escape:0,
+
+sashi:0,
+
+maki:0,
+
+makiSashi:0
+
+};
+
+valid.forEach(x=>{
+
+if(x.decision==="逃げ")counts.escape++;
+
+if(x.decision==="差し")counts.sashi++;
+
+if(x.decision==="まくり")counts.maki++;
+
+if(x.decision==="まくり差し")counts.makiSashi++
+
+});
+
+const total=HISTORY_RACES;
+
+return{
+
+escape:counts.escape/total*100,
+
+sashi:counts.sashi/total*100,
+
+maki:counts.maki/total*100,
+
+makiSashi:counts.makiSashi/total*100
+
+}
+
+}
+
+function decisions(r){
+
+if(!r)
+
+return{
+
+escape:0,nige:0,sashi:0,maki:0,makiSashi:0,
+
+makare:0,sasare:0,nigashi:0,nigashiRate:0
+
+};
+
+let d=
+
+r?.decision_rates||
+
+r?.decisionRate||
+
+r?.decisions||
+
+r?.win_by||
+
+r?.winning_methods||
+
+{};
+
+let v={
+
+escape:rateValue(r,[
+
+"escape_rate","nige_rate","win_by_escape_rate",
+
+"nige_percent","nige_percent_rate","escape_percent",
+
+"escapeRate","nigeRate","逃げ率",
+
+()=>d?.escape_rate,()=>d?.nige_rate,
+
+()=>d?.escape,()=>d?.nige
+
+]),
+
+nigashi:rateValue(r,[
+
+"nigashi_rate","nigashi_percent",
+
+"nigashi_percent_rate","escape_failed_rate",
+
+"escape_failure_rate","lose_escape_rate",
+
+"nige_failed_rate","nige_failure_rate","逃し率",
+
+()=>d?.nigashi_rate,()=>d?.nigashi,
+
+()=>d?.escape_failed_rate,
+
+()=>d?.escape_failure_rate,
+
+()=>d?.nige_failed_rate,
+
+()=>d?.nige_failure_rate
+
+]),
+
+sashi:rateValue(r,[
+
+"sashi_rate","win_by_sashi_rate",
+
+"sashi_percent","sashi_percent_rate",
+
+"sashiRate","差し率",
+
+()=>d?.sashi_rate,()=>d?.sashi
+
+]),
+
+maki:rateValue(r,[
+
+"maki_rate","makuri_rate","win_by_maki_rate",
+
+"makuri_percent","maki_percent",
+
+"maki_percent_rate","makiRate","makuriRate",
+
+"まくり率",
+
+()=>d?.maki_rate,()=>d?.makuri_rate,
+
+()=>d?.maki,()=>d?.makuri
+
+]),
+
+makiSashi:rateValue(r,[
+
+"maki_sashi_rate","makurisashi_rate",
+
+"win_by_maki_sashi_rate","makuri_sashi_rate",
+
+"maki_sashi_percent","makurisashi_percent",
+
+"makiSashiRate","makuriSashiRate",
+
+"まくり差し率",
+
+()=>d?.maki_sashi_rate,
+
+()=>d?.makurisashi_rate,
+
+()=>d?.maki_sashi,
+
+()=>d?.makurisashi
+
+]),
+
+makare:rateValue(r,[
+
+"makare_rate","makurare_rate",
+
+"be_makuri_rate","being_makuri_rate",
+
+"lose_by_makuri_rate","makare_percent",
+
+"makurare_percent","まくられ率",
+
+()=>d?.makare_rate,()=>d?.makurare,
+
+()=>d?.makare,()=>d?.makurare
+
+]),
+
+sasare:rateValue(r,[
+
+"sasare_rate","be_sashi_rate",
+
+"being_sashi_rate","lose_by_sashi_rate",
+
+"sasare_percent","差され率",
+
+()=>d?.sasare,()=>d?.be_sashi_rate
+
+])
+
+};
+
+if(
+
+v.escape===0&&
+
+v.sashi===0&&
+
+v.maki===0&&
+
+v.makiSashi===0
+
+){
+
+let h=historicalDecisionRates(
+
+r?.entry_number?num(r.entry_number):0
+
+);
+
+if(h){
+
+v.escape=h.escape;
+
+v.sashi=h.sashi;
+
+v.maki=h.maki;
+
+v.makiSashi=h.makiSashi
+
+}
+
+}
+
+v.nige=v.escape;
+
+v.nigashiRate=v.nigashi;
+
+return v
+
+}
+
 function decisionTrendHTML(b,d){
 
 if(b===1)return`<div class="decisionStats">
 
-<div class="decisionStat">
+<div class="decisionStat"><span>逃げ率</span><strong>${d.escape.toFixed(1)}%</strong></div>
 
-<span>逃げ率</span>
+<div class="decisionStat"><span>逃し率</span><strong>${d.nigashi.toFixed(1)}%</strong></div>
 
-<strong>${d.escape.toFixed(1)}%</strong>
+<div class="decisionStat"><span>まくられ率</span><strong>${d.makare.toFixed(1)}%</strong></div>
 
-<small>${decisionLevel(d.escape,"escape")}</small>
-
-</div>
-
-<div class="decisionStat">
-
-<span>差され率</span>
-
-<strong>${d.sasare.toFixed(1)}%</strong>
-
-</div>
-
-<div class="decisionStat">
-
-<span>まくられ率</span>
-
-<strong>${d.makare.toFixed(1)}%</strong>
-
-</div>
-
-<div class="decisionStat">
-
-<span>まくり差され率</span>
-
-<strong>${d.makuriSashiSare.toFixed(1)}%</strong>
-
-</div>
+<div class="decisionStat"><span>差され率</span><strong>${d.sasare.toFixed(1)}%</strong></div>
 
 </div>`;
 
 if(b===2)return`<div class="decisionStats">
 
-<div class="decisionStat">
+<div class="decisionStat"><span>差し率</span><strong>${d.sashi.toFixed(1)}%</strong></div>
 
-<span>差し率</span>
+<div class="decisionStat"><span>まくり率</span><strong>${d.maki.toFixed(1)}%</strong></div>
 
-<strong>${d.sashi.toFixed(1)}%</strong>
+<div class="decisionStat"><span>まくり差し率</span><strong>${d.makiSashi.toFixed(1)}%</strong></div>
 
-<small>${decisionLevel(d.sashi,"sashi")}</small>
-
-</div>
-
-<div class="decisionStat">
-
-<span>まくり率</span>
-
-<strong>${d.maki.toFixed(1)}%</strong>
-
-<small>${decisionLevel(d.maki,"maki")}</small>
-
-</div>
-
-<div class="decisionStat">
-
-<span>まくり差し率</span>
-
-<strong>対象外</strong>
-
-</div>
-
-<div class="decisionStat">
-
-<span>3連対率</span>
-
-<strong>${hstats(b).rate.toFixed(1)}%</strong>
-
-</div>
+<div class="decisionStat"><span>差され率</span><strong>${d.sasare.toFixed(1)}%</strong></div>
 
 </div>`;
 
 return`<div class="decisionStats">
 
-<div class="decisionStat">
+<div class="decisionStat"><span>差し率</span><strong>${d.sashi.toFixed(1)}%</strong></div>
 
-<span>差し率</span>
+<div class="decisionStat"><span>まくり率</span><strong>${d.maki.toFixed(1)}%</strong></div>
 
-<strong>${d.sashi.toFixed(1)}%</strong>
+<div class="decisionStat"><span>まくり差し率</span><strong>${d.makiSashi.toFixed(1)}%</strong></div>
 
-<small>${decisionLevel(d.sashi,"sashi")}</small>
+<div class="decisionStat"><span>まくられ率</span><strong>${d.makare.toFixed(1)}%</strong></div>
 
-</div>
-
-<div class="decisionStat">
-
-<span>まくり率</span>
-
-<strong>${d.maki.toFixed(1)}%</strong>
-
-<small>${decisionLevel(d.maki,"maki")}</small>
-
-</div>
-
-<div class="decisionStat">
-
-<span>まくり差し率</span>
-
-<strong>${d.makiSashi.toFixed(1)}%</strong>
-
-<small>${decisionLevel(d.makiSashi,"makiSashi")}</small>
-
-</div>
-
-<div class="decisionStat">
-
-<span>3連対率</span>
-
-<strong>${hstats(b).rate.toFixed(1)}%</strong>
-
-</div>
+<div class="decisionStat"><span>差され率</span><strong>${d.sasare.toFixed(1)}%</strong></div>
 
 </div>`
 
@@ -1570,6 +1432,134 @@ return x
 
 }
 
+/* =========================
+
+   過去15走の決まり手取得強化
+
+   ========================= */
+
+function getDecisionValue(x,result,race){
+
+let technique=
+
+x?.technique_number ??
+
+x?.techniqueNumber ??
+
+x?.technique_no ??
+
+x?.techniqueNo ??
+
+x?.decision_number ??
+
+x?.decisionNumber ??
+
+x?.decision_no ??
+
+x?.decisionNo ??
+
+x?.decision ??
+
+x?.winning_method_number ??
+
+x?.winningMethodNumber ??
+
+x?.winning_method ??
+
+x?.winningMethod ??
+
+x?.winning_technique ??
+
+x?.winningTechnique ??
+
+x?.finish_technique ??
+
+x?.finishTechnique;
+
+if(technique&&typeof technique==="object"){
+
+technique=
+
+technique.number ??
+
+technique.id ??
+
+technique.code ??
+
+technique.value ??
+
+technique.name ??
+
+technique.label ??
+
+""
+
+}
+
+if(technique!=null&&technique!=="")return technique;
+
+const sources=[
+
+result,
+
+race,
+
+result?.decision,
+
+result?.decisions,
+
+result?.technique,
+
+result?.techniques,
+
+result?.winning_methods,
+
+result?.winningMethods
+
+];
+
+for(const source of sources){
+
+if(!source)continue;
+
+if(typeof source==="object"&&!Array.isArray(source)){
+
+let value=
+
+source?.[String(getResultRacerNumber(x))] ??
+
+source?.[getResultRacerNumber(x)];
+
+if(value&&typeof value==="object"){
+
+value=
+
+value.number ??
+
+value.id ??
+
+value.code ??
+
+value.value ??
+
+value.name ??
+
+value.label ??
+
+""
+
+}
+
+if(value!=null&&value!=="")return value
+
+}
+
+}
+
+return null
+
+}
+
 function addResultRace(race,targets,wanted){
 
 let result=race?.result||race?.results||race?.race_result;
@@ -1584,7 +1574,17 @@ result.entries||
 
 result.participants||
 
-result.boats;
+result.boats||
+
+result.players||
+
+race?.racers||
+
+race?.entries||
+
+race?.participants||
+
+race?.boats;
 
 if(!resultRacers)return;
 
@@ -1622,23 +1622,7 @@ if(!targets[no]||c!==targets[no].course)return;
 
 if(targets[no].boats[c].length>=HISTORY_RACES)return;
 
-let technique=
-
-x.technique_number||
-
-x.technique||
-
-x.decision||
-
-x.decision_number||
-
-result.technique_number||
-
-result.technique||
-
-result.decision||
-
-result.decision_number;
+let technique=getDecisionValue(x,result,race);
 
 targets[no].boats[c].push({
 
@@ -1736,7 +1720,7 @@ async function loadHistory(){
 
 let key=
 
-"bh-history-course-v16-"+
+"bh-history-course-v15-"+
 
 today().ymd+"-"+
 
@@ -1866,8 +1850,6 @@ counts.every(x=>x>=HISTORY_RACES)?
 
 対象：今回と同じ進入コース<br>
 
-決まり手：1着時のみ集計<br>
-
 検索：過去${Math.min(start+9,HISTORY_DAYS)}日
 
 </span>`
@@ -1962,9 +1944,7 @@ let a=history(b),
 
 s=hstats(b),
 
-c=course(b),
-
-d=decisions(racer(b));
+c=course(b);
 
 if(!a.length)
 
@@ -2077,14 +2057,6 @@ x.place===1&&x.decision!=="-"?
 </div>
 
 `).join("")}
-
-</div>
-
-<div style="margin-top:7px;font-size:9px;color:#777;line-height:1.5">
-
-決まり手率：過去15走を母数として1着時のみ集計<br>
-
-3連対率：過去15走の1着・2着・3着を集計
 
 </div>
 
@@ -2352,7 +2324,7 @@ r.local_2ren_rate||
 
 r.local_top2_percent
 
-).toFixed(1)}%
+).toFixed(1) }%
 
 </div>
 
@@ -2664,9 +2636,7 @@ if(c===1){
 
 v-=d.makare*.45;
 
-v-=d.sasare*.35;
-
-v-=d.makuriSashiSare*.35
+v-=d.sasare*.35
 
 }
 
@@ -2698,14 +2668,6 @@ v+=d.maki*1.55
 
 if(type==="makiSashi"){
 
-/*
-
-  2コースのまくり差しは評価対象外
-
-*/
-
-if(c===2)return 0;
-
 if(c===3)v+=17;
 
 else if(c===4)v+=16;
@@ -2721,16 +2683,6 @@ let vt=venueTrait();
 return v*(vt[type]||1)
 
 }
-
-/*
-
-  内部AI評価用。
-
-  「全体の見通し」は画面表示から削除したが、
-
-  既存AI評価・展開評価を壊さないため内部計算は保持。
-
-*/
 
 function overview(){
 
@@ -2768,9 +2720,7 @@ if(course(1)===1){
 
 v.escape-=d1.makare*.65;
 
-v.escape-=d1.sasare*.45;
-
-v.escape-=d1.makuriSashiSare*.45
+v.escape-=d1.sasare*.45
 
 }
 
@@ -2781,14 +2731,6 @@ let d=decisions(racer(b));
 v.sashi+=d.sashi*.9;
 
 v.maki+=d.maki*.9;
-
-/*
-
-  2コースのまくり差し率は対象外
-
-*/
-
-if(course(b)!==2)
 
 v.makiSashi+=d.makiSashi*.9
 
@@ -3035,8 +2977,6 @@ s+=(vt.escape-1)*20;
 s-=d.makare*.55;
 
 s-=d.sasare*.40;
-
-s-=d.makuriSashiSare*.40;
 
 if(ast>0&&ast<=.18)s+=3
 
@@ -3309,14 +3249,6 @@ if(d.sasare>=15){
 bonus+=7;
 
 reasons.push("差され残り再評価")
-
-}
-
-if(d.makuriSashiSare>=15){
-
-bonus+=7;
-
-reasons.push("まくり差され残り再評価")
 
 }
 
@@ -4020,9 +3952,17 @@ cut.sort(
 
 );
 
+thirdOnly.sort(
+
+(x,y)=>x.score-y.score
+
+);
+
+let html="";
+
 cut.forEach(x=>{
 
-let html=`<div class="exclusion">
+html+=`<div class="exclusion">
 
 <strong>
 
@@ -4050,9 +3990,7 @@ ${x.classification.diff.toFixed(1)}pt<br>
 
 明確な展開根拠があれば復活可能。
 
-</div>`;
-
-$("exclusions").innerHTML+=html
+</div>`
 
 });
 
@@ -4078,7 +4016,7 @@ t
 
 );
 
-let html=`<div class="exclusionKeep">
+html+=`<div class="exclusionKeep">
 
 <strong>
 
@@ -4110,23 +4048,23 @@ promoted?
 
 2着・3着候補として展開根拠を再評価。
 
-</div>`;
-
-$("exclusions").innerHTML+=html
+</div>`
 
 });
 
 if(!cut.length&&!thirdOnly.length)
 
-$("exclusions").innerHTML=
+html=
 
 `<div class="strategy">
 
-今回は「3着から切り候補」を設定しません。<br>
+今回は「3着から切候補」を設定しません。<br>
 
 6艇平均：${avg.toFixed(1)}pt
 
-</div>`
+</div>`;
+
+$("exclusions").innerHTML=html
 
 }
 
@@ -4318,8 +4256,6 @@ renderRanking(r);
 
 renderAttack(o);
 
-$("exclusions").innerHTML="";
-
 renderExclusions(r);
 
 $("analysisCard").style.display="block";
@@ -4360,27 +4296,19 @@ AIスコアへ反映<br>
 
 AI評価へ反映<br>
 
-🎯 決まり手：
+🎯 過去15走：
 
-過去15走を母数として1着時のみ集計<br>
+1着時の決まり手を集計<br>
 
-📊 1号艇：
+📊 選手の決まり手傾向：
 
-逃げ率・差され率・まくられ率・まくり差され率を評価<br>
+過去15走を母数として1着時の逃げ・差し・まくり・まくり差しを集計<br>
 
-📊 2〜6号艇：
+🛡️ まくられ率・差され率：
 
-差し率・まくり率・まくり差し率を評価<br>
+選手情報・イン逃げ評価へ反映<br>
 
-⚠️ 2コース：
-
-まくり差し率は評価対象外<br>
-
-📈 3連対率：
-
-過去15走の1着・2着・3着を集計<br>
-
-✂️ 3着から切り候補：
+✂️ 3着から切候補：
 
 0〜複数艇、無理に設定なし<br>
 
