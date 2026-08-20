@@ -382,12 +382,6 @@ return r.json()
 
 }
 
-/* =========================
-
-   出走表取得強化部分
-
-   ========================= */
-
 function normalizeEntry(x,i){
 
 if(x==null||typeof x!=="object")return null;
@@ -958,12 +952,6 @@ esc(e.message).replace(/\n/g,"<br>")+
 
 }
 
-/* =========================
-
-   以下、既存AIロジック
-
-   ========================= */
-
 function getRacerNumber(x){
 
 return num(
@@ -1440,6 +1428,16 @@ return x
 
 function getDecisionValue(x,result,race){
 
+/*
+
+ * Boatrace Open API v1では決まり手は
+
+ * result.technique_number に入る。
+
+ * これはレース単位の値なので、1着艇にだけ適用する。
+
+ */
+
 let technique=
 
 x?.technique_number ??
@@ -1497,6 +1495,50 @@ technique.label ??
 }
 
 if(technique!=null&&technique!=="")return technique;
+
+/* ★ 修正箇所
+
+   result直下の technique_number を最優先で取得 */
+
+const raceTechnique=
+
+result?.technique_number ??
+
+result?.techniqueNumber ??
+
+result?.technique_no ??
+
+result?.techniqueNo ??
+
+result?.decision_number ??
+
+result?.decisionNumber ??
+
+result?.decision_no ??
+
+result?.decisionNo;
+
+if(raceTechnique!=null&&raceTechnique!=="")return raceTechnique;
+
+const raceTechniqueObject=
+
+race?.technique_number ??
+
+race?.techniqueNumber ??
+
+race?.technique_no ??
+
+race?.techniqueNo ??
+
+race?.decision_number ??
+
+race?.decisionNumber ??
+
+race?.decision_no ??
+
+race?.decisionNo;
+
+if(raceTechniqueObject!=null&&raceTechniqueObject!=="")return raceTechniqueObject;
 
 const sources=[
 
@@ -1606,6 +1648,58 @@ race.date_time||
 
 "";
 
+/*
+
+ * ★ API v1の標準構造：
+
+ * result.technique_number = レースの決まり手
+
+ * result.racers.{entry_number}.place_number = 着順
+
+ *
+
+ * そのため、決まり手は1着艇にのみ表示する。
+
+ */
+
+let raceTechnique=
+
+result.technique_number ??
+
+result.techniqueNumber ??
+
+result.technique_no ??
+
+result.techniqueNo ??
+
+result.decision_number ??
+
+result.decisionNumber ??
+
+result.decision_no ??
+
+result.decisionNo;
+
+if(raceTechnique&&typeof raceTechnique==="object"){
+
+raceTechnique=
+
+raceTechnique.number ??
+
+raceTechnique.id ??
+
+raceTechnique.code ??
+
+raceTechnique.value ??
+
+raceTechnique.name ??
+
+raceTechnique.label ??
+
+""
+
+}
+
 list.forEach(x=>{
 
 let no=getResultRacerNumber(x);
@@ -1622,7 +1716,25 @@ if(!targets[no]||c!==targets[no].course)return;
 
 if(targets[no].boats[c].length>=HISTORY_RACES)return;
 
-let technique=getDecisionValue(x,result,race);
+/*
+
+ * 1着の場合はレース結果直下の
+
+ * technique_number を決まり手として使用。
+
+ *
+
+ * 2〜6着には決まり手を付けない。
+
+ */
+
+let technique=
+
+place===1&&raceTechnique!=null&&raceTechnique!==""?
+
+raceTechnique:
+
+getDecisionValue(x,result,race);
 
 targets[no].boats[c].push({
 
@@ -1632,7 +1744,13 @@ place,
 
 course:c,
 
-decision:decision(technique)
+decision:
+
+place===1?
+
+decision(technique):
+
+"-"
 
 })
 
@@ -2018,7 +2136,9 @@ String(x.date)
 
 .replace("-","/")
 
-)}
+)
+
+}
 
 </span>
 
@@ -2324,7 +2444,7 @@ r.local_2ren_rate||
 
 r.local_top2_percent
 
-).toFixed(1) }%
+).toFixed(1)}%
 
 </div>
 
