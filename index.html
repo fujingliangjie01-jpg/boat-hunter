@@ -1004,47 +1004,485 @@ return({
 
 }
 
-/* ================= 決まり手率 ================= */
+/* =========================================================
 
-function rateValue(r,keys){
+   決まり手率 0.0% 修正版
 
-for(const key of keys){
+   ・APIのトップ階層だけでなく深い階層まで探索
 
-let v;
+   ・rate / percent / ratio / percentage 等にも対応
 
-if(typeof key==="function"){
+   ・日本語キーにも対応
 
-try{
+   ・API側に率が存在しない場合は過去20走から補完
 
-v=key(r);
+   ========================================================= */
 
-}catch(e){
+function normalizeRate(v){
 
-v=0;
+if(v==null||v==="")return null;
+
+if(typeof v==="object")return null;
+
+let s=String(v).trim();
+
+if(!s)return null;
+
+let n=parseFloat(
+
+s.replace(/,/g,"").replace("%","")
+
+);
+
+if(!Number.isFinite(n))return null;
+
+/* 0〜1形式の割合なら％へ変換 */
+
+if(n>0&&n<=1)
+
+n*=100;
+
+return Math.max(0,Math.min(100,n));
 
 }
 
-}else{
+function keyNormalize(k){
 
-v=r?.[key];
+return String(k||"")
 
-}
+.toLowerCase()
 
-if(v!==undefined&&v!==null&&v!==""){
+.replace(/[\s_\-％%]/g,"")
 
-let n=num(v);
-
-if(Number.isFinite(n))
-
-return n;
+.replace(/[()（）]/g,"");
 
 }
 
+/* オブジェクト全体を再帰探索して決まり手率を探す */
+
+function deepFindRate(obj,keys,depth=0,seen=new Set()){
+
+if(obj==null||depth>7)return null;
+
+if(typeof obj!=="object")return null;
+
+if(seen.has(obj))return null;
+
+seen.add(obj);
+
+const wanted=keys.map(keyNormalize);
+
+if(Array.isArray(obj)){
+
+for(const item of obj){
+
+let found=deepFindRate(
+
+item,
+
+keys,
+
+depth+1,
+
+seen
+
+);
+
+if(found!==null)return found;
+
 }
 
-return 0;
+return null;
 
 }
+
+for(const key of Object.keys(obj)){
+
+const nk=keyNormalize(key);
+
+if(wanted.includes(nk)){
+
+let n=normalizeRate(obj[key]);
+
+if(n!==null)return n;
+
+}
+
+/* rate系の派生キーにも対応 */
+
+if(
+
+wanted.some(w=>
+
+nk.includes(w)||
+
+w.includes(nk)
+
+)
+
+){
+
+let n=normalizeRate(obj[key]);
+
+if(n!==null)return n;
+
+}
+
+}
+
+for(const key of Object.keys(obj)){
+
+let child=obj[key];
+
+if(child&&typeof child==="object"){
+
+let found=deepFindRate(
+
+child,
+
+keys,
+
+depth+1,
+
+seen
+
+);
+
+if(found!==null)return found;
+
+}
+
+}
+
+return null;
+
+}
+
+/* APIにありがちな決まり手名称から率を探す */
+
+function deepDecisionRate(r,method){
+
+const map={
+
+escape:[
+
+"escape_rate",
+
+"nige_rate",
+
+"nige_percent",
+
+"nige_percent_rate",
+
+"escape_percent",
+
+"escapeRate",
+
+"nigeRate",
+
+"win_by_escape_rate",
+
+"win_by_nige_rate",
+
+"逃げ率"
+
+],
+
+nigashi:[
+
+"nigashi_rate",
+
+"nigashi_percent",
+
+"nigashi_percent_rate",
+
+"escape_failed_rate",
+
+"escape_failure_rate",
+
+"lose_escape_rate",
+
+"nige_failed_rate",
+
+"nige_failure_rate",
+
+"逃し率"
+
+],
+
+sashi:[
+
+"sashi_rate",
+
+"sashi_percent",
+
+"sashi_percent_rate",
+
+"sashiRate",
+
+"win_by_sashi_rate",
+
+"差し率"
+
+],
+
+maki:[
+
+"maki_rate",
+
+"makuri_rate",
+
+"maki_percent",
+
+"makuri_percent",
+
+"makuri_percent_rate",
+
+"makiRate",
+
+"makuriRate",
+
+"win_by_maki_rate",
+
+"win_by_makuri_rate",
+
+"まくり率"
+
+],
+
+makiSashi:[
+
+"maki_sashi_rate",
+
+"makuri_sashi_rate",
+
+"makurisashi_rate",
+
+"maki_sashi_percent",
+
+"makurisashi_percent",
+
+"makiSashiRate",
+
+"makuriSashiRate",
+
+"win_by_maki_sashi_rate",
+
+"win_by_makuri_sashi_rate",
+
+"まくり差し率"
+
+],
+
+makare:[
+
+"makare_rate",
+
+"makurare_rate",
+
+"be_makuri_rate",
+
+"being_makuri_rate",
+
+"lose_by_makuri_rate",
+
+"makare_percent",
+
+"makurare_percent",
+
+"まくられ率"
+
+],
+
+sasare:[
+
+"sasare_rate",
+
+"be_sashi_rate",
+
+"being_sashi_rate",
+
+"lose_by_sashi_rate",
+
+"sasare_percent",
+
+"差され率"
+
+]
+
+};
+
+return deepFindRate(
+
+r,
+
+map[method]||[]
+
+);
+
+}
+
+/* APIデータ内の決まり手統計候補 */
+
+function getDecisionContainer(r){
+
+return[
+
+r?.decision_rates,
+
+r?.decisionRate,
+
+r?.decisions,
+
+r?.decision_rate,
+
+r?.win_by,
+
+r?.winning_methods,
+
+r?.winningMethods,
+
+r?.statistics,
+
+r?.stats,
+
+r?.stats_data,
+
+r?.racer_statistics,
+
+r?.racer_stats,
+
+r?.profile,
+
+r?.data
+
+].filter(Boolean);
+
+}
+
+/* 過去20走から決まり手率を補完 */
+
+function historyDecisionRates(b){
+
+let a=history(b);
+
+let totalWins=a.filter(
+
+x=>x.place===1
+
+).length;
+
+let count={
+
+escape:0,
+
+sashi:0,
+
+maki:0,
+
+makiSashi:0,
+
+nigashi:0,
+
+makare:0,
+
+sasare:0
+
+};
+
+/*
+
+  勝ちレースの決まり手を集計。
+
+  逃し・まくられ・差されは勝敗展開側のデータが
+
+  APIにない場合は0のままにする。
+
+*/
+
+a.forEach(x=>{
+
+let d=String(x.decision||"");
+
+if(x.place===1){
+
+if(d==="逃げ")count.escape++;
+
+if(d==="差し")count.sashi++;
+
+if(d==="まくり")count.maki++;
+
+if(d==="まくり差し")count.makiSashi++;
+
+}
+
+});
+
+let denom=totalWins||0;
+
+return{
+
+escape:denom?count.escape/denom*100:0,
+
+sashi:denom?count.sashi/denom*100:0,
+
+maki:denom?count.maki/denom*100:0,
+
+makiSashi:denom?count.makiSashi/denom*100:0,
+
+/*
+
+  逃し・まくられ・差されは勝ち決まり手とは別概念。
+
+  API値が取得できなかった場合は、同コース過去20走の
+
+  結果から補助指標として推定する。
+
+*/
+
+makare:a.length
+
+?Math.max(
+
+0,
+
+a.filter(x=>
+
+x.place>=2&&
+
+x.decision==="まくり"
+
+).length/a.length*100
+
+)
+
+:0,
+
+sasare:a.length
+
+?Math.max(
+
+0,
+
+a.filter(x=>
+
+x.place>=2&&
+
+x.decision==="差し"
+
+).length/a.length*100
+
+)
+
+:0,
+
+nigashi:0
+
+};
+
+}
+
+/* 決まり手率の本体 */
 
 function decisions(r){
 
@@ -1074,245 +1512,131 @@ nigashiRate:0
 
 }
 
-let d=
+let fallbackBoat=0;
 
-r?.decision_rates||
+/* racerのentry_numberから艇番を取得 */
 
-r?.decisionRate||
+let boat=num(r.entry_number);
 
-r?.decisions||
+let h=boat>=1&&boat<=6
 
-r?.win_by||
+?historyDecisionRates(boat)
 
-r?.winning_methods||
+:null;
 
-{};
+let get=(method)=>{
+
+/* ① APIの深い階層から取得 */
+
+let n=deepDecisionRate(r,method);
+
+if(n!==null)
+
+return n;
+
+/* ② 決まり手統計コンテナから取得 */
+
+for(const box of getDecisionContainer(r)){
+
+n=deepDecisionRate(box,method);
+
+if(n!==null)
+
+return n;
+
+}
+
+/* ③ 過去20走から補完 */
+
+if(h&&h[method]!=null){
+
+let hv=normalizeRate(h[method]);
+
+if(hv!==null&&hv>0)
+
+return hv;
+
+}
+
+return 0;
+
+};
 
 let v={
 
-/* 逃げ率 */
+escape:get("escape"),
 
-escape:rateValue(r,[
+nigashi:get("nigashi"),
 
-"escape_rate",
+sashi:get("sashi"),
 
-"nige_rate",
+maki:get("maki"),
 
-"win_by_escape_rate",
+makiSashi:get("makiSashi"),
 
-"nige_percent",
+makare:get("makare"),
 
-"nige_percent_rate",
-
-"escape_percent",
-
-"escapeRate",
-
-"nigeRate",
-
-"逃げ率"
-
-].concat([
-
-()=>d?.escape_rate,
-
-()=>d?.nige_rate,
-
-()=>d?.escape,
-
-()=>d?.nige
-
-])),
-
-/* 逃し率 */
-
-nigashi:rateValue(r,[
-
-"nigashi_rate",
-
-"nigashi_percent",
-
-"nigashi_percent_rate",
-
-"escape_failed_rate",
-
-"escape_failure_rate",
-
-"lose_escape_rate",
-
-"nige_failed_rate",
-
-"nige_failure_rate",
-
-"逃し率"
-
-].concat([
-
-()=>d?.nigashi_rate,
-
-()=>d?.nigashi,
-
-()=>d?.escape_failed_rate,
-
-()=>d?.escape_failure_rate,
-
-()=>d?.nige_failed_rate,
-
-()=>d?.nige_failure_rate
-
-])),
-
-/* 差し率 */
-
-sashi:rateValue(r,[
-
-"sashi_rate",
-
-"win_by_sashi_rate",
-
-"sashi_percent",
-
-"sashi_percent_rate",
-
-"sashiRate",
-
-"差し率"
-
-].concat([
-
-()=>d?.sashi_rate,
-
-()=>d?.sashi
-
-])),
-
-/* まくり率 */
-
-maki:rateValue(r,[
-
-"maki_rate",
-
-"makuri_rate",
-
-"win_by_maki_rate",
-
-"makuri_percent",
-
-"maki_percent",
-
-"makuri_percent_rate",
-
-"makiRate",
-
-"makuriRate",
-
-"まくり率"
-
-].concat([
-
-()=>d?.maki_rate,
-
-()=>d?.makuri_rate,
-
-()=>d?.maki,
-
-()=>d?.makuri
-
-])),
-
-/* まくり差し率 */
-
-makiSashi:rateValue(r,[
-
-"maki_sashi_rate",
-
-"makurisashi_rate",
-
-"win_by_maki_sashi_rate",
-
-"makuri_sashi_rate",
-
-"maki_sashi_percent",
-
-"makurisashi_percent",
-
-"makiSashiRate",
-
-"makuriSashiRate",
-
-"まくり差し率"
-
-].concat([
-
-()=>d?.maki_sashi_rate,
-
-()=>d?.makurisashi_rate,
-
-()=>d?.maki_sashi,
-
-()=>d?.makurisashi
-
-])),
-
-/* まくられ率 */
-
-makare:rateValue(r,[
-
-"makare_rate",
-
-"makurare_rate",
-
-"be_makuri_rate",
-
-"being_makuri_rate",
-
-"lose_by_makuri_rate",
-
-"makare_percent",
-
-"makurare_percent",
-
-"まくられ率"
-
-].concat([
-
-()=>d?.makare_rate,
-
-()=>d?.makurare_rate,
-
-()=>d?.makare,
-
-()=>d?.makurare
-
-])),
-
-/* 差され率 */
-
-sasare:rateValue(r,[
-
-"sasare_rate",
-
-"be_sashi_rate",
-
-"being_sashi_rate",
-
-"lose_by_sashi_rate",
-
-"sasare_percent",
-
-"差され率"
-
-].concat([
-
-()=>d?.sasare_rate,
-
-()=>d?.sasare,
-
-()=>d?.be_sashi_rate
-
-]))
+sasare:get("sasare")
 
 };
+
+/*
+
+  0.0%のままになるケースをさらに補正。
+
+  同コース過去20走に勝ち決まり手が存在する場合は
+
+  その実績を表示値へ反映。
+
+*/
+
+if(v.escape===0&&h?.escape>0)v.escape=h.escape;
+
+if(v.sashi===0&&h?.sashi>0)v.sashi=h.sashi;
+
+if(v.maki===0&&h?.maki>0)v.maki=h.maki;
+
+if(v.makiSashi===0&&h?.makiSashi>0)v.makiSashi=h.makiSashi;
+
+/*
+
+  1号艇の逃げ率は、API値が無い場合でも
+
+  同コース過去20走の1着率を逃げ率候補として使用。
+
+*/
+
+if(
+
+v.escape===0&&
+
+boat===1&&
+
+h?.escape===0
+
+){
+
+let hs=hstats(boat);
+
+if(hs.count>0)
+
+v.escape=hs.first/hs.count*100;
+
+}
+
+/*
+
+  数値異常を防止
+
+*/
+
+Object.keys(v).forEach(k=>{
+
+if(!Number.isFinite(v[k]))v[k]=0;
+
+v[k]=Math.max(0,Math.min(100,v[k]));
+
+});
 
 v.nige=v.escape;
 
@@ -1568,13 +1892,23 @@ x.decision||
 
 x.decision_number||
 
+x.winning_technique||
+
+x.winning_method||
+
+x.decision_name||
+
 result.technique_number||
 
 result.technique||
 
 result.decision||
 
-result.decision_number;
+result.decision_number||
+
+result.winning_technique||
+
+result.winning_method;
 
 targets[no].boats[c].push({
 
@@ -2344,7 +2678,7 @@ r.local_2ren_rate||
 
 r.local_top2_percent
 
-).toFixed(1)}%
+).toFixed(1)%
 
 </div>
 
@@ -4644,9 +4978,7 @@ used.add(x.key);
 
 }
 
-for(
-
-let type of [
+for(let type of [
 
 "escape",
 
@@ -4656,9 +4988,7 @@ let type of [
 
 "makiSashi"
 
-]
-
-){
+]){
 
 let list=
 
@@ -5684,7 +6014,7 @@ AI評価へ反映<br>
 
 📊 選手の決まり手傾向：
 
-逃げ・逃し・差し・まくり・まくり差しを表示<br>
+API深部探索＋過去20走補完<br>
 
 🛡️ まくられ率・差され率：
 
