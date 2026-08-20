@@ -382,6 +382,12 @@ return r.json()
 
 }
 
+/* =========================
+
+   出走表取得強化部分
+
+   ========================= */
+
 function normalizeEntry(x,i){
 
 if(x==null||typeof x!=="object")return null;
@@ -836,7 +842,9 @@ let e=$("course"+b);
 
 e.innerHTML="";
 
-for(let c=1;c<=6;c++)e.add(new Option(c+"コース",c));
+for(let c=1;c<=6;c++)
+
+e.add(new Option(c+"コース",c));
 
 e.value=String(b);
 
@@ -952,6 +960,12 @@ esc(e.message).replace(/\n/g,"<br>")+
 
 }
 
+/* =========================
+
+   以下、既存AIロジック
+
+   ========================= */
+
 function getRacerNumber(x){
 
 return num(
@@ -986,7 +1000,11 @@ x?.registration_number||
 
 x?.player_number||
 
-x?.racerNumber
+x?.racerNumber||
+
+x?.boat_number||
+
+x?.boatNumber
 
 )
 
@@ -1004,7 +1022,11 @@ x?.finish_position||
 
 x?.arrival||
 
-x?.rank
+x?.rank||
+
+x?.result||
+
+x?.finish
 
 )
 
@@ -1028,6 +1050,30 @@ x?.entry
 
 function decision(n){
 
+if(n&&typeof n==="object"){
+
+n=
+
+n.number||
+
+n.id||
+
+n.code||
+
+n.value||
+
+n.name||
+
+n.label||
+
+""
+
+}
+
+let s=String(n??"").trim();
+
+if(/^[1-6]$/.test(s))n=Number(s);
+
 return({
 
 1:"逃げ",
@@ -1040,9 +1086,21 @@ return({
 
 5:"抜き",
 
-6:"恵まれ"
+6:"恵まれ",
 
-}[num(n)]||"-")
+"逃げ":"逃げ",
+
+"差し":"差し",
+
+"まくり":"まくり",
+
+"まくり差し":"まくり差し",
+
+"抜き":"抜き",
+
+"恵まれ":"恵まれ"
+
+}[n]||"-")
 
 }
 
@@ -1098,7 +1156,9 @@ r?.winning_method
 
 ];
 
-for(const key of keys)for(const obj of objects){
+for(const key of keys)
+
+for(const obj of objects){
 
 if(!obj)continue;
 
@@ -1424,19 +1484,47 @@ return x
 
    過去15走の決まり手取得強化
 
+   ※表示部分以外は既存ロジック維持
+
    ========================= */
 
+function normalizeDecisionObject(value){
+
+if(value==null||value==="")return null;
+
+if(typeof value==="object"){
+
+value=
+
+value.number ??
+
+value.id ??
+
+value.code ??
+
+value.value ??
+
+value.name ??
+
+value.label ??
+
+value.technique ??
+
+value.method ??
+
+value.type ??
+
+"";
+
+}
+
+if(value==null||value==="")return null;
+
+return value
+
+}
+
 function getDecisionValue(x,result,race){
-
-/*
-
- * Boatrace Open API v1では決まり手は
-
- * result.technique_number に入る。
-
- * これはレース単位の値なので、1着艇にだけ適用する。
-
- */
 
 let technique=
 
@@ -1472,75 +1560,21 @@ x?.winningTechnique ??
 
 x?.finish_technique ??
 
-x?.finishTechnique;
+x?.finishTechnique ??
 
-if(technique&&typeof technique==="object"){
+x?.winning_type ??
 
-technique=
+x?.winningType;
 
-technique.number ??
-
-technique.id ??
-
-technique.code ??
-
-technique.value ??
-
-technique.name ??
-
-technique.label ??
-
-""
-
-}
+technique=normalizeDecisionObject(technique);
 
 if(technique!=null&&technique!=="")return technique;
 
-/* ★ 修正箇所
-
-   result直下の technique_number を最優先で取得 */
-
-const raceTechnique=
-
-result?.technique_number ??
-
-result?.techniqueNumber ??
-
-result?.technique_no ??
-
-result?.techniqueNo ??
-
-result?.decision_number ??
-
-result?.decisionNumber ??
-
-result?.decision_no ??
-
-result?.decisionNo;
-
-if(raceTechnique!=null&&raceTechnique!=="")return raceTechnique;
-
-const raceTechniqueObject=
-
-race?.technique_number ??
-
-race?.techniqueNumber ??
-
-race?.technique_no ??
-
-race?.techniqueNo ??
-
-race?.decision_number ??
-
-race?.decisionNumber ??
-
-race?.decision_no ??
-
-race?.decisionNo;
-
-if(raceTechniqueObject!=null&&raceTechniqueObject!=="")return raceTechniqueObject;
+const racerNo=getResultRacerNumber(x);
 
 const sources=[
+
+x,
 
 result,
 
@@ -1556,7 +1590,19 @@ result?.techniques,
 
 result?.winning_methods,
 
-result?.winningMethods
+result?.winningMethods,
+
+race?.decision,
+
+race?.decisions,
+
+race?.technique,
+
+race?.techniques,
+
+race?.winning_methods,
+
+race?.winningMethods
 
 ];
 
@@ -1566,33 +1612,89 @@ if(!source)continue;
 
 if(typeof source==="object"&&!Array.isArray(source)){
 
-let value=
+const keys=[
 
-source?.[String(getResultRacerNumber(x))] ??
+String(racerNo),
 
-source?.[getResultRacerNumber(x)];
+racerNo,
 
-if(value&&typeof value==="object"){
+String(x?.entry_number??""),
 
-value=
+String(x?.boat_number??""),
 
-value.number ??
+String(x?.boatNumber??"")
 
-value.id ??
+].filter(Boolean);
 
-value.code ??
+for(const key of keys){
 
-value.value ??
+let value=source?.[key];
 
-value.name ??
+value=normalizeDecisionObject(value);
 
-value.label ??
-
-""
+if(value!=null&&value!=="")return value
 
 }
 
-if(value!=null&&value!=="")return value
+const namedKeys=[
+
+"technique_number",
+
+"techniqueNumber",
+
+"technique_no",
+
+"techniqueNo",
+
+"decision_number",
+
+"decisionNumber",
+
+"decision_no",
+
+"decisionNo",
+
+"decision",
+
+"winning_method_number",
+
+"winningMethodNumber",
+
+"winning_method",
+
+"winningMethod",
+
+"winning_technique",
+
+"winningTechnique",
+
+"finish_technique",
+
+"finishTechnique",
+
+"method",
+
+"type"
+
+];
+
+for(const key of namedKeys){
+
+let value=normalizeDecisionObject(source?.[key]);
+
+if(value!=null&&value!==""){
+
+if(
+
+typeof value==="string"||
+
+typeof value==="number"
+
+)return value
+
+}
+
+}
 
 }
 
@@ -1602,43 +1704,79 @@ return null
 
 }
 
+function findResultList(race,result){
+
+const candidates=[
+
+result?.racers,
+
+result?.entries,
+
+result?.participants,
+
+result?.boats,
+
+result?.players,
+
+result?.results,
+
+result?.result,
+
+race?.result?.racers,
+
+race?.result?.entries,
+
+race?.result?.participants,
+
+race?.result?.boats,
+
+race?.result?.players,
+
+race?.racers,
+
+race?.entries,
+
+race?.participants,
+
+race?.boats
+
+];
+
+for(const source of candidates){
+
+if(!source)continue;
+
+const list=Array.isArray(source)?
+
+source:
+
+(typeof source==="object"?Object.values(source):[]);
+
+if(list.length)return list
+
+}
+
+return[]
+
+}
+
 function addResultRace(race,targets,wanted){
 
 let result=race?.result||race?.results||race?.race_result;
 
 if(!result)return;
 
-let resultRacers=
+let resultRacers=findResultList(race,result);
 
-result.racers||
-
-result.entries||
-
-result.participants||
-
-result.boats||
-
-result.players||
-
-race?.racers||
-
-race?.entries||
-
-race?.participants||
-
-race?.boats;
-
-if(!resultRacers)return;
-
-let list=Array.isArray(resultRacers)?
-
-resultRacers:
-
-Object.values(resultRacers);
+if(!resultRacers.length)return;
 
 let date=
 
 result.date||
+
+result.race_date||
+
+result.date_time||
 
 race.date||
 
@@ -1648,59 +1786,7 @@ race.date_time||
 
 "";
 
-/*
-
- * ★ API v1の標準構造：
-
- * result.technique_number = レースの決まり手
-
- * result.racers.{entry_number}.place_number = 着順
-
- *
-
- * そのため、決まり手は1着艇にのみ表示する。
-
- */
-
-let raceTechnique=
-
-result.technique_number ??
-
-result.techniqueNumber ??
-
-result.technique_no ??
-
-result.techniqueNo ??
-
-result.decision_number ??
-
-result.decisionNumber ??
-
-result.decision_no ??
-
-result.decisionNo;
-
-if(raceTechnique&&typeof raceTechnique==="object"){
-
-raceTechnique=
-
-raceTechnique.number ??
-
-raceTechnique.id ??
-
-raceTechnique.code ??
-
-raceTechnique.value ??
-
-raceTechnique.name ??
-
-raceTechnique.label ??
-
-""
-
-}
-
-list.forEach(x=>{
+resultRacers.forEach(x=>{
 
 let no=getResultRacerNumber(x);
 
@@ -1716,25 +1802,7 @@ if(!targets[no]||c!==targets[no].course)return;
 
 if(targets[no].boats[c].length>=HISTORY_RACES)return;
 
-/*
-
- * 1着の場合はレース結果直下の
-
- * technique_number を決まり手として使用。
-
- *
-
- * 2〜6着には決まり手を付けない。
-
- */
-
-let technique=
-
-place===1&&raceTechnique!=null&&raceTechnique!==""?
-
-raceTechnique:
-
-getDecisionValue(x,result,race);
+let technique=getDecisionValue(x,result,race);
 
 targets[no].boats[c].push({
 
@@ -1744,13 +1812,7 @@ place,
 
 course:c,
 
-decision:
-
-place===1?
-
-decision(technique):
-
-"-"
+decision:decision(technique)
 
 })
 
@@ -2136,9 +2198,7 @@ String(x.date)
 
 .replace("-","/")
 
-)
-
-}
+)}
 
 </span>
 
@@ -2158,19 +2218,15 @@ x.place<=3?
 
 ${x.place}着
 
-<span class="historyDecision">
-
 ${
 
 x.place===1&&x.decision!=="-"?
 
-" / "+esc(x.decision):
+`<span class="historyDecision"> / ${esc(x.decision)}</span>`:
 
 ""
 
 }
-
-</span>
 
 </span>
 
