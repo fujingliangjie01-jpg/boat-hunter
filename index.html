@@ -198,17 +198,21 @@ th{color:#d4af37}
 
 .outlookItem{border-radius:8px;padding:9px;text-align:center;border:1px solid #333;background:#151515}
 
-.outlookEscape{border-color:#3d78b5;background:#0e1722}
+.outlookEscape{border-color:#7b2d2d;background:#241414}
 
-.outlookNonEscape{border-color:#8a4b4b;background:#241414}
+.outlookNonEscape{border-color:#285b8c;background:#0e1722}
+
+.outlookInactive{border-color:#333!important;background:#151515!important}
 
 .outlookLabel{font-size:10px;color:#aaa}
 
 .outlookValue{font-size:22px;font-weight:900;margin-top:3px}
 
-.outlookEscape .outlookValue{color:#58a6ff}
+.outlookEscape .outlookValue{color:#ff5555}
 
-.outlookNonEscape .outlookValue{color:#ff6b6b}
+.outlookNonEscape .outlookValue{color:#58a6ff}
+
+.outlookInactive .outlookValue{color:#777}
 
 .outlookStatus{font-size:10px;margin-top:4px;font-weight:bold}
 
@@ -221,6 +225,12 @@ th{color:#d4af37}
 .aiDetail{background:#101010;border:1px solid #292929;border-radius:8px;padding:8px;margin-top:8px;font-size:10px;line-height:1.7}
 
 .aiDetail strong{color:#d4af37}
+
+.patternNote{font-size:10px;color:#888;line-height:1.7;margin-top:6px}
+
+.thirdProb{color:#ffd84d;font-weight:bold;font-size:10px}
+
+.patternExcluded{color:#777;text-decoration:line-through}
 
 @media(max-width:600px){
 
@@ -337,6 +347,8 @@ th{color:#d4af37}
 <h3>✂️ 3着から切り候補</h3>
 
 <div id="exclusions"></div>
+
+<div id="bettingPatterns"></div>
 
 </div>
 
@@ -810,67 +822,15 @@ let s=String(n).trim();
 
 if(!s)return"-";
 
-const normalized=s
+const normalized=s.replace(/\s/g,"").replace(/　/g,"").toLowerCase();
 
-.replace(/\s/g,"")
+if(normalized==="1"||normalized==="逃げ"||normalized==="nige"||normalized==="escape")return"逃げ";
 
-.replace(/　/g,"")
+if(normalized==="2"||normalized==="差し"||normalized==="差し切り"||normalized==="sashi")return"差し";
 
-.toLowerCase();
+if(normalized==="3"||normalized==="まくり"||normalized==="捲り"||normalized==="maki"||normalized==="makuri")return"まくり";
 
-if(
-
-normalized==="1"||
-
-normalized==="逃げ"||
-
-normalized==="nige"||
-
-normalized==="escape"
-
-)return"逃げ";
-
-if(
-
-normalized==="2"||
-
-normalized==="差し"||
-
-normalized==="差し切り"||
-
-normalized==="sashi"
-
-)return"差し";
-
-if(
-
-normalized==="3"||
-
-normalized==="まくり"||
-
-normalized==="捲り"||
-
-normalized==="maki"||
-
-normalized==="makuri"
-
-)return"まくり";
-
-if(
-
-normalized==="4"||
-
-normalized==="まくり差し"||
-
-normalized==="捲り差し"||
-
-normalized==="まくりさし"||
-
-normalized==="makisashi"||
-
-normalized==="makuri-sashi"
-
-)return"まくり差し";
+if(normalized==="4"||normalized==="まくり差し"||normalized==="捲り差し"||normalized==="まくりさし"||normalized==="makisashi"||normalized==="makuri-sashi")return"まくり差し";
 
 if(normalized==="5"||normalized==="抜き"||normalized==="nuki")return"抜き";
 
@@ -1124,7 +1084,7 @@ if(b===2)return`<div class="decisionStats">
 
 <div class="decisionStat"><span>まくり差し率</span><strong>${d.makiSashi.toFixed(1)}%</strong></div>
 
-<div class="decisionStat"><span>差され率</span><strong>${d.sasare.toFixed(1)}%</strong></div>
+<div class="decisionStat"><span>差され率</span><strong>${d.sasareRate.toFixed(1)}%</strong></div>
 
 </div>`;
 
@@ -2166,11 +2126,7 @@ function decisionEvaluation(b,type){
 
 let d=decisions(racer(b));
 
-let value=0,
-
-label="場平均",
-
-reason="";
+let value=0,label="場平均",reason="";
 
 if(b===1&&type==="escape"){
 
@@ -2444,9 +2400,7 @@ status:"イン逃げ軸ではない"
 
 };
 
-let d=decisions(r1),
-
-p=50;
+let d=decisions(r1),p=50;
 
 p+=(d.escape-50)*.45;
 
@@ -3154,7 +3108,7 @@ if(!A||!B)return null;
 
 let o=overview();
 
-raw=A.score*1.35+B.score*.75;
+let raw=A.score*1.35+B.score*.75;
 
 if(type==="escape"){
 
@@ -3492,7 +3446,7 @@ ${main==="maki"||main==="makiSashi"?
 
 <div class="outlookGrid">
 
-<div class="outlookItem outlookEscape">
+<div class="outlookItem outlookEscape ${outlook.escape<=0?"outlookInactive":""}">
 
 <div class="outlookLabel">イン逃げする</div>
 
@@ -3502,7 +3456,7 @@ ${main==="maki"||main==="makiSashi"?
 
 </div>
 
-<div class="outlookItem outlookNonEscape">
+<div class="outlookItem outlookNonEscape ${outlook.nonEscape<=0?"outlookInactive":""}">
 
 <div class="outlookLabel">イン逃げしない</div>
 
@@ -3554,167 +3508,493 @@ outlook.escape>=50?
 
 }
 
-function runAnalysis(){
+/* 今回追加：イン逃げ65%以上時のパターン1・パターン2買い目 */
 
-if(racers.length!==6){
+function motorRate(b){
 
-alert("先に出走表を取得してください");
+return num(
+
+racer(b)?.motor_top_2_percent||
+
+racer(b)?.motor_2ren_rate||
+
+racer(b)?.motor_2ren
+
+)
+
+}
+
+function recentFormValue(b){
+
+return recentForm(b).score
+
+}
+
+function patternThirdScore(b,rankings,type){
+
+let x=rankings.find(z=>z.boat===b);
+
+if(!x)return -999;
+
+let v=x.score;
+
+v+=motorRate(b)*.35;
+
+v+=recentFormValue(b)*4;
+
+v+=suitability(b,type)*.35;
+
+let dev=developmentBonus(b,rankings,type);
+
+v+=dev.bonus*.8;
+
+if(goodHistory(b))v+=5;
+
+return v
+
+}
+
+function thirdProbabilityList(excluded,rankings,type){
+
+let list=[];
+
+for(let b=2;b<=6;b++){
+
+if(excluded.includes(b))continue;
+
+let v=patternThirdScore(b,rankings,type);
+
+if(v<=-900)continue;
+
+list.push({
+
+boat:b,
+
+value:v
+
+})
+
+}
+
+list.sort((a,b)=>b.value-a.value);
+
+let min=list.length?Math.min(...list.map(x=>x.value)):0;
+
+let weights=list.map(x=>Math.max(.1,x.value-min+5));
+
+let total=weights.reduce((s,x)=>s+x,0)||1;
+
+list.forEach((x,i)=>{
+
+x.prob=weights[i]/total*100
+
+});
+
+return list
+
+}
+
+function bestSecondNonOne(rankings){
+
+return rankings.find(x=>x.boat!==1)?.boat||null
+
+}
+
+function patternTwoCandidates(rankings){
+
+let avg=scoreAverage(rankings);
+
+let eligible=[];
+
+rankings.forEach((x,i)=>{
+
+if(x.boat===1)return;
+
+let lowAI=x.score<=avg-20;
+
+let weakMotor=motorRate(x.boat)<30;
+
+if(lowAI&&weakMotor)return;
+
+eligible.push({
+
+boat:x.boat,
+
+rank:i+1,
+
+score:x.score
+
+})
+
+});
+
+let fourth=rankings[3],
+
+fifth=rankings[4],
+
+picked=[];
+
+[fourth,fifth].forEach(x=>{
+
+if(!x||x.boat===1)return;
+
+let lowAI=x.score<=avg-20;
+
+let weakMotor=motorRate(x.boat)<30;
+
+if(lowAI&&weakMotor)return;
+
+if(!picked.includes(x.boat))picked.push(x.boat)
+
+});
+
+if(!picked.length&&eligible.length){
+
+picked.push(eligible[0].boat)
+
+}
+
+if(picked.length>2)picked=picked.slice(0,2);
+
+return{
+
+picked,
+
+eligible,
+
+avg
+
+}
+
+}
+
+function renderThirdCandidates(list,secondBoats,firstBoat,forcedBoat){
+
+if(!list.length)return'<div class="noPick">3着候補なし</div>';
+
+return`
+
+<div class="thirdCandidates">
+
+${list.map(x=>{
+
+let forced=x.boat===forcedBoat;
+
+let duplicate=secondBoats.includes(x.boat)||x.boat===firstBoat;
+
+if(duplicate&&!forced)return"";
+
+return`
+
+<div class="thirdCandidate ${forced?"revival":"normal"}">
+
+${x.boat}号艇
+
+<span class="thirdProb">${x.prob.toFixed(1)}%</span>
+
+${forced?'<span class="revivalLabel">⭐ AI80以上＋モーター35%以上</span>':""}
+
+</div>`
+
+}).join("")}
+
+</div>`
+
+}
+
+function renderPatternBets(rankings,outlook){
+
+if(!outlook||outlook.escape<65){
+
+$("bettingPatterns").innerHTML="";
+
+currentBets=null;
 
 return
 
 }
 
-$("message").innerHTML='<span class="loading">🤖 AI解析中...</span>';
+let bestSecond=bestSecondNonOne(rankings);
 
-(async()=>{
+if(!bestSecond){
 
-try{
+$("bettingPatterns").innerHTML="";
 
-for(let b=1;b<=6;b++)
+currentBets=null;
 
-manualCourses[b]=+$("course"+b).value;
-
-for(let b=1;b<=6;b++){
-
-if(
-
-!Number.isInteger(manualCourses[b])||
-
-manualCourses[b]<1||
-
-manualCourses[b]>6
-
-){
-
-manualCourses[b]=b;
-
-$("course"+b).value=String(b)
+return
 
 }
 
-}
+let type=dominant(overview());
 
-$("message").innerHTML='<span class="loading">🤖 同じコースを走った過去15走を検索中...</span>';
+if(type==="escape")type="sashi";
 
-await loadHistory();
+let forced6=rankings.find(x=>{
 
-renderRace();
+return x.boat!==1&&
 
-let o=overview(),
+x.score>=80&&
 
-r=ranking();
-
-renderRanking(r);
-
-renderAttack(o);
-
-renderExclusions(r);
-
-$("analysisCard").style.display="block";
-
-let counts=racers.map(x=>{
-
-let no=getRacerNumber(x),
-
-c=course(num(x.entry_number));
-
-return historyData[no]?.boats?.[c]?.length||0
+motorRate(x.boat)>=35
 
 });
 
-let wi=windInfo(),
+let p1Third=thirdProbabilityList([1,bestSecond],rankings,type);
 
-outlook=overallEscapeProbability();
+if(forced6&&!p1Third.some(x=>x.boat===forced6.boat)){
 
-$("message").innerHTML=
+p1Third.push({
 
-`<span class="success">
+boat:forced6.boat,
 
-✅ AI解析完了<br>
+value:patternThirdScore(forced6.boat,rankings,type),
 
-🔥 主攻め：${typeName(dominant(o))}<br>
+prob:0,
 
-📈 今回と同コースの過去15走：${counts.join(" / ")}走取得<br>
+forced:true
 
-🏟️ 場特性：${esc(venueTrait().name)}を評価<br>
-
-🌬️ 風情報：${esc(wi.label)} ${wi.speed.toFixed(1)}m<br>
-
-🎯 風補正：${
-
-wi.mode==="head"&&wi.speed>=3?
-
-"向かい風3m以上 → アウトコース・まくりを上方補正":
-
-wi.mode==="tail"&&wi.speed>=3?
-
-"追い風3m以上 → インコース・2・3コース差しを上方補正":
-
-wi.mode==="head"?
-
-"向かい風 → アウトコース・まくり方向を補正":
-
-wi.mode==="tail"?
-
-"追い風 → インコース・差し方向を補正":
-
-"風向データなし → 風補正なし"
-
-}<br>
-
-📊 全体見通し：イン逃げ ${outlook.escape.toFixed(1)}% / イン逃げしない ${outlook.nonEscape.toFixed(1)}%<br>
-
-📈 直近15走の調子：AIスコアへ反映<br>
-
-🛥️ 進入コース：AI評価へ反映<br>
-
-🎯 過去15走：全着順の決まり手を表示<br>
-
-📊 1号艇決まり手集計：母数15走。1着＋逃げ＝逃げ率、1着以外＋まくり＝まくられ率、1着以外＋差し＝差され率、1着以外＋まくり差し＝まくり差され率<br>
-
-🛡️ まくられ率・差され率・まくり差され率：1号艇のイン逃げ評価へ反映<br>
-
-✂️ 3着から切候補：0〜複数艇、無理に設定なし<br>
-
-🟡 展開復活：根拠がある場合のみ3着まで<br>
-
-⬆️ まくり後ろ：条件を満たせば2着まで昇格<br>
-
-🎯 AI評価：全国勝率・当地勝率・モーター・ST・展示・進入・決まり手・同コース過去15走・直近15走・風向・風速・場特性・展開連動を総合評価
-
-</span>`
-
-}catch(e){
-
-console.error(e);
-
-$("message").innerHTML=
-
-'<span class="error">❌ AI解析失敗<br>'+
-
-esc(e.message).replace(/\n/g,"<br>")+
-
-'</span>'
+})
 
 }
 
-})()
+p1Third.sort((a,b)=>{
+
+if(a.boat===forced6?.boat)return -1;
+
+if(b.boat===forced6?.boat)return 1;
+
+return b.value-a.value
+
+});
+
+let p2=patternTwoCandidates(rankings);
+
+let p2Third=thirdProbabilityList([1,...p2.picked],rankings,type);
+
+if(forced6&&!p2Third.some(x=>x.boat===forced6.boat)){
+
+p2Third.push({
+
+boat:forced6.boat,
+
+value:patternThirdScore(forced6.boat,rankings,type),
+
+prob:0,
+
+forced:true
+
+})
 
 }
 
-function rank(n){
+p2Third.sort((a,b)=>{
 
-return{
+if(a.boat===forced6?.boat)return -1;
 
-1:"A1",
+if(b.boat===forced6?.boat)return 1;
 
-2:"A2",
+return b.value-a.value
 
-3:"B1",
+});
 
-4:"B2"
+if(forced6){
 
-}[num(n)]||"-"
+let all1=p1Third.filter(x=>x.boat!==forced6.boat);
+
+let total1=all1.reduce((s,x)=>s+Math.max(.1,x.value),0)||1;
+
+all1.forEach(x=>x.prob=Math.max(.1,x.value)/total1*100);
+
+forced6.prob=0;
+
+p1Third=[forced6,...all1];
+
+let all2=p2Third.filter(x=>x.boat!==forced6.boat);
+
+let total2=all2.reduce((s,x)=>s+Math.max(.1,x.value),0)||1;
+
+all2.forEach(x=>x.prob=Math.max(.1,x.value)/total2*100);
+
+forced6.prob=0;
+
+p2Third=[forced6,...all2];
+
+}
+
+let secondNames=p2.picked.map(b=>{
+
+let x=rankings.find(z=>z.boat===b);
+
+return`${b}号艇（AI${x.score.toFixed(1)}）`
+
+}).join("・");
+
+let p1SecondName=rankings.find(x=>x.boat===bestSecond);
+
+let html=`
+
+<div class="pickBox">
+
+<div class="pickTitle">🎯 イン逃げ65%以上 → AI買い目パターン1</div>
+
+<div class="betHeader">
+
+<div>1着 → 2着</div>
+
+<div>3着候補・確率</div>
+
+</div>
+
+<div class="betRow">
+
+<div class="bet2">
+
+<span class="bet2Number">1</span>
+
+<span>→</span>
+
+<span class="bet2Number">${bestSecond}</span>
+
+</div>
+
+<div>
+
+${renderThirdCandidates(
+
+p1Third,
+
+[bestSecond],
+
+1,
+
+forced6?.boat
+
+)}
+
+</div>
+
+</div>
+
+<div class="patternNote">
+
+1着：1号艇固定<br>
+
+2着：1号艇以外のAI評価最上位 → ${bestSecond}号艇
+
+<br>
+
+3着：モーター・直近の調子・AI評価・展開を統合して優先順位を算出。
+
+1号艇は2着・3着に入れない。
+
+</div>
+
+</div>
+
+<div class="pickBox">
+
+<div class="pickTitle">🎯 イン逃げ65%以上 → AI買い目パターン2</div>
+
+<div class="betHeader">
+
+<div>1着 → 2着</div>
+
+<div>3着候補・確率</div>
+
+</div>
+
+<div class="betRow">
+
+<div class="bet2">
+
+<span class="bet2Number">1</span>
+
+<span>→</span>
+
+<span class="bet2Number">${secondNames||"-"}</span>
+
+</div>
+
+<div>
+
+${renderThirdCandidates(
+
+p2Third,
+
+p2.picked,
+
+1,
+
+forced6?.boat
+
+)}
+
+</div>
+
+</div>
+
+<div class="patternNote">
+
+1着：1号艇固定<br>
+
+2着：AI評価4位・5位を基本候補。
+
+AI評価が平均より20ポイント以上低く、かつモーター2連対率30%未満の艇は2着候補から除外。
+
+2着候補が1艇の場合は、その艇を3着候補から重複させない。
+
+3着：AI評価上位から選択。
+
+1号艇は2着・3着に入れない。
+
+</div>
+
+</div>
+
+`;
+
+if(forced6){
+
+html+=`
+
+<div class="strategy">
+
+⭐ ${forced6.boat}号艇はAI評価${forced6.score.toFixed(1)}pt・モーター2連対率${motorRate(forced6.boat).toFixed(1)}%。
+
+AI80pt以上＋モーター35%以上の特別条件を満たすため、
+
+パターン1・パターン2の両方で3着候補へ無条件採用。
+
+</div>`
+
+}
+
+$("bettingPatterns").innerHTML=html;
+
+currentBets={
+
+pattern1:{
+
+first:1,
+
+second:[bestSecond],
+
+third:p1Third
+
+},
+
+pattern2:{
+
+first:1,
+
+second:p2.picked,
+
+third:p2Third
+
+}
+
+}
 
 }
 
@@ -3873,6 +4153,180 @@ ${x.boat===1?
 }).join("")}
 
 </table>`
+
+}
+
+function runAnalysis(){
+
+if(racers.length!==6){
+
+alert("先に出走表を取得してください");
+
+return
+
+}
+
+$("message").innerHTML='<span class="loading">🤖 AI解析中...</span>';
+
+(async()=>{
+
+try{
+
+for(let b=1;b<=6;b++)
+
+manualCourses[b]=+$("course"+b).value;
+
+for(let b=1;b<=6;b++){
+
+if(
+
+!Number.isInteger(manualCourses[b])||
+
+manualCourses[b]<1||
+
+manualCourses[b]>6
+
+){
+
+manualCourses[b]=b;
+
+$("course"+b).value=String(b)
+
+}
+
+}
+
+$("message").innerHTML='<span class="loading">🤖 同じコースを走った過去15走を検索中...</span>';
+
+await loadHistory();
+
+renderRace();
+
+let o=overview(),
+
+r=ranking();
+
+renderRanking(r);
+
+renderAttack(o);
+
+renderExclusions(r);
+
+$("analysisCard").style.display="block";
+
+let outlook=overallEscapeProbability();
+
+/* 今回変更：65%以上の場合のみパターン1・2を表示 */
+
+renderPatternBets(r,outlook);
+
+let counts=racers.map(x=>{
+
+let no=getRacerNumber(x),
+
+c=course(num(x.entry_number));
+
+return historyData[no]?.boats?.[c]?.length||0
+
+});
+
+let wi=windInfo();
+
+$("message").innerHTML=
+
+`<span class="success">
+
+✅ AI解析完了<br>
+
+🔥 主攻め：${typeName(dominant(o))}<br>
+
+📈 今回と同コースの過去15走：${counts.join(" / ")}走取得<br>
+
+🏟️ 場特性：${esc(venueTrait().name)}を評価<br>
+
+🌬️ 風情報：${esc(wi.label)} ${wi.speed.toFixed(1)}m<br>
+
+🎯 風補正：${
+
+wi.mode==="head"&&wi.speed>=3?
+
+"向かい風3m以上 → アウトコース・まくりを上方補正":
+
+wi.mode==="tail"&&wi.speed>=3?
+
+"追い風3m以上 → インコース・2・3コース差しを上方補正":
+
+wi.mode==="head"?
+
+"向かい風 → アウトコース・まくり方向を補正":
+
+wi.mode==="tail"?
+
+"追い風 → インコース・差し方向を補正":
+
+"風向データなし → 風補正なし"
+
+}<br>
+
+📊 全体見通し：イン逃げ ${outlook.escape.toFixed(1)}% / イン逃げしない ${outlook.nonEscape.toFixed(1)}%<br>
+
+📈 直近15走の調子：AIスコアへ反映<br>
+
+🛥️ 進入コース：AI評価へ反映<br>
+
+🎯 過去15走：全着順の決まり手を表示<br>
+
+📊 1号艇決まり手集計：母数15走。1着＋逃げ＝逃げ率、1着以外＋まくり＝まくられ率、1着以外＋差し＝差され率、1着以外＋まくり差し＝まくり差され率<br>
+
+🛡️ まくられ率・差され率・まくり差され率：1号艇のイン逃げ評価へ反映<br>
+
+✂️ 3着から切候補：0〜複数艇、無理に設定なし<br>
+
+🟡 展開復活：根拠がある場合のみ3着まで<br>
+
+⬆️ まくり後ろ：条件を満たせば2着まで昇格<br>
+
+🎯 AI評価：全国勝率・当地勝率・モーター・ST・展示・進入・決まり手・同コース過去15走・直近15走・風向・風速・場特性・展開連動を総合評価
+
+${outlook.escape>=65?
+
+"<br>🎯 イン逃げ65%以上：買い目パターン1・パターン2を生成":
+
+""}
+
+</span>`
+
+}catch(e){
+
+console.error(e);
+
+$("message").innerHTML=
+
+'<span class="error">❌ AI解析失敗<br>'+
+
+esc(e.message).replace(/\n/g,"<br>")+
+
+'</span>'
+
+}
+
+})()
+
+}
+
+function rank(n){
+
+return{
+
+1:"A1",
+
+2:"A2",
+
+3:"B1",
+
+4:"B2"
+
+}[num(n)]||"-"
 
 }
 
