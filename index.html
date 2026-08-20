@@ -840,9 +840,7 @@ normalized==="makisashi"||
 
 normalized==="makuri-sashi"
 
-)
-
-return"まくり差し";
+)return"まくり差し";
 
 if(normalized==="5"||normalized==="抜き"||normalized==="nuki")return"抜き";
 
@@ -1130,113 +1128,41 @@ return x
 
    ========================= */
 
-function getDecisionValue(x,result,race){
-
-let technique=
-
-x?.technique_number??
-
-x?.techniqueNumber??
-
-x?.technique_no??
-
-x?.techniqueNo??
-
-x?.decision_number??
-
-x?.decisionNumber??
-
-x?.decision_no??
-
-x?.decisionNo??
-
-x?.decision??
-
-x?.winning_method_number??
-
-x?.winningMethodNumber??
-
-x?.winning_method??
-
-x?.winningMethod??
-
-x?.winning_technique??
-
-x?.winningTechnique??
-
-x?.finish_technique??
-
-x?.finishTechnique;
-
 /*
 
-  APIによって決まり手が
+  今回の最重要修正：
 
-  - 数値
+  決まり手は「1着艇本人のデータ」にだけ存在するAPI構造だけでなく、
 
-  - 日本語
+  レース結果側にレース単位で格納されている決まり手も取得する。
 
-  - オブジェクト
+  そのため、
 
-  のいずれでも来るため、そのまま保持する。
+  - 1着
+
+  - 2着
+
+  - 3着
+
+  - 4着
+
+  - 5着
+
+  - 6着
+
+  のどの艇の過去走であっても、
+
+  そのレースに決まり手データが存在すれば同じ決まり手を表示する。
+
+  APIに決まり手そのものが存在しない場合のみ null → 「なし」。
 
 */
 
-if(technique&&typeof technique==="object"){
+function decisionFromValue(value){
 
-technique=
+if(value==null||value==="")return null;
 
-technique.number??
-
-technique.id??
-
-technique.code??
-
-technique.value??
-
-technique.name??
-
-technique.label??
-
-""
-
-}
-
-if(technique!=null&&technique!=="")return technique;
-
-const sources=[
-
-result,
-
-race,
-
-result?.decision,
-
-result?.decisions,
-
-result?.technique,
-
-result?.techniques,
-
-result?.winning_methods,
-
-result?.winningMethods
-
-];
-
-for(const source of sources){
-
-if(!source)continue;
-
-if(typeof source==="object"&&!Array.isArray(source)){
-
-let value=
-
-source?.[String(getResultRacerNumber(x))]??
-
-source?.[getResultRacerNumber(x)];
-
-if(value&&typeof value==="object"){
+if(typeof value==="object"){
 
 value=
 
@@ -1252,15 +1178,333 @@ value.name??
 
 value.label??
 
+value.technique??
+
+value.technique_name??
+
+value.decision??
+
+value.decision_name??
+
 ""
 
 }
 
-if(value!=null&&value!=="")return value
+if(value==null||value==="")return null;
+
+let d=decision(value);
+
+return d&&d!=="-"?d:null
+
+}
+
+function getDecisionValue(x,result,race){
+
+/* ① まず各選手データ自身に紐づく決まり手 */
+
+const directKeys=[
+
+"technique_number",
+
+"techniqueNumber",
+
+"technique_no",
+
+"techniqueNo",
+
+"decision_number",
+
+"decisionNumber",
+
+"decision_no",
+
+"decisionNo",
+
+"decision",
+
+"decision_name",
+
+"decisionName",
+
+"winning_method_number",
+
+"winningMethodNumber",
+
+"winning_method",
+
+"winningMethod",
+
+"winning_technique",
+
+"winningTechnique",
+
+"finish_technique",
+
+"finishTechnique",
+
+"finish_method",
+
+"finishMethod",
+
+"result_decision",
+
+"resultDecision"
+
+];
+
+for(const key of directKeys){
+
+let value=x?.[key];
+
+let d=decisionFromValue(value);
+
+if(d)return d
+
+}
+
+/* ② 各選手番号をキーにした決まり手 */
+
+const no=getResultRacerNumber(x);
+
+const keyedSources=[
+
+result?.decision,
+
+result?.decisions,
+
+result?.technique,
+
+result?.techniques,
+
+result?.winning_methods,
+
+result?.winningMethods,
+
+result?.decision_rates,
+
+race?.decision,
+
+race?.decisions,
+
+race?.technique,
+
+race?.techniques,
+
+race?.winning_methods,
+
+race?.winningMethods
+
+];
+
+for(const source of keyedSources){
+
+if(!source)continue;
+
+if(typeof source==="object"&&!Array.isArray(source)){
+
+const values=[
+
+source?.[String(no)],
+
+source?.[no],
+
+source?.racers?.[String(no)],
+
+source?.racers?.[no],
+
+source?.entries?.[String(no)],
+
+source?.entries?.[no],
+
+source?.players?.[String(no)],
+
+source?.players?.[no],
+
+source?.boats?.[String(no)],
+
+source?.boats?.[no]
+
+];
+
+for(const value of values){
+
+let d=decisionFromValue(value);
+
+if(d)return d
 
 }
 
 }
+
+}
+
+/* ③ レース結果・レース本体にある「レース単位」の決まり手 */
+
+const raceLevelKeys=[
+
+"technique_number",
+
+"techniqueNumber",
+
+"technique_no",
+
+"techniqueNo",
+
+"decision_number",
+
+"decisionNumber",
+
+"decision_no",
+
+"decisionNo",
+
+"decision",
+
+"decision_name",
+
+"decisionName",
+
+"winning_method_number",
+
+"winningMethodNumber",
+
+"winning_method",
+
+"winningMethod",
+
+"winning_technique",
+
+"winningTechnique",
+
+"finish_technique",
+
+"finishTechnique",
+
+"finish_method",
+
+"finishMethod",
+
+"result_decision",
+
+"resultDecision"
+
+];
+
+const raceLevelSources=[
+
+result,
+
+race,
+
+result?.result,
+
+race?.result
+
+];
+
+for(const source of raceLevelSources){
+
+if(!source||typeof source!=="object")continue;
+
+for(const key of raceLevelKeys){
+
+let value=source?.[key];
+
+if(value&&typeof value==="object"&&!Array.isArray(value)){
+
+/*
+
+  決まり手オブジェクトの場合はその値を取得。
+
+  選手別マップの場合は現在の艇番号を優先。
+
+*/
+
+let mapped=
+
+value?.[String(no)]??
+
+value?.[no]??
+
+value?.name??
+
+value?.label??
+
+value?.value??
+
+value?.code??
+
+value?.number??
+
+value?.id;
+
+if(mapped!=null&&mapped!==""){
+
+let d=decisionFromValue(mapped);
+
+if(d)return d
+
+}
+
+}else{
+
+let d=decisionFromValue(value);
+
+if(d)return d
+
+}
+
+}
+
+}
+
+/* ④ よくあるAPI別フィールド */
+
+const alternativeSources=[
+
+result?.winning,
+
+result?.winner,
+
+result?.finish,
+
+result?.result_data,
+
+result?.resultData,
+
+race?.winning,
+
+race?.winner,
+
+race?.finish,
+
+race?.result_data,
+
+race?.resultData
+
+];
+
+for(const source of alternativeSources){
+
+if(!source)continue;
+
+if(typeof source==="object"&&!Array.isArray(source)){
+
+for(const key of raceLevelKeys){
+
+let value=source?.[key];
+
+let d=decisionFromValue(value);
+
+if(d)return d
+
+}
+
+}
+
+}
+
+/* APIに決まり手データが存在しない */
 
 return null
 
@@ -1328,17 +1572,19 @@ if(!targets[no]||c!==targets[no].course)return;
 
 if(targets[no].boats[c].length>=HISTORY_RACES)return;
 
-let technique=getDecisionValue(x,result,race);
-
 /*
 
-  2着・3着・4着以下でも
+  ここが重要。
 
-  API上に決まり手データがあれば保存。
+  着順を条件に決まり手を取得しない。
 
-  データが存在しない場合だけ「-」→表示時に「なし」。
+  1着だけでなく、対象選手が2着・3着・4着・5着・6着でも
+
+  そのレースの決まり手を取得して保存する。
 
 */
+
+let technique=getDecisionValue(x,result,race);
 
 targets[no].boats[c].push({
 
@@ -1426,9 +1672,7 @@ async function loadHistory(){
 
 let key=
 
-"bh-history-course-v15-"+
-
-today().ymd+"-"+$("venue").value+"-"+
+"bh-history-course-v15-"+today().ymd+"-"+$("venue").value+"-"+
 
 racers.map(r=>getRacerNumber(r)).join("-")+"-"+
 
@@ -2386,7 +2630,9 @@ let x=a.find(z=>z.boat===boat);
 
 if(!x)return{type:"normal",diff:0,average:0};
 
-let avg=scoreAverage(a),diff=x.score-avg;
+let avg=scoreAverage(a),
+
+diff=x.score-avg;
 
 let low=a.filter(z=>z.score-avg<=-22).sort((p,q)=>p.score-q.score);
 
@@ -2612,7 +2858,13 @@ return{revival:false,two:false,reason:""}
 
 function thirdCandidates(a,secondBoat,rankings,type,firstBoat){
 
-let o=overview(),candidates=[],mainAttacker=bestAttackBoat(type),avg=scoreAverage(rankings);
+let o=overview(),
+
+candidates=[],
+
+mainAttacker=bestAttackBoat(type),
+
+avg=scoreAverage(rankings);
 
 for(let b=1;b<=6;b++){
 
@@ -2720,7 +2972,17 @@ if(!rv.revival)continue;
 
 candidates.push({
 
-boat:b,raw:raw+20,revival:true,thirdOnly:false,two:false,reason:rv.reason
+boat:b,
+
+raw:raw+20,
+
+revival:true,
+
+thirdOnly:false,
+
+two:false,
+
+reason:rv.reason
 
 });
 
