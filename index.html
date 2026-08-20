@@ -186,9 +186,7 @@ th{color:#d4af37}
 
 .betEscape{color:#ff9500}.betSashi{color:#4cd964}.betMaki{color:#ff5555}.betMakiSashi{color:#58a6ff}
 
-.recommendPick{opacity:.52}
-
-.recommendTitle{color:#888!important}
+.recommendPick{opacity:.52}.recommendTitle{color:#888!important}
 
 @media(max-width:600px){
 
@@ -332,7 +330,7 @@ th{color:#d4af37}
 
 <div id="attack"></div>
 
-<h3>🚫 除外候補</h3>
+<h3>✂️ 3着から切り候補</h3>
 
 <div id="exclusions"></div>
 
@@ -378,9 +376,15 @@ AI買い目確率合計<br>
 
 ※2コースまくりは条件を満たす場合のみ使用。<br>
 
-※完全除外は最大1艇。<br>
+※「3着から切り候補」は0〜複数艇。無理に設定しない。<br>
 
-※🟡展開復活は明確な展開根拠がある場合のみ3着まで。2連単の1・2着には使用しない。
+※まくり艇の後ろは展開加点。まくり買い目がある場合は、その後ろからまくり差し候補を選択。<br>
+
+※まくり艇の直後など明確な展開根拠がある場合、「3着まで」を「2着まで」に昇格。<br>
+
+※まくられる艇は2着・3着残りを展開から再評価。<br>
+
+※展開復活は明確な展開根拠がある場合のみ。
 
 </div>
 
@@ -472,11 +476,7 @@ return Number.isFinite(x)?x:0;
 
 };
 
-const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({
-
-"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-
-}[m]));
+const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 
 function course(b){return Number(manualCourses[b]||b)}
 
@@ -824,27 +824,11 @@ function rateValue(r,keys){
 
 let objects=[
 
-r,
+r,r?.decision_rates,r?.decisionRate,r?.decisions,r?.win_by,
 
-r?.decision_rates,
+r?.winning_methods,r?.stats,r?.statistics,r?.statistics?.decision,
 
-r?.decisionRate,
-
-r?.decisions,
-
-r?.win_by,
-
-r?.winning_methods,
-
-r?.stats,
-
-r?.statistics,
-
-r?.statistics?.decision,
-
-r?.decision,
-
-r?.winning_method
+r?.decision,r?.winning_method
 
 ];
 
@@ -860,11 +844,7 @@ if(typeof key==="function"){
 
 try{v=key(r)}catch(e){v=null}
 
-}else{
-
-v=obj?.[key];
-
-}
+}else v=obj?.[key];
 
 let n=cleanRate(v);
 
@@ -890,13 +870,7 @@ if(!valid.length)return null;
 
 let total=valid.length;
 
-let counts={
-
-escape:0,sashi:0,maki:0,makiSashi:0,
-
-makare:0,sasare:0,nigashi:0
-
-};
+let counts={escape:0,sashi:0,maki:0,makiSashi:0};
 
 valid.forEach(x=>{
 
@@ -946,13 +920,11 @@ escape:rateValue(r,[
 
 "escape_rate","nige_rate","win_by_escape_rate","nige_percent",
 
-"nige_percent_rate","escape_percent","escapeRate","nigeRate","逃げ率"
-
-].concat([
+"nige_percent_rate","escape_percent","escapeRate","nigeRate","逃げ率",
 
 ()=>d?.escape_rate,()=>d?.nige_rate,()=>d?.escape,()=>d?.nige
 
-])),
+]),
 
 nigashi:rateValue(r,[
 
@@ -960,35 +932,33 @@ nigashi:rateValue(r,[
 
 "escape_failed_rate","escape_failure_rate","lose_escape_rate",
 
-"nige_failed_rate","nige_failure_rate","逃し率"
-
-].concat([
+"nige_failed_rate","nige_failure_rate","逃し率",
 
 ()=>d?.nigashi_rate,()=>d?.nigashi,()=>d?.escape_failed_rate,
 
-()=>d?.escape_failure_rate,()=>d?.nige_failed_rate,()=>d?.nige_failure_rate
+()=>d?.escape_failure_rate,()=>d?.nige_failed_rate
 
-])),
+]),
 
 sashi:rateValue(r,[
 
 "sashi_rate","win_by_sashi_rate","sashi_percent",
 
-"sashi_percent_rate","sashiRate","差し率"
+"sashi_percent_rate","sashiRate","差し率",
 
-].concat([()=>d?.sashi_rate,()=>d?.sashi])),
+()=>d?.sashi_rate,()=>d?.sashi
+
+]),
 
 maki:rateValue(r,[
 
 "maki_rate","makuri_rate","win_by_maki_rate","makuri_percent",
 
-"maki_percent","makuri_percent_rate","makiRate","makuriRate","まくり率"
-
-].concat([
+"maki_percent","makuri_percent_rate","makiRate","makuriRate","まくり率",
 
 ()=>d?.maki_rate,()=>d?.makuri_rate,()=>d?.maki,()=>d?.makuri
 
-])),
+]),
 
 makiSashi:rateValue(r,[
 
@@ -996,15 +966,13 @@ makiSashi:rateValue(r,[
 
 "makuri_sashi_rate","maki_sashi_percent","makurisashi_percent",
 
-"makiSashiRate","makuriSashiRate","まくり差し率"
-
-].concat([
+"makiSashiRate","makuriSashiRate","まくり差し率",
 
 ()=>d?.maki_sashi_rate,()=>d?.makurisashi_rate,
 
 ()=>d?.maki_sashi,()=>d?.makurisashi
 
-])),
+]),
 
 makare:rateValue(r,[
 
@@ -1012,27 +980,23 @@ makare:rateValue(r,[
 
 "being_makuri_rate","lose_by_makuri_rate","makare_percent",
 
-"makurare_percent","まくられ率"
-
-].concat([
+"makurare_percent","まくられ率",
 
 ()=>d?.makare_rate,()=>d?.makurare_rate,
 
 ()=>d?.makare,()=>d?.makurare
 
-])),
+]),
 
 sasare:rateValue(r,[
 
 "sasare_rate","be_sashi_rate","being_sashi_rate",
 
-"lose_by_sashi_rate","sasare_percent","差され率"
-
-].concat([
+"lose_by_sashi_rate","sasare_percent","差され率",
 
 ()=>d?.sasare_rate,()=>d?.sasare,()=>d?.be_sashi_rate
 
-]))
+])
 
 };
 
@@ -1061,8 +1025,6 @@ v.nigashiRate=v.nigashi;
 return v;
 
 }
-
-/* ================= 決まり手傾向 ================= */
 
 function decisionTrendHTML(b,d){
 
@@ -1380,8 +1342,6 @@ return s.first*3.8+s.second*2.6+s.third*1.6+s.rate*.2;
 
 }
 
-/* ================= 過去20走表示 ================= */
-
 function renderHistory(b){
 
 let a=history(b),s=hstats(b),c=course(b);
@@ -1437,8 +1397,6 @@ ${x.place}着
 </div>`;
 
 }
-
-/* ================= 級別 ================= */
 
 function rank(n){
 
@@ -1940,13 +1898,7 @@ score:score(i+1)
 
 }
 
-/* ================= 除外判定 ================= */
-
-function scoreAverage(a){
-
-return a.reduce((s,x)=>s+x.score,0)/a.length;
-
-}
+/* ================= 3着から切り候補 ================= */
 
 function classification(boat,a){
 
@@ -1956,53 +1908,255 @@ if(!x)return{type:"normal",diff:0,average:0};
 
 let avg=scoreAverage(a);
 
-let low=a.filter(z=>z.score-avg<=-22).sort((x,y)=>x.score-y.score);
+let diff=x.score-avg;
 
-if(diff=x.score-avg,diff<=-22&&low.length&&low[0].boat===boat)
+/*
 
-return{type:"exclude",diff,average:avg};
+完全除外は廃止。
 
-if(diff<-12)return{type:"third",diff,average:avg};
+AI評価が低い艇を「3着から切り候補」とする。
+
+ただし明確な展開根拠があれば切らず、3着候補として再評価する。
+
+*/
+
+if(diff<=-22)return{type:"cut",diff,average:avg};
+
+if(diff<=-12)return{type:"third",diff,average:avg};
 
 return{type:"normal",diff,average:avg};
 
 }
 
-function isExcluded(b,a){return classification(b,a).type==="exclude"}
+function isExcluded(b,a){
 
-function isThirdOnly(b,a){return classification(b,a).type==="third"}
+return false;
 
-/* ================= 展開復活 ================= */
+}
+
+function isCutCandidate(b,a){
+
+return classification(b,a).type==="cut";
+
+}
+
+function isThirdOnly(b,a){
+
+return classification(b,a).type==="third";
+
+}
+
+/* ================= 展開分析 ================= */
+
+function attackBoats(type){
+
+let result=[];
+
+for(let b=1;b<=6;b++){
+
+let r=racer(b),d=decisions(r),c=course(b),v=suitability(b,type);
+
+if(type==="maki"){
+
+if(c===3||c===4)v+=22;
+
+if(d.maki>=15)v+=10;
+
+}
+
+if(type==="makiSashi"){
+
+if(c===3||c===4)v+=20;
+
+if(d.makiSashi>=10)v+=10;
+
+}
+
+if(type==="sashi"){
+
+if(c===2)v+=20;
+
+if(d.sashi>=15)v+=10;
+
+}
+
+v+=recentForm(b).score*.7;
+
+v+=strongMotor(b)?6:0;
+
+result.push({boat:b,value:v});
+
+}
+
+return result.sort((a,b)=>b.value-a.value);
+
+}
+
+function bestAttackBoat(type){
+
+let a=attackBoats(type);
+
+return a.length?a[0].boat:1;
+
+}
+
+/*
+
+まくり艇の後ろ。
+
+「まくる艇の直後のコース」を最優先し、
+
+その艇をまくり差し展開候補として加点する。
+
+*/
+
+function makuriRearBoats(attacker){
+
+let ac=course(attacker);
+
+let list=[];
+
+for(let b=1;b<=6;b++){
+
+if(b===attacker)continue;
+
+let c=course(b);
+
+if(c>ac){
+
+let distance=c-ac;
+
+let add=distance===1?18:distance===2?10:5;
+
+if(c<=5)add+=strongMotor(b)?5:0;
+
+list.push({boat:b,add});
+
+}
+
+}
+
+return list.sort((a,b)=>b.add-a.add);
+
+}
+
+/*
+
+まくられる艇の残り目評価。
+
+1号艇などがまくられるケースでも、
+
+AI・同コース成績・機力・位置関係を再評価する。
+
+*/
+
+function escapeSurvivalScore(b,o){
+
+let r=racer(b);
+
+if(!r)return 0;
+
+let d=decisions(r),hs=hstats(b),f=recentForm(b);
+
+let v=0;
+
+if(b===1){
+
+v+=d.escape*.7;
+
+v-=d.makare*.2;
+
+v-=d.sasare*.15;
+
+}
+
+if(hs.count>=5)v+=hs.rate*.18;
+
+v+=f.score*2;
+
+if(strongMotor(b))v+=6;
+
+if(o.escape<50&&b===1)v+=4;
+
+return v;
+
+}
+
+/*
+
+切り候補でも、展開上3着に残る根拠が強ければ復活。
+
+「完全除外」はしない。
+
+*/
 
 function attackRevival(b,rankings,o){
 
 let c=classification(b,rankings);
 
-if(c.type!=="exclude"&&c.type!=="third")
+if(c.type!=="cut"&&c.type!=="third"){
 
 return{revival:false,two:false,reason:""};
+
+}
 
 let main=dominant(o);
 
-let attacker=bestAttackBoat(main);
+let attackers=attackBoats(main);
 
-if((main==="maki"||main==="makiSashi")&&attacker!==b){
+for(const at of attackers){
+
+let attacker=at.boat;
+
+if(attacker===b)continue;
 
 let ac=course(attacker),bc=course(b);
 
-if(bc>ac){
+let reasons=[],evidence=0;
 
-let rawHistory=hstats(b),form=recentForm(b),motor=strongMotor(b),reasonParts=[];
+if((main==="maki"||main==="makiSashi")&&bc>ac){
 
-if(bc===ac+1)reasonParts.push("攻め艇の直後のコース");
+evidence++;
 
-if(rawHistory.count>=5&&rawHistory.rate>=40)reasonParts.push("同コース3連対率"+rawHistory.rate.toFixed(1)+"%");
+reasons.push(`${attacker}号艇の${typeName(main)}後ろ`);
 
-if(form.score>=3)reasonParts.push("直近20走好調");
+}
 
-if(motor)reasonParts.push("モーター2連率35%以上");
+if(main==="sashi"&&bc>ac){
 
-if(reasonParts.length>=2){
+evidence++;
+
+reasons.push(`${attacker}号艇の差し展開後ろ`);
+
+}
+
+let hs=hstats(b);
+
+if(hs.count>=5&&hs.rate>=40){
+
+evidence++;
+
+reasons.push(`同コース3連対率${hs.rate.toFixed(1)}%`);
+
+}
+
+if(recentForm(b).score>=3){
+
+evidence++;
+
+reasons.push("直近20走好調");
+
+}
+
+if(strongMotor(b)){
+
+evidence++;
+
+reasons.push("モーター2連率35%以上");
+
+}
+
+if(evidence>=2){
 
 return{
 
@@ -2010,37 +2164,9 @@ revival:true,
 
 two:false,
 
-reason:`${attacker}号艇の${typeName(main)}展開。${reasonParts.join("・")}の根拠があるため3着まで残す`
+reason:`${reasons.join("・")}のため3着まで残す`
 
 };
-
-}
-
-}
-
-}
-
-if(main==="sashi"){
-
-let attacker=bestAttackBoat(main);
-
-if(attacker!==b&&course(b)>course(attacker)){
-
-let hs=hstats(b),f=recentForm(b);
-
-if(course(b)===course(attacker)+1&&((hs.count>=5&&hs.rate>=40)||f.score>=3||strongMotor(b))){
-
-return{
-
-revival:true,
-
-two:false,
-
-reason:`${attacker}号艇の差し展開後ろ。コース位置と能力・機力の根拠から3着まで残す`
-
-};
-
-}
 
 }
 
@@ -2050,23 +2176,87 @@ return{revival:false,two:false,reason:""};
 
 }
 
-/* ================= 攻め艇 ================= */
+/*
 
-function bestAttackBoat(type){
+前艇がまくりの場合は、その後ろの艇を
 
-let best=1,val=-Infinity;
+「3着まで」から「2着まで」に昇格可能とする。
 
-for(let b=1;b<=6;b++){
+*/
 
-let x=suitability(b,type),f=recentForm(b);
+function makuriRearPromotion(b,rankings,type){
 
-x+=f.score*.5;
+if(type!=="maki"&&type!=="makiSashi")return null;
 
-if(x>val){val=x;best=b}
+let attackers=attackBoats("maki");
+
+let attacker=attackers[0]?.boat;
+
+if(!attacker||attacker===b)return null;
+
+let ac=course(attacker),bc=course(b);
+
+if(bc<=ac)return null;
+
+let distance=bc-ac;
+
+let hs=hstats(b);
+
+let f=recentForm(b);
+
+let motor=strongMotor(b);
+
+let evidence=0;
+
+let reasons=[];
+
+if(distance===1){
+
+evidence++;
+
+reasons.push("まくり艇の直後");
 
 }
 
-return best;
+if(hs.count>=5&&hs.rate>=40){
+
+evidence++;
+
+reasons.push("同コース3連対率");
+
+}
+
+if(f.score>=3){
+
+evidence++;
+
+reasons.push("直近20走好調");
+
+}
+
+if(motor){
+
+evidence++;
+
+reasons.push("機力");
+
+}
+
+if(evidence>=2){
+
+return{
+
+promoted:true,
+
+attacker,
+
+reason:`${attacker}号艇のまくり後ろ。${reasons.join("・")}を評価し${b}号艇を2着まで昇格`
+
+};
+
+}
+
+return null;
 
 }
 
@@ -2074,53 +2264,145 @@ return best;
 
 function thirdCandidates(a,secondBoat,rankings,type){
 
-let o=overview(),candidates=[],mainAttacker=bestAttackBoat(type);
+let o=overview();
+
+let candidates=[];
+
+let mainAttacker=bestAttackBoat(type);
+
+let avg=scoreAverage(rankings);
 
 for(let b=1;b<=6;b++){
 
 if(b===secondBoat)continue;
 
-let c=classification(b,rankings),f=recentForm(b),hs=hstats(b);
+/* 2連単の1・2着艇は3着候補から除外 */
+
+if(a===b||secondBoat===b)continue;
+
+let c=classification(b,rankings);
+
+let f=recentForm(b);
+
+let hs=hstats(b);
 
 let raw=rankings.find(x=>x.boat===b)?.score||0;
 
 let reasons=[],evidence=0;
 
-let avg=scoreAverage(rankings);
+/* 切り候補 */
 
-if(raw>=avg-8){evidence++;reasons.push("AI評価")}
+if(c.type==="cut"){
 
-if(suitability(b,type)>=15){evidence++;reasons.push("展開適性")}
+let rv=attackRevival(b,rankings,o);
 
-if((type==="maki"||type==="makiSashi")&&course(b)>course(mainAttacker)){
+if(!rv.revival)continue;
 
-evidence++;
+evidence+=2;
 
-reasons.push("攻め艇後ろ");
+reasons.push(rv.reason);
 
-raw+=course(b)===course(mainAttacker)+1?15:7;
+raw+=18;
 
 }
 
+/* 3着まで評価 */
+
+if(c.type==="third"){
+
+evidence++;
+
+reasons.push("AI評価");
+
+raw+=5;
+
+}
+
+/* 通常艇 */
+
+if(c.type==="normal"){
+
+if(raw>=avg-8){
+
+evidence++;
+
+reasons.push("AI評価");
+
+}
+
+if(suitability(b,type)>=15){
+
+evidence++;
+
+reasons.push("展開適性");
+
+}
+
+}
+
+/* まくり艇の後ろを加点 */
+
+if((type==="maki"||type==="makiSashi")&&course(b)>course(mainAttacker)){
+
+let rear=course(b)-course(mainAttacker);
+
+raw+=rear===1?15:rear===2?8:4;
+
+evidence++;
+
+reasons.push("まくり艇後ろ");
+
+}
+
+/* まくり艇後ろのまくり差し候補 */
+
+if(type==="maki"||type==="makiSashi"){
+
+let rear=makuriRearBoats(mainAttacker);
+
+if(rear.some(x=>x.boat===b)){
+
+raw+=20;
+
+evidence++;
+
+reasons.push("まくり後ろのまくり差し候補");
+
+}
+
+}
+
+/* 差し展開後ろ */
+
 if(type==="sashi"&&course(b)>course(mainAttacker)){
+
+raw+=8;
 
 evidence++;
 
 reasons.push("差し展開後ろ");
 
-raw+=7;
-
 }
 
-if(b===1&&o.escape>=50){
+/* 1号艇残り */
 
-evidence++;
+if(b===1){
 
-reasons.push("イン残り");
+let survival=escapeSurvivalScore(b,o);
+
+if(survival>10){
 
 raw+=12;
 
+evidence++;
+
+reasons.push("まくられ後の残り評価");
+
 }
+
+}
+
+/* 同コース */
 
 if(hs.count>=5&&hs.rate>=40){
 
@@ -2132,6 +2414,8 @@ raw+=hscore(b)*.8;
 
 }
 
+/* 直近 */
+
 if(f.score>=3){
 
 evidence++;
@@ -2141,6 +2425,8 @@ reasons.push("直近20走好調");
 raw+=f.score*1.2;
 
 }
+
+/* モーター */
 
 if(strongMotor(b)){
 
@@ -2152,49 +2438,45 @@ raw+=8;
 
 }
 
+/* まくり後ろの2着昇格対象は3着候補でも優先 */
+
+let promoted=makuriRearPromotion(b,rankings,type);
+
+if(promoted){
+
+raw+=14;
+
+evidence+=2;
+
+reasons.push(promoted.reason);
+
+}
+
 if(evidence<2)continue;
 
-if(c.type==="exclude"){
-
-let rv=attackRevival(b,rankings,o);
-
-if(!rv.revival)continue;
-
 candidates.push({
 
-boat:b,raw:raw+20,revival:true,thirdOnly:false,reason:rv.reason
+boat:b,
 
-});
+raw,
 
-continue;
+revival:c.type==="cut",
 
-}
+thirdOnly:c.type==="third",
 
-if(c.type==="third"){
+promoted:!!promoted,
 
-candidates.push({
-
-boat:b,raw:raw+5,revival:false,thirdOnly:true,
-
-reason:`${reasons.join("・")}の根拠あり`
-
-});
-
-continue;
-
-}
-
-candidates.push({
-
-boat:b,raw,revival:false,thirdOnly:false,
-
-reason:`${reasons.join("・")}の根拠あり`
+reason:reasons.join("・")
 
 });
 
 }
 
-return candidates.sort((a,b)=>b.raw-a.raw).slice(0,3);
+return candidates
+
+.sort((a,b)=>b.raw-a.raw)
+
+.slice(0,4);
 
 }
 
@@ -2210,9 +2492,37 @@ let B=rankings.find(x=>x.boat===b);
 
 if(!A||!B)return null;
 
-if(isExcluded(a,rankings)||isExcluded(b,rankings))return null;
+/*
 
-if(isThirdOnly(a,rankings)||isThirdOnly(b,rankings))return null;
+完全除外は廃止。
+
+ただし「3着から切り候補」は2連単の1・2着からは
+
+自動的に落とす。
+
+*/
+
+if(isCutCandidate(a,rankings)||isCutCandidate(b,rankings)){
+
+/*
+
+まくり艇後ろの昇格条件を満たした艇のみ、
+
+3着から2着まで昇格可能。
+
+*/
+
+let promotion=makuriRearPromotion(a,rankings,type);
+
+if(!promotion||promotion.boat!==b){
+
+let promotionA=makuriRearPromotion(a,rankings,type);
+
+if(!promotionA||promotionA.boat!==a)return null;
+
+}
+
+}
 
 let o=overview();
 
@@ -2262,7 +2572,7 @@ if(o.escape<42)raw+=10;
 
 if(type==="makiSashi"&&course(a)===2)return null;
 
-/* 2コースまくりは条件付き */
+/* 2コースまくり条件付き */
 
 if(type==="maki"&&course(a)===2){
 
@@ -2274,7 +2584,7 @@ raw+=rr.maki*.5;
 
 }
 
-/* 1号艇の2着残りを重視 */
+/* 1号艇の2着残り */
 
 if(b===1){
 
@@ -2282,9 +2592,25 @@ raw+=18;
 
 if(o.escape>=50)raw+=10;
 
+raw+=escapeSurvivalScore(1,o)*.5;
+
 }
 
-/* 1号艇の3着残りは後段の3着候補で重視 */
+/* まくり艇後ろの2着昇格 */
+
+let promotion=makuriRearPromotion(b,rankings,type);
+
+if(promotion&&promotion.promoted){
+
+raw+=22;
+
+}
+
+if((type==="maki"||type==="makiSashi")&&course(b)>course(a)){
+
+raw+=12;
+
+}
 
 raw+=hscore(a)*1.3;
 
@@ -2318,7 +2644,17 @@ type==="maki"?vt.maki:
 
 vt.makiSashi;
 
-return{key:`${a}-${b}`,a,b,raw:Math.max(.01,raw),type};
+return{
+
+key:`${a}-${b}`,
+
+a,b,
+
+raw:Math.max(.01,raw),
+
+type
+
+};
 
 }
 
@@ -2362,13 +2698,7 @@ if(!used.has(x.key))all.push(x);
 
 return all
 
-.sort((a,b)=>{
-
-let ai=(a.raw||0),bi=(b.raw||0);
-
-return bi-ai;
-
-})
+.sort((a,b)=>(b.raw||0)-(a.raw||0))
 
 .slice(0,7);
 
@@ -2378,7 +2708,11 @@ return bi-ai;
 
 function buildUnderBets(r,o,used){
 
-let result=[],main=dominant(o),attack=bestAttackBoat(main);
+let result=[];
+
+let main=dominant(o);
+
+let attack=bestAttackBoat(main);
 
 for(let b=1;b<=6;b++){
 
@@ -2386,7 +2720,7 @@ if(b===attack)continue;
 
 let c=classification(b,r);
 
-if(c.type!=="exclude")continue;
+if(c.type!=="cut")continue;
 
 let rv=attackRevival(b,r,o);
 
@@ -2504,7 +2838,7 @@ return new Set(all.slice(0,starCount()).map(x=>x.key));
 
 function renderThirdCandidates(x,rankings,type){
 
-let list=thirdCandidates(rankings,x.b,rankings,type);
+let list=thirdCandidates(x.a,x.b,rankings,type);
 
 if(!list.length)return`
 
@@ -2520,11 +2854,13 @@ return`
 
 ${list.map(z=>`
 
-<div class="thirdCandidate ${z.revival?"revival":z.thirdOnly?"warning":"normal"}">
+<div class="thirdCandidate ${z.revival?"revival":z.promoted?"normal":z.thirdOnly?"warning":"normal"}">
 
 ${z.boat}号艇
 
 ${z.revival?`<span class="revivalLabel">🟡展開復活</span>`:""}
+
+${z.promoted?`<span class="revivalLabel">⬆️2着まで</span>`:""}
 
 ${z.thirdOnly?`<span class="revivalLabel">△3着まで</span>`:""}
 
@@ -2718,7 +3054,31 @@ used.add(x.key);
 
 }
 
-/* 回収率重視：4展開横断で期待値順5点 */
+/*
+
+的中率重視では、展開を見越して2着・3着を絞る。
+
+まくり艇後ろの昇格候補を優先。
+
+*/
+
+result.hit.sort((a,b)=>{
+
+let pa=makuriRearPromotion(a.b,r,a.type)?20:0;
+
+let pb=makuriRearPromotion(b.b,r,b.type)?20:0;
+
+return(
+
+((b.raw||0)+pb)-
+
+((a.raw||0)+pa)
+
+);
+
+});
+
+/* 回収率重視 */
 
 let recoveryPool=[
 
@@ -2748,7 +3108,7 @@ used.add(x.key);
 
 }
 
-/* 表示カテゴリは4展開を維持 */
+/* 表示カテゴリは4展開 */
 
 result.escape=result.recovery.filter(x=>x.type==="escape");
 
@@ -2758,13 +3118,13 @@ result.maki=result.recovery.filter(x=>x.type==="maki");
 
 result.makiSashi=result.recovery.filter(x=>x.type==="makiSashi");
 
-/* その他オッズ妙味・推奨 最大7点 */
+/* その他 */
 
 result.recommend=buildRecommendationBets(r,used);
 
 for(let x of result.recommend)used.add(x.key);
 
-/* 穴目 */
+/* 穴 */
 
 let o=overview();
 
@@ -2807,14 +3167,6 @@ $("displayBudget").textContent=
 Math.max(100,Math.floor(Number($("budget").value||100)/100)*100).toLocaleString()+"円";
 
 renderBetRows("hitPicks",b.hit,b,"hit");
-
-/*
-
-回収率重視は横断5点。
-
-カテゴリ別表示は同じ5点を展開別に振り分ける。
-
-*/
 
 renderBetRows("escapePicks",b.escape,b,"escape");
 
@@ -2922,19 +3274,19 @@ ${[1,2,3,4,5,6].map(x=>`${x}号艇=${course(x)}コース`).join(" / ")}
 
 <strong>AI評価</strong><br>
 
-全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・まくられ率・差され率・場特性・今回と同じ進入コースの過去20走・直近20走の調子を総合評価。
+全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・まくられ率・差され率・場特性・今回と同じ進入コースの過去20走・直近20走の調子・展開後ろ加点を総合評価。
 
 </div>`;
 
 }
 
-/* ================= 除外表示 ================= */
+/* ================= 切り候補表示 ================= */
 
 function renderExclusions(a){
 
 let avg=scoreAverage(a);
 
-let excluded=[],thirdOnly=[],revival=[];
+let cut=[],thirdOnly=[],revival=[],promoted=[];
 
 let o=overview();
 
@@ -2942,29 +3294,49 @@ a.forEach(x=>{
 
 let c=classification(x.boat,a);
 
-if(c.type==="exclude"){
+if(c.type==="cut"){
 
 let rv=attackRevival(x.boat,a,o);
 
-if(rv.revival)revival.push({...x,classification:c,revival:rv});
+if(rv.revival){
 
-else excluded.push({...x,classification:c});
+revival.push({...x,classification:c,revival:rv});
+
+}else{
+
+cut.push({...x,classification:c});
+
+}
 
 }else if(c.type==="third"){
+
+let rv=attackRevival(x.boat,a,o);
+
+if(rv.revival){
+
+revival.push({...x,classification:c,revival:rv});
+
+}else{
 
 thirdOnly.push({...x,classification:c});
 
 }
 
+}
+
 });
 
-/* 完全除外は最大1艇 */
+/*
 
-excluded=excluded.slice(0,1);
+完全除外は廃止。
+
+切り候補は0〜複数艇。
+
+*/
 
 let html="";
 
-excluded.forEach(x=>{
+cut.forEach(x=>{
 
 html+=`
 
@@ -2978,9 +3350,9 @@ AI：${x.score.toFixed(1)}<br>
 
 平均との差：${x.classification.diff.toFixed(1)}pt<br>
 
-🚫 <strong>完全除外</strong><br>
+✂️ <strong>3着から切り候補</strong><br>
 
-この艇はいかなる2連単買い目にも入りません。
+完全除外ではなく、展開・機力・同コース実績により3着残りを再評価。
 
 </div>`;
 
@@ -3000,15 +3372,17 @@ AI：${x.score.toFixed(1)}<br>
 
 平均との差：${x.classification.diff.toFixed(1)}pt<br>
 
-🟡 <strong>3着までなら</strong><br>
+🟡 <strong>3着まで</strong><br>
 
-2着には入れず、明確な根拠がある場合のみ3着候補として使用。
+2着には原則入れず、明確な展開根拠がある場合のみ3着候補。
 
 </div>`;
 
 });
 
 revival.forEach(x=>{
+
+let p=makuriRearPromotion(x.boat,a,"maki");
 
 html+=`
 
@@ -3022,25 +3396,27 @@ AI：${x.score.toFixed(1)}<br>
 
 平均との差：${x.classification.diff.toFixed(1)}pt<br>
 
-🟡 <strong>展開復活 → 3着まで</strong><br>
+🟡 <strong>展開で残す</strong><br>
 
 ${esc(x.revival.reason)}<br>
 
-<strong>2連単の1着・2着には使用しません。</strong>
+${p?`⬆️ まくり艇後ろの根拠が強いため2着まで昇格候補。`:`3着まで残す。`}
 
 </div>`;
 
 });
 
-if(!excluded.length&&!thirdOnly.length&&!revival.length){
+if(!cut.length&&!thirdOnly.length&&!revival.length){
 
 html=`
 
 <div class="strategy">
 
-今回は平均点から大きく低い完全除外艇なし。<br>
+今回は3着から切る候補なし。<br>
 
-6艇平均：${avg.toFixed(1)}pt
+6艇平均：${avg.toFixed(1)}pt<br>
+
+全艇を展開・AI評価・機力・同コース実績から再評価。
 
 </div>`;
 
@@ -3156,6 +3532,8 @@ o.escape<42?"1号艇のイン逃げ信頼度は低め。":
 
 "イン逃げは五分以上。相手展開も比較。";
 
+let rear=makuriRearBoats(attacker);
+
 $("attack").innerHTML=`
 
 <div class="attackBox">
@@ -3182,21 +3560,37 @@ ${mt.length?mt.map(x=>typeName(x[0])+" "+x[1].toFixed(1)+"%").join(" / "):typeNa
 
 ${attacker}号艇
 
+${(main==="maki"||main==="makiSashi")&&rear.length?`
+
+<br><br>
+
+<strong style="color:#ffd84d">🟡 まくり艇後ろ</strong><br>
+
+${rear.slice(0,3).map(x=>`${x.boat}号艇：+${x.add}pt`).join(" / ")}
+
+<br>
+
+まくり艇後ろからまくり差し候補を優先評価。
+
+`:""}
+
 <br><br>
 
 <strong style="color:#d4af37">進入</strong><br>
 
 ${[1,2,3,4,5,6].map(b=>`${b}号艇→${course(b)}コース`).join(" / ")}
 
-${main==="maki"||main==="makiSashi"?`
-
 <br><br>
 
-🟡 <strong style="color:#ffd84d">まくり後ろの展開を3着評価へ反映</strong><br>
+<strong style="color:#ffd84d">展開ルール</strong><br>
 
-ただし展開だけでは追加せず、AI評価・過去データ・機力等の根拠がある艇のみ3着候補に採用。
+まくり艇の後ろを加点。<br>
 
-`:""}
+前艇がまくりの場合は、根拠が強い艇を2着まで昇格。<br>
+
+まくられる艇は2着・3着残りを再評価。<br>
+
+3着から切る候補は無理に設定しない。
 
 </div>
 
@@ -3238,7 +3632,7 @@ $("message").innerHTML='<span class="loading">🤖 同じコースを走った�
 
 await loadHistory();
 
-/* 過去20走取得後に決まり手率を再評価できるよう出走表を再描画 */
+/* 過去20走取得後に再描画 */
 
 renderRace();
 
@@ -3294,11 +3688,17 @@ $("message").innerHTML=`
 
 🛡️ まくられ率・差され率：選手情報・イン逃げ評価へ反映<br>
 
-🟡 展開復活：根拠がある場合のみ3着まで<br>
+🟡 まくり艇後ろ：展開加点<br>
 
-🚫 完全除外：最大1艇<br>
+⬆️ まくり後ろの根拠が強い艇：2着まで昇格<br>
 
-❌ 展開復活艇の2連単使用：なし<br>
+🔄 まくられる艇：2着・3着残りを再評価<br>
+
+✂️ 3着から切り候補：0〜複数、無理に設定しない<br>
+
+🎯 的中率重視：展開を見越して2着・3着を絞る<br>
+
+❌ 2コースまくり差し：使用なし<br>
 
 🎯 3着候補：複数の根拠がある艇のみ<br>
 
@@ -3366,9 +3766,9 @@ let f=recentForm(x.boat);
 
 let status=
 
-c.type==="exclude"
+c.type==="cut"
 
-?"<br><span style='color:#ff5555;font-size:9px'>🚫除外</span>":
+?"<br><span style='color:#ff5555;font-size:9px'>✂️3着切り候補</span>":
 
 c.type==="third"
 
