@@ -308,7 +308,9 @@ th{color:#d4af37}
 
 ※まくられる艇は2着・3着残りを展開から再評価。<br>
 
-※展開だけでは買い目へ追加せず、AI・過去15走・機力等の根拠を必要とする。
+※展開だけでは買い目へ追加せず、AI・過去15走・機力等の根拠を必要とする。<br>
+
+※2連単の1着・2着に入っている艇は、その買い目自身の3着候補には絶対に重複させない。
 
 </div>
 
@@ -1740,7 +1742,21 @@ return{revival:false,two:false,reason:""}
 
 }
 
-function thirdCandidates(a,secondBoat,rankings,type){
+/* ===== 3着候補 =====
+
+   重要：
+
+   secondBoat（2連単2着）だけでなく firstBoat（2連単1着）も
+
+   必ず除外する。
+
+   これにより「1着・2着に入っている艇が3着候補に重複」
+
+   することを完全に防止する。
+
+*/
+
+function thirdCandidates(a,secondBoat,rankings,type,firstBoat){
 
 let o=overview(),
 
@@ -1752,7 +1768,9 @@ avg=scoreAverage(rankings);
 
 for(let b=1;b<=6;b++){
 
-if(b===secondBoat)continue;
+/* ===== 2連単の1着・2着艇は3着候補から完全除外 ===== */
+
+if(b===firstBoat||b===secondBoat)continue;
 
 let c=classification(b,rankings),
 
@@ -2170,7 +2188,9 @@ return new Set(all.slice(0,starCount()).map(x=>x.key))
 
 function renderThirdCandidates(x,rankings,type){
 
-let list=thirdCandidates(rankings,x.b,rankings,type);
+/* ===== 2連単1着・2着の両方を3着候補から除外 ===== */
+
+let list=thirdCandidates(rankings,x.b,rankings,type,x.a);
 
 if(!list.length)
 
@@ -2246,9 +2266,7 @@ return`<div class="betRow ${cls}">
 
 <div>${renderThirdCandidates(x,bets.ranking||[],type)}</div>
 
-</div>`
-
-}).join("")}`
+</div>`}).join("")}`
 
 }
 
@@ -3017,6 +3035,8 @@ $("message").innerHTML=`<span class="success">
 ⬆️ まくり後ろ：条件を満たせば2着まで昇格<br>
 
 🎯 3着候補：複数の根拠がある艇のみ<br>
+
+🚫 2連単1着・2着艇：同じ買い目の3着候補から完全除外<br>
 
 💰 回収率重視：差し・まくり・まくり差しを各最低1点確保、4展開横断で最大5点<br>
 
