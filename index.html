@@ -114,8 +114,6 @@ th{color:#d4af37}
 
 .pickTitle.green{color:#4cd964}.pickTitle.red{color:#ff8b8b}
 
-/* イン逃げのみオレンジ */
-
 .pickTitle.escapeColor{color:#ff9800}
 
 .pickTitle.sashiColor{color:#4db8ff}
@@ -1592,7 +1590,13 @@ let x=suitability(b,type);
 
 x+=recentForm(b).score*.5;
 
-if(x>val){val=x;best=b}
+if(x>val){
+
+val=x;
+
+best=b;
+
+}
 
 }
 
@@ -1730,15 +1734,7 @@ return candidates.sort((a,b)=>b.raw-a.raw).slice(0,3);
 
 }
 
-/*
-
-=========================================================
-
-2連単
-
-=========================================================
-
-*/
+/* 2連単 */
 
 function candidate(a,b,rankings,type){
 
@@ -2146,7 +2142,19 @@ function starCount(){
 
 let b=Math.max(100,Math.floor(Number($("budget").value||100)/100)*100);
 
-return b<=500?1:b<=1000?2:b<=2000?3:b<=3000?4:b<=5000?6:b<=10000?8:b<=20000?10:12;
+return b<=500?1:
+
+b<=1000?2:
+
+b<=2000?3:
+
+b<=3000?4:
+
+b<=5000?6:
+
+b<=10000?8:
+
+b<=20000?10:12;
 
 }
 
@@ -2244,7 +2252,11 @@ ${list.map(x=>{
 
 let p=x.probability||0;
 
-let cls=p>=6.5?"veryStrong":p>=5.5?"strong":p<=4.9?"weak":"";
+let cls=p>=6.5?"veryStrong":
+
+p>=5.5?"strong":
+
+p<=4.9?"weak":"";
 
 return`
 
@@ -2296,7 +2308,11 @@ $(id).innerHTML=list.map(x=>{
 
 let p=x.probability||0;
 
-let cls=p>=6.5?"veryStrong":p>=5.5?"strong":p<=4.9?"weak":"";
+let cls=p>=6.5?"veryStrong":
+
+p>=5.5?"strong":
+
+p<=4.9?"weak":"";
 
 return`
 
@@ -2588,11 +2604,17 @@ function renderOverview(o){
 
 let reason=
 
-o.escape<42?`イン逃げ期待は${o.escape.toFixed(1)}%。42%未満なのでイン逃げ一本では見ない。`:
+o.escape<42?
 
-o.escape<50?`イン逃げ期待は${o.escape.toFixed(1)}%。42〜50%なので相手展開も重視。`:
+`イン逃げ期待は${o.escape.toFixed(1)}%。42%未満なのでイン逃げ一本では見ない。`:
 
-o.escape<60?`イン逃げ期待は${o.escape.toFixed(1)}%。50%以上なのでイン逃げ中心。`:
+o.escape<50?
+
+`イン逃げ期待は${o.escape.toFixed(1)}%。42〜50%なので相手展開も重視。`:
+
+o.escape<60?
+
+`イン逃げ期待は${o.escape.toFixed(1)}%。50%以上なのでイン逃げ中心。`:
 
 `イン逃げ期待は${o.escape.toFixed(1)}%。60%以上なのでイン逃げ鉄板級。`;
 
@@ -2618,7 +2640,9 @@ ${["escape","sashi","maki","makiSashi"].map(t=>`
 
 <div class="value">${o[t].toFixed(1)}%</div>
 
-</div>`).join("")}
+</div>
+
+`).join("")}
 
 </div>
 
@@ -2702,7 +2726,7 @@ ${main==="maki"||main==="makiSashi"?`
 
 🟡 <strong style="color:#ffd84d">まくり後ろの展開を3着評価へ反映</strong><br>
 
-${attacker}号艇が攻めた場合、その後ろの艇を3着候補として強化。
+${attacker}号艇が攻めた場合、その後ろの艇を3着候補として強化.
 
 `:""}
 
@@ -2738,9 +2762,13 @@ let f=recentForm(x.boat);
 
 let status=
 
-c.type==="exclude"?"<br><span style='color:#ff5555;font-size:9px'>🚫除外</span>":
+c.type==="exclude"?
 
-c.type==="third"?"<br><span style='color:#ffd84d;font-size:9px'>△3着まで</span>":"";
+"<br><span style='color:#ff5555;font-size:9px'>🚫除外</span>":
+
+c.type==="third"?
+
+"<br><span style='color:#ffd84d;font-size:9px'>△3着まで</span>":"";
 
 return`
 
