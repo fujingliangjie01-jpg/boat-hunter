@@ -222,7 +222,15 @@ th{color:#d4af37}
 
 </div>
 
-<div style="margin-top:9px"><label>投資資金（100円単位）</label><input id="budget" type="number" value="3000" min="100" step="100" inputmode="numeric"><div class="budgetInfo">💰 設定した資金に応じて <strong class="budgetStrong">⭐優先買い目</strong> を表示します。<br>買い目そのものは変更しません。</div></div>
+<div style="margin-top:9px">
+
+<label>投資資金（100円単位）</label>
+
+<input id="budget" type="number" value="3000" min="100" step="100" inputmode="numeric">
+
+<div class="budgetInfo">💰 設定した資金に応じて <strong class="budgetStrong">⭐優先買い目</strong> を表示します。<br>買い目そのものは変更しません。</div>
+
+</div>
 
 <h3>🛥️ 今回の進入コース</h3>
 
@@ -252,23 +260,41 @@ th{color:#d4af37}
 
 </div>
 
-<div id="raceCard" class="card" style="display:none"><h2>🏁 出走表</h2><div id="raceInfo"></div><div id="racers" class="racers"></div></div>
+<div id="raceCard" class="card" style="display:none">
+
+<h2>🏁 出走表</h2>
+
+<div id="raceInfo"></div>
+
+<div id="racers" class="racers"></div>
+
+</div>
 
 <div id="analysisCard" class="card" style="display:none">
 
-<h2>🤖 AI期待値ランキング</h2><div id="ranking"></div>
+<h2>🤖 AI期待値ランキング</h2>
 
-<h3>📊 全体の見通し</h3><div id="overview"></div>
+<div id="ranking"></div>
 
-<h3>🔥 このレースの攻め手</h3><div id="attack"></div>
+<h3>📊 全体の見通し</h3>
 
-<h3>✂️ 3着から切り候補</h3><div id="exclusions"></div>
+<div id="overview"></div>
+
+<h3>🔥 このレースの攻め手</h3>
+
+<div id="attack"></div>
+
+<h3>✂️ 3着から切り候補</h3>
+
+<div id="exclusions"></div>
 
 </div>
 
 <div id="predictionCard" class="card" style="display:none">
 
-<h2>🎯 AI買い目</h2><div id="forecast"></div>
+<h2>🎯 AI買い目</h2>
+
+<div id="forecast"></div>
 
 <div class="total">AI買い目確率合計<br><span id="totalProbability">0.0%</span></div>
 
@@ -310,7 +336,7 @@ th{color:#d4af37}
 
 ※まくられる艇は2着・3着残りを展開から再評価。<br>
 
-※展開だけでは買い目へ追加せず、AI・過去20走・機力等の根拠を必要とする。<br>
+※展開だけでは買い目へ追加せず、AI・過去15走・機力等の根拠を必要とする。<br>
 
 ※2連単の1着・2着に入っている艇は、その買い目自身の3着候補には絶対に重複させない。
 
@@ -348,7 +374,9 @@ const API_V2="https://boatraceopenapi.github.io/programs/v2";
 
 let raceData=null,racers=[],previewRacers={},manualCourses={},historyData={},currentBets=null;
 
-const HISTORY_RACES=20;
+/* ===== 今回変更：過去15走 ===== */
+
+const HISTORY_RACES=15;
 
 const HISTORY_DAYS=180;
 
@@ -584,7 +612,7 @@ renderRace();
 
 $("raceCard").style.display="block";
 
-$("message").innerHTML='<span class="success">✅ 出走表取得成功<br>AI解析時に同コース過去20走を取得します</span>'
+$("message").innerHTML='<span class="success">✅ 出走表取得成功<br>AI解析時に同コース過去15走を取得します</span>'
 
 }catch(e){
 
@@ -702,9 +730,13 @@ return 0
 
 /* ===== 決まり手集計 =====
 
-   過去20走のうち「1着」のレースだけを対象に集計。
+   過去15走を母数とする。
 
-   3連対率は過去20走すべてを対象にするため変更しない。
+   決まり手は「1着になったレース」のみ集計。
+
+   決まり手率＝各決まり手の1着回数 ÷ 過去15走 × 100
+
+   3連対率＝3着以内回数 ÷ 過去15走 × 100
 
 */
 
@@ -715,8 +747,6 @@ let a=history(b);
 if(!a.length)return null;
 
 let valid=a.filter(x=>x.place===1&&x.decision&&x.decision!=="-");
-
-if(!valid.length)return null;
 
 let counts={escape:0,sashi:0,maki:0,makiSashi:0};
 
@@ -732,7 +762,9 @@ if(x.decision==="まくり差し")counts.makiSashi++
 
 });
 
-let total=valid.length;
+/* 母数は必ず過去15走 */
+
+const total=HISTORY_RACES;
 
 return{
 
@@ -944,7 +976,7 @@ if(arr.length>HISTORY_RACES)arr.splice(HISTORY_RACES)
 
 async function loadHistory(){
 
-let key="bh-history-course-v20-"+today().ymd+"-"+$("venue").value+"-"+racers.map(r=>getRacerNumber(r)).join("-")+"-"+Object.values(manualCourses).join("");
+let key="bh-history-course-v15-"+today().ymd+"-"+$("venue").value+"-"+racers.map(r=>getRacerNumber(r)).join("-")+"-"+Object.values(manualCourses).join("");
 
 try{
 
@@ -1010,7 +1042,7 @@ return targets[no]?.boats?.[c]?.length||0
 
 });
 
-$("message").innerHTML=`<span class="loading">🤖 ${counts.every(x=>x>=HISTORY_RACES)?"同コース過去20走を取得完了":"同コース過去20走を検索中..."}<br>現在：${counts.join(" / ")}走<br>対象：今回と同じ進入コース<br>検索：過去${Math.min(start+9,HISTORY_DAYS)}日</span>`
+$("message").innerHTML=`<span class="loading">🤖 ${counts.every(x=>x>=HISTORY_RACES)?"同コース過去15走を取得完了":"同コース過去15走を検索中..."}<br>現在：${counts.join(" / ")}走<br>対象：今回と同じ進入コース<br>検索：過去${Math.min(start+9,HISTORY_DAYS)}日</span>`
 
 }
 
@@ -1036,9 +1068,31 @@ return(historyData[no]?.boats?.[c]||[]).slice(0,HISTORY_RACES)
 
 function hstats(b){
 
-let a=history(b),f=a.filter(x=>x.place===1).length,s=a.filter(x=>x.place===2).length,t=a.filter(x=>x.place===3).length;
+let a=history(b),
 
-return{count:a.length,first:f,second:s,third:t,rate:a.length?(f+s+t)/a.length*100:0}
+f=a.filter(x=>x.place===1).length,
+
+s=a.filter(x=>x.place===2).length,
+
+t=a.filter(x=>x.place===3).length;
+
+/* 母数は過去15走 */
+
+const total=HISTORY_RACES;
+
+return{
+
+count:a.length,
+
+first:f,
+
+second:s,
+
+third:t,
+
+rate:(f+s+t)/total*100
+
+}
 
 }
 
@@ -1054,7 +1108,7 @@ function renderHistory(b){
 
 let a=history(b),s=hstats(b),c=course(b);
 
-if(!a.length)return`<div class="history"><div class="historyTitle">📈 ${c}コース過去20走</div><div class="historyList"><span style="color:#777">${c}コースを走った過去20走を取得できていません</span></div></div>`;
+if(!a.length)return`<div class="history"><div class="historyTitle">📈 ${c}コース過去15走</div><div class="historyList"><span style="color:#777">${c}コースを走った過去15走を取得できていません</span></div></div>`;
 
 return`<div class="history">
 
@@ -1262,7 +1316,7 @@ let first=a.filter(x=>x.place===1).length;
 
 let top3=a.filter(x=>x.place<=3).length;
 
-let rate=top3/a.length*100;
+let rate=top3/HISTORY_RACES*100;
 
 let recent=a.slice(0,Math.min(5,a.length));
 
@@ -1438,7 +1492,15 @@ num(r.local_win_rate)*4+
 
 num(r.national_top_2_percent||r.national_2ren_rate)*.12;
 
-s+=num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)*.15+(num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)>=40?5:num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)>=35?3:num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)>=30?1:num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)<20?-2:0);
+s+=num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)*.15+
+
+(num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)>=40?5:
+
+num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)>=35?3:
+
+num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)>=30?1:
+
+num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)<20?-2:0);
 
 let ast=num(r.average_start_timing||r.average_st);
 
@@ -1536,8 +1598,6 @@ return a.reduce((s,x)=>s+x.score,0)/a.length
 
 }
 
-/* ===== 切り候補：完全除外を廃止 ===== */
-
 function classification(boat,a){
 
 let x=a.find(z=>z.boat===boat);
@@ -1607,8 +1667,6 @@ best=b
 return best
 
 }
-
-/* ===== 展開連動評価 ===== */
 
 function developmentBonus(b,rankings,type){
 
@@ -1682,8 +1740,6 @@ return{bonus,reasons}
 
 }
 
-/* 前艇がまくりなら後ろの3着評価を2着まで昇格 */
-
 function promotionByMaki(b,rankings,type){
 
 let attacker=bestAttackBoat(type),
@@ -1711,8 +1767,6 @@ score(b)>=scoreAverage(rankings)-5
 return false
 
 }
-
-/* ===== 切り候補は買い目から排除せず3着候補から切る ===== */
 
 function attackRevival(b,rankings,o){
 
@@ -1748,7 +1802,7 @@ revival:true,
 
 two:false,
 
-reason:`${attacker}号艇の${typeName(main)}展開。${dev.reasons.join("・")}。能力・過去20走・機力の根拠から3着まで残す`
+reason:`${attacker}号艇の${typeName(main)}展開。${dev.reasons.join("・")}。能力・過去15走・機力の根拠から3着まで残す`
 
 }
 
@@ -1757,8 +1811,6 @@ reason:`${attacker}号艇の${typeName(main)}展開。${dev.reasons.join("・")}
 return{revival:false,two:false,reason:""}
 
 }
-
-/* ===== 3着候補 ===== */
 
 function thirdCandidates(a,secondBoat,rankings,type,firstBoat){
 
@@ -1840,7 +1892,7 @@ if(hs.count>=5&&hs.rate>=40){
 
 evidence++;
 
-reasons.push("同コース過去20走");
+reasons.push("同コース過去15走");
 
 raw+=hscore(b)*.8
 
@@ -1850,7 +1902,7 @@ if(f.score>=3){
 
 evidence++;
 
-reasons.push("直近20走好調");
+reasons.push("直近15走好調");
 
 raw+=f.score*1.2
 
@@ -2140,13 +2192,7 @@ return result.sort((a,b)=>b.raw-a.raw).slice(0,3)
 
 function starCount(){
 
-let b=Math.max(
-
-100,
-
-Math.floor(Number($("budget").value||100)/100)*100
-
-);
+let b=Math.max(100,Math.floor(Number($("budget").value||100)/100)*100);
 
 return b<=500?1:
 
@@ -2262,7 +2308,9 @@ return`<div class="betRow ${cls}">
 
 <div>${renderThirdCandidates(x,bets.ranking||[],type)}</div>
 
-</div>`}).join("")}`
+</div>`
+
+}).join("")}`
 
 }
 
@@ -2454,9 +2502,9 @@ used.add(fallback.key)
 
 if(result.recovery.length>5){
 
-let mandatoryTypes=["sashi","maki","makiSashi"];
+let mandatoryTypes=["sashi","maki","makiSashi"],
 
-let mandatory=[],
+mandatory=[],
 
 others=[];
 
@@ -2542,13 +2590,7 @@ function renderBets(b){
 
 $("displayBudget").textContent=
 
-Math.max(
-
-100,
-
-Math.floor(Number($("budget").value||100)/100)*100
-
-).toLocaleString()+"円";
+Math.max(100,Math.floor(Number($("budget").value||100)/100)*100).toLocaleString()+"円";
 
 renderBetRows("hitPicks",b.hit,b,"hit");
 
@@ -2652,7 +2694,7 @@ ${[1,2,3,4,5,6].map(x=>`${x}号艇=${course(x)}コース`).join(" / ")}<br><br>
 
 <strong>AI評価</strong><br>
 
-全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・まくられ率・差され率・場特性・今回と同じ進入コースの過去20走・直近20走の調子・展開連動を総合評価。
+全国勝率・当地勝率・モーター2連率・ST・展示・進入・決まり手適性・まくられ率・差され率・場特性・今回と同じ進入コースの過去15走・直近15走の調子・展開連動を総合評価。
 
 </div>`
 
@@ -2906,7 +2948,7 @@ $("course"+b).value=String(b)
 
 }
 
-$("message").innerHTML='<span class="loading">🤖 同じコースを走った過去20走を検索中...</span>';
+$("message").innerHTML='<span class="loading">🤖 同じコースを走った過去15走を検索中...</span>';
 
 await loadHistory();
 
@@ -2952,17 +2994,17 @@ $("message").innerHTML=`<span class="success">
 
 🔥 主攻め：${typeName(dominant(o))}<br>
 
-📈 今回と同コースの過去20走：${counts.join(" / ")}走取得<br>
+📈 今回と同コースの過去15走：${counts.join(" / ")}走取得<br>
 
 🏟️ 場特性：${esc(venueTrait().name)}を評価<br>
 
-📈 直近20走の調子：AIスコアへ反映<br>
+📈 直近15走の調子：AIスコアへ反映<br>
 
 🛥️ 進入コース：AI評価へ反映<br>
 
-🎯 過去20走：1着時の決まり手を集計<br>
+🎯 過去15走：1着時の決まり手を集計<br>
 
-📊 選手の決まり手傾向：1着時の逃げ・差し・まくり・まくり差しを集計<br>
+📊 選手の決まり手傾向：過去15走を母数として1着時の逃げ・差し・まくり・まくり差しを集計<br>
 
 🛡️ まくられ率・差され率：選手情報・イン逃げ評価へ反映<br>
 
@@ -2986,9 +3028,7 @@ $("message").innerHTML=`<span class="success">
 
 console.error(e);
 
-$("message").innerHTML=
-
-'<span class="error">❌ AI解析失敗<br>'+esc(e.message)+'</span>'
+$("message").innerHTML='<span class="error">❌ AI解析失敗<br>'+esc(e.message)+'</span>'
 
 }
 
