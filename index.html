@@ -748,7 +748,7 @@ function getResultRacerNumber(x){
 
 return num(x?.number||x?.racer_number||x?.registration_number||
 
-x?.player_number||x?.racerNumber)
+x?.player_number||x?.racerNumber||x?.boat_number||x?.boatNumber)
 
 }
 
@@ -760,7 +760,7 @@ return num(x?.place_number||x?.place||x?.finish_position||x?.arrival||x?.rank)
 
 function getCourse(x){
 
-return num(x?.course_number||x?.course||x?.entry_course||x?.entry)
+return num(x?.course_number||x?.course||x?.entry_course||x?.entry||x?.lane)
 
 }
 
@@ -772,7 +772,7 @@ if(n==null||n==="")return"-";
 
 if(typeof n==="object"){
 
-n=n.number??n.id??n.code??n.value??n.name??n.label??""
+n=n.number??n.id??n.code??n.value??n.name??n.label??n.technique??n.technique_name??""
 
 }
 
@@ -908,29 +908,59 @@ return 0
 
 }
 
+/* =========================================================
+
+   同コース過去15走の決まり手集計
+
+   1号艇については「着順に関係なく」15走を母数にする。
+
+   ========================================================= */
+
 function historicalDecisionRates(b){
 
 let a=history(b);
 
 if(!a.length)return null;
 
-let valid=a.filter(x=>x.place===1&&x.decision&&x.decision!=="-");
+const total=HISTORY_RACES;
 
-let counts={escape:0,sashi:0,maki:0,makiSashi:0};
+let counts={
 
-valid.forEach(x=>{
+escape:0,
 
-if(x.decision==="逃げ")counts.escape++;
+sashi:0,
 
-if(x.decision==="差し")counts.sashi++;
+maki:0,
 
-if(x.decision==="まくり")counts.maki++;
+makiSashi:0
 
-if(x.decision==="まくり差し")counts.makiSashi++
+};
+
+a.slice(0,HISTORY_RACES).forEach(x=>{
+
+/*
+
+  1着＋逃げ       → 逃げ率
+
+  1着以外＋まくり → まくられ率
+
+  1着以外＋差し   → 差され率
+
+  1着以外＋まくり差し → まくり差され率
+
+  「恵まれ」「抜き」は上記4項目には含めない。
+
+*/
+
+if(x.place===1&&x.decision==="逃げ")counts.escape++;
+
+if(x.place!==1&&x.decision==="まくり")counts.maki++;
+
+if(x.place!==1&&x.decision==="差し")counts.sashi++;
+
+if(x.place!==1&&x.decision==="まくり差し")counts.makiSashi++
 
 });
-
-const total=HISTORY_RACES;
 
 return{
 
@@ -952,7 +982,9 @@ if(!r)return{
 
 escape:0,nige:0,sashi:0,maki:0,makiSashi:0,
 
-makare:0,sasare:0,nigashi:0,nigashiRate:0
+makare:0,sasare:0,nigashi:0,nigashiRate:0,
+
+makareRate:0,sasareRate:0,makiSashiSareRate:0
 
 };
 
@@ -1040,7 +1072,9 @@ sasare:rateValue(r,[
 
 if(v.escape===0&&v.sashi===0&&v.maki===0&&v.makiSashi===0){
 
-let h=historicalDecisionRates(r?.entry_number?num(r.entry_number):0);
+let b=r?.entry_number?num(r.entry_number):0;
+
+let h=historicalDecisionRates(b);
 
 if(h){
 
@@ -1060,21 +1094,41 @@ v.nige=v.escape;
 
 v.nigashiRate=v.nigashi;
 
+v.makareRate=v.maki;
+
+v.sasareRate=v.sashi;
+
+v.makiSashiSareRate=v.makiSashi;
+
 return v
 
 }
 
 function decisionTrendHTML(b,d){
 
+/*
+
+  1号艇：
+
+  逃げ率       = 1着＋逃げ / 過去15走
+
+  まくられ率   = 1着以外＋まくり / 過去15走
+
+  差され率     = 1着以外＋差し / 過去15走
+
+  まくり差され率 = 1着以外＋まくり差し / 過去15走
+
+*/
+
 if(b===1)return`<div class="decisionStats">
 
 <div class="decisionStat"><span>逃げ率</span><strong>${d.escape.toFixed(1)}%</strong></div>
 
-<div class="decisionStat"><span>逃し率</span><strong>${d.nigashi.toFixed(1)}%</strong></div>
+<div class="decisionStat"><span>まくられ率</span><strong>${d.makareRate.toFixed(1)}%</strong></div>
 
-<div class="decisionStat"><span>まくられ率</span><strong>${d.makare.toFixed(1)}%</strong></div>
+<div class="decisionStat"><span>差され率</span><strong>${d.sasareRate.toFixed(1)}%</strong></div>
 
-<div class="decisionStat"><span>差され率</span><strong>${d.sasare.toFixed(1)}%</strong></div>
+<div class="decisionStat"><span>まくり差され率</span><strong>${d.makiSashiSareRate.toFixed(1)}%</strong></div>
 
 </div>`;
 
@@ -1122,41 +1176,11 @@ return x
 
 }
 
-/* =========================
+/* =========================================================
 
    過去15走の決まり手取得
 
-   ========================= */
-
-/*
-
-  今回の最重要修正：
-
-  決まり手は「1着艇本人のデータ」にだけ存在するAPI構造だけでなく、
-
-  レース結果側にレース単位で格納されている決まり手も取得する。
-
-  そのため、
-
-  - 1着
-
-  - 2着
-
-  - 3着
-
-  - 4着
-
-  - 5着
-
-  - 6着
-
-  のどの艇の過去走であっても、
-
-  そのレースに決まり手データが存在すれば同じ決まり手を表示する。
-
-  APIに決まり手そのものが存在しない場合のみ null → 「なし」。
-
-*/
+   ========================================================= */
 
 function decisionFromValue(value){
 
@@ -1198,9 +1222,25 @@ return d&&d!=="-"?d:null
 
 }
 
-function getDecisionValue(x,result,race){
+/*
 
-/* ① まず各選手データ自身に紐づく決まり手 */
+  APIの決まり手フィールドから、現在の艇番号に対応する値を取得。
+
+  APIによって
+
+  decision: "逃げ"
+
+  decision: {number:1}
+
+  decision: {1:"逃げ"}
+
+  decisions: [{...}]
+
+  など構造が違うため、複数形式を吸収する。
+
+*/
+
+function getDecisionValue(x,result,race){
 
 const directKeys=[
 
@@ -1262,8 +1302,6 @@ if(d)return d
 
 }
 
-/* ② 各選手番号をキーにした決まり手 */
-
 const no=getResultRacerNumber(x);
 
 const keyedSources=[
@@ -1300,7 +1338,49 @@ for(const source of keyedSources){
 
 if(!source)continue;
 
-if(typeof source==="object"&&!Array.isArray(source)){
+if(Array.isArray(source)){
+
+for(const item of source){
+
+if(!item||typeof item!=="object")continue;
+
+let itemNo=getResultRacerNumber(item);
+
+if(itemNo!==no)continue;
+
+let d=decisionFromValue(
+
+item.decision??
+
+item.decision_name??
+
+item.technique??
+
+item.technique_name??
+
+item.winning_method??
+
+item.winningMethod??
+
+item.value??
+
+item.name??
+
+item.number??
+
+item.code
+
+);
+
+if(d)return d
+
+}
+
+continue
+
+}
+
+if(typeof source==="object"){
 
 const values=[
 
@@ -1337,8 +1417,6 @@ if(d)return d
 }
 
 }
-
-/* ③ レース結果・レース本体にある「レース単位」の決まり手 */
 
 const raceLevelKeys=[
 
@@ -1412,14 +1490,6 @@ let value=source?.[key];
 
 if(value&&typeof value==="object"&&!Array.isArray(value)){
 
-/*
-
-  決まり手オブジェクトの場合はその値を取得。
-
-  選手別マップの場合は現在の艇番号を優先。
-
-*/
-
 let mapped=
 
 value?.[String(no)]??
@@ -1458,8 +1528,6 @@ if(d)return d
 
 }
 
-/* ④ よくあるAPI別フィールド */
-
 const alternativeSources=[
 
 result?.winning,
@@ -1488,7 +1556,45 @@ for(const source of alternativeSources){
 
 if(!source)continue;
 
-if(typeof source==="object"&&!Array.isArray(source)){
+if(Array.isArray(source)){
+
+for(const item of source){
+
+if(!item||typeof item!=="object")continue;
+
+let itemNo=getResultRacerNumber(item);
+
+if(itemNo!==no)continue;
+
+let d=decisionFromValue(
+
+item.decision??
+
+item.decision_name??
+
+item.technique??
+
+item.technique_name??
+
+item.winning_method??
+
+item.winningMethod??
+
+item.value??
+
+item.name??
+
+item.number??
+
+item.code
+
+);
+
+if(d)return d
+
+}
+
+}else if(typeof source==="object"){
 
 for(const key of raceLevelKeys){
 
@@ -1504,11 +1610,21 @@ if(d)return d
 
 }
 
-/* APIに決まり手データが存在しない */
-
 return null
 
 }
+
+/*
+
+  1レースにつき、対象選手の結果を1件だけ保存する。
+
+  決まり手は1着に限定しない。
+
+  1着なら「逃げ・差し・まくり・まくり差し」等を保存。
+
+  2〜6着でもレース側に存在する決まり手を保存する。
+
+*/
 
 function addResultRace(race,targets,wanted){
 
@@ -1554,6 +1670,8 @@ race.race_date||
 
 race.date_time||
 
+race.dateTime||
+
 "";
 
 list.forEach(x=>{
@@ -1572,19 +1690,15 @@ if(!targets[no]||c!==targets[no].course)return;
 
 if(targets[no].boats[c].length>=HISTORY_RACES)return;
 
+let technique=getDecisionValue(x,result,race);
+
 /*
 
-  ここが重要。
+  APIに決まり手がある場合だけ保存。
 
-  着順を条件に決まり手を取得しない。
-
-  1着だけでなく、対象選手が2着・3着・4着・5着・6着でも
-
-  そのレースの決まり手を取得して保存する。
+  無い場合は null を保存し、画面側で「なし」と表示。
 
 */
-
-let technique=getDecisionValue(x,result,race);
 
 targets[no].boats[c].push({
 
@@ -1594,7 +1708,7 @@ place,
 
 course:c,
 
-decision:decision(technique)
+decision:technique&&technique!=="-"?technique:null
 
 })
 
@@ -1604,7 +1718,23 @@ decision:decision(technique)
 
 function collectHistoryFromDay(data,targets,wanted){
 
-let stadiums=data?.programs?.stadiums;
+/*
+
+  APIによって stadiums の階層が異なるため、
+
+  既存の構造を維持したまま programs / stadiums を探索。
+
+*/
+
+let stadiums=
+
+data?.programs?.stadiums||
+
+data?.stadiums||
+
+data?.programs?.venues||
+
+data?.venues;
 
 if(!stadiums)return;
 
@@ -1616,7 +1746,13 @@ Object.values(stadiums);
 
 stadiumList.forEach(stadium=>{
 
-let races=stadium?.races;
+let races=
+
+stadium?.races||
+
+stadium?.race||
+
+stadium?.programs;
 
 if(!races)return;
 
@@ -1637,6 +1773,14 @@ addResultRace(race,targets,wanted)
 })
 
 }
+
+/*
+
+  必ず「各艇15走」揃うまで検索。
+
+  1号艇だけでなく、今回出走する全艇について同コース15走を取得。
+
+*/
 
 function historyComplete(targets){
 
@@ -1672,7 +1816,7 @@ async function loadHistory(){
 
 let key=
 
-"bh-history-course-v15-"+today().ymd+"-"+$("venue").value+"-"+
+"bh-history-course-v16-"+today().ymd+"-"+$("venue").value+"-"+
 
 racers.map(r=>getRacerNumber(r)).join("-")+"-"+
 
@@ -1908,7 +2052,7 @@ ${i+1}. ${
 
 esc(
 
-String(x.date)
+String(x.date||"-")
 
 .slice(5,10)
 
@@ -3230,7 +3374,7 @@ AI：${x.score.toFixed(1)}<br>
 
 平均との差：${x.classification.diff.toFixed(1)}pt<br>
 
-✂️ <strong>3着から切り候補</strong><br>
+✂️ <strong>3着から切候補</strong><br>
 
 完全除外ではなく、展開・AI評価により3着候補から外す基準。
 
@@ -3476,11 +3620,11 @@ wi.mode==="tail"?
 
 🛥️ 進入コース：AI評価へ反映<br>
 
-🎯 過去15走：全着順の決まり手を表示・1着時の決まり手を集計<br>
+🎯 過去15走：全着順の決まり手を表示<br>
 
-📊 選手の決まり手傾向：過去15走を母数として1着時の逃げ・差し・まくり・まくり差しを集計<br>
+📊 1号艇決まり手集計：母数15走。1着＋逃げ＝逃げ率、1着以外＋まくり＝まくられ率、1着以外＋差し＝差され率、1着以外＋まくり差し＝まくり差され率<br>
 
-🛡️ まくられ率・差され率：選手情報・イン逃げ評価へ反映<br>
+🛡️ まくられ率・差され率・まくり差され率：1号艇のイン逃げ評価へ反映<br>
 
 ✂️ 3着から切候補：0〜複数艇、無理に設定なし<br>
 
