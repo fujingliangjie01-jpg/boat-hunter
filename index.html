@@ -542,6 +542,22 @@ return 0
 
 }
 
+/* =========================================================
+
+   決まり手集計
+
+   ・全艇の差し/まくり/まくり差し率
+
+     → 今コース過去15走の「1着」のみを分子にする
+
+   ・1号艇のまくられ/差され/まくり差され率
+
+     → 今コース過去15走の「1着以外」を分子にする
+
+   ・すべて母数は過去15走の出走回数
+
+   ========================================================= */
+
 function historicalDecisionRates(b){
 
 let a=history(b);
@@ -554,17 +570,69 @@ let counts={escape:0,sashi:0,maki:0,makiSashi:0};
 
 a.slice(0,HISTORY_RACES).forEach(x=>{
 
+/* 1着の決まり手だけを攻め手率に使用 */
+
 if(x.place===1&&x.decision==="逃げ")counts.escape++;
 
-if(x.place!==1&&x.decision==="まくり")counts.maki++;
+if(x.place===1&&x.decision==="差し")counts.sashi++;
 
-if(x.place!==1&&x.decision==="差し")counts.sashi++;
+if(x.place===1&&x.decision==="まくり")counts.maki++;
 
-if(x.place!==1&&x.decision==="まくり差し")counts.makiSashi++
+if(x.place===1&&x.decision==="まくり差し")counts.makiSashi++
 
 });
 
-return{escape:counts.escape/total*100,sashi:counts.sashi/total*100,maki:counts.maki/total*100,makiSashi:counts.makiSashi/total*100}
+return{
+
+escape:counts.escape/total*100,
+
+sashi:counts.sashi/total*100,
+
+maki:counts.maki/total*100,
+
+makiSashi:counts.makiSashi/total*100
+
+}
+
+}
+
+function historicalInsideDefenseRates(){
+
+let a=history(1);
+
+if(!a.length)return null;
+
+const total=HISTORY_RACES;
+
+let counts={makare:0,sasare:0,makiSashi:0};
+
+a.slice(0,HISTORY_RACES).forEach(x=>{
+
+/* 1号艇が1着以外の時だけ、
+
+   勝った艇の決まり手を「まくられ・差され・まくり差され」として集計 */
+
+if(x.place!==1){
+
+if(x.againstDecision==="まくり")counts.makare++;
+
+if(x.againstDecision==="差し")counts.sasare++;
+
+if(x.againstDecision==="まくり差し")counts.makiSashi++
+
+}
+
+});
+
+return{
+
+makare:counts.makare/total*100,
+
+sasare:counts.sasare/total*100,
+
+makiSashi:counts.makiSashi/total*100
+
+}
 
 }
 
@@ -572,45 +640,67 @@ function decisions(r){
 
 if(!r)return{escape:0,nige:0,sashi:0,maki:0,makiSashi:0,makare:0,sasare:0,nigashi:0,nigashiRate:0,makareRate:0,sasareRate:0,makiSashiSareRate:0};
 
-let d=r?.decision_rates||r?.decisionRate||r?.decisions||r?.win_by||r?.winning_methods||{};
-
-let v={
-
-escape:rateValue(r,["escape_rate","nige_rate","win_by_escape_rate","nige_percent","nige_percent_rate","escape_percent","escapeRate","nigeRate","逃げ率",()=>d?.escape_rate,()=>d?.nige_rate,()=>d?.escape,()=>d?.nige]),
-
-nigashi:rateValue(r,["nigashi_rate","nigashi_percent","nigashi_percent_rate","escape_failed_rate","escape_failure_rate","lose_escape_rate","nige_failed_rate","nige_failure_rate","逃し率",()=>d?.nigashi_rate,()=>d?.nigashi,()=>d?.escape_failed_rate,()=>d?.escape_failure_rate,()=>d?.nige_failed_rate,()=>d?.nige_failure_rate]),
-
-sashi:rateValue(r,["sashi_rate","win_by_sashi_rate","sashi_percent","sashi_percent_rate","sashiRate","差し率",()=>d?.sashi_rate,()=>d?.sashi]),
-
-maki:rateValue(r,["maki_rate","makuri_rate","win_by_maki_rate","makuri_percent","maki_percent","maki_percent_rate","makiRate","makuriRate","まくり率",()=>d?.maki_rate,()=>d?.makuri_rate,()=>d?.maki,()=>d?.makuri]),
-
-makiSashi:rateValue(r,["maki_sashi_rate","makurisashi_rate","win_by_maki_sashi_rate","makuri_sashi_rate","maki_sashi_percent","makurisashi_percent","makiSashiRate","makuriSashiRate","まくり差し率",()=>d?.maki_sashi_rate,()=>d?.makurisashi_rate,()=>d?.maki_sashi,()=>d?.makurisashi]),
-
-makare:rateValue(r,["makare_rate","makurare_rate","be_makuri_rate","being_makuri_rate","lose_by_makuri_rate","makare_percent","makurare_percent","まくられ率",()=>d?.makare_rate,()=>d?.makurare,()=>d?.makare,()=>d?.makurare]),
-
-sasare:rateValue(r,["sasare_rate","be_sashi_rate","being_sashi_rate","lose_by_sashi_rate","sasare_percent","差され率",()=>d?.sasare,()=>d?.be_sashi_rate])
-
-};
-
-if(v.escape===0&&v.sashi===0&&v.maki===0&&v.makiSashi===0){
-
 let b=r?.entry_number?num(r.entry_number):0;
+
+/* 過去15走を最優先。
+
+   APIに存在する累積率ではなく、今回と同コース過去15走から再計算 */
 
 let h=historicalDecisionRates(b);
 
-if(h){v.escape=h.escape;v.sashi=h.sashi;v.maki=h.maki;v.makiSashi=h.makiSashi}
+let v={
+
+escape:h?.escape||0,
+
+nige:h?.escape||0,
+
+sashi:h?.sashi||0,
+
+maki:h?.maki||0,
+
+makiSashi:h?.makiSashi||0,
+
+makare:0,
+
+sasare:0,
+
+nigashi:0,
+
+nigashiRate:0,
+
+makareRate:0,
+
+sasareRate:0,
+
+makiSashiSareRate:0
+
+};
+
+/* 1号艇のみ、1着以外の決まり手を防御側率として集計 */
+
+if(b===1){
+
+let d=historicalInsideDefenseRates();
+
+if(d){
+
+v.makare=d.makare;
+
+v.sasare=d.sasare;
+
+v.makiSashi=d.makiSashi;
 
 }
 
-v.nige=v.escape;
-
-v.nigashiRate=v.nigashi;
+v.nigashiRate=v.makare;
 
 v.makareRate=v.makare;
 
 v.sasareRate=v.sasare;
 
-v.makiSashiSareRate=v.makiSashi;
+v.makiSashiSareRate=v.makiSashi
+
+}
 
 return v
 
@@ -766,6 +856,24 @@ return null
 
 }
 
+/* =========================================================
+
+   過去結果取り込み
+
+   1号艇の「1着以外」は勝者の決まり手を保存。
+
+   これにより、
+
+   まくられ率＝1号艇が1着以外＋勝者がまくり
+
+   差され率＝1号艇が1着以外＋勝者が差し
+
+   まくり差され率＝1号艇が1着以外＋勝者がまくり差し
+
+   を正しく算出する。
+
+   ========================================================= */
+
 function addResultRace(race,targets,wanted){
 
 let result=race?.result||race?.results||race?.race_result;
@@ -780,23 +888,81 @@ let list=Array.isArray(resultRacers)?resultRacers:Object.values(resultRacers);
 
 let date=result.date||race.date||race.race_date||race.date_time||race.dateTime||"";
 
-list.forEach(x=>{
+/* レース内全艇の結果を先に正規化 */
+
+let normalized=list.map(x=>{
 
 let no=getResultRacerNumber(x);
 
+let c=getCourse(x);
+
+let place=getPlace(x);
+
+let technique=getDecisionValue(x,result,race);
+
+return{raw:x,no,c,place,technique}
+
+}).filter(x=>x.no>0&&x.c>=1&&x.c<=6&&x.place>=1&&x.place<=6);
+
+/* 1着艇と、その1着艇の決まり手を特定 */
+
+let winner=normalized.find(x=>x.place===1);
+
+let winningDecision=winner?.technique||null;
+
+normalized.forEach(x=>{
+
+let no=x.no;
+
 if(!wanted.has(no))return;
 
-let c=getCourse(x),place=getPlace(x);
-
-if(no<=0||c<1||c>6||place<1||place>6)return;
+let c=x.c,place=x.place;
 
 if(!targets[no]||c!==targets[no].course)return;
 
 if(targets[no].boats[c].length>=HISTORY_RACES)return;
 
-let technique=getDecisionValue(x,result,race);
+/* 1着艇は自分自身の決まり手を保存 */
 
-targets[no].boats[c].push({date,place,course:c,decision:technique&&technique!=="-"?technique:null})
+if(place===1){
+
+targets[no].boats[c].push({
+
+date,
+
+place,
+
+course:c,
+
+decision:x.technique&&x.technique!=="-"?x.technique:null,
+
+againstDecision:null
+
+});
+
+return
+
+}
+
+/* 1着以外は、自分の決まり手ではなく
+
+   1着艇の決まり手を againstDecision として保存。
+
+   特に1号艇の防御率計算に使用する。 */
+
+targets[no].boats[c].push({
+
+date,
+
+place,
+
+course:c,
+
+decision:null,
+
+againstDecision:winningDecision&&winningDecision!=="-"?winningDecision:null
+
+});
 
 })
 
@@ -838,13 +1004,19 @@ return(targets[no]?.boats?.[c]?.length||0)>=HISTORY_RACES
 
 function sortHistory(targets){
 
-Object.values(targets).forEach(player=>Object.values(player.boats).forEach(arr=>{arr.sort((a,b)=>String(b.date).localeCompare(String(a.date)));if(arr.length>HISTORY_RACES)arr.splice(HISTORY_RACES)}))
+Object.values(targets).forEach(player=>Object.values(player.boats).forEach(arr=>{
+
+arr.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+
+if(arr.length>HISTORY_RACES)arr.splice(HISTORY_RACES)
+
+}))
 
 }
 
 async function loadHistory(){
 
-let key="bh-history-course-v16-"+today().ymd+"-"+$("venue").value+"-"+racers.map(r=>getRacerNumber(r)).join("-")+"-"+Object.values(manualCourses).join("");
+let key="bh-history-course-v17-"+today().ymd+"-"+$("venue").value+"-"+racers.map(r=>getRacerNumber(r)).join("-")+"-"+Object.values(manualCourses).join("");
 
 try{
 
@@ -882,7 +1054,13 @@ for(const url of urls){try{let data=await json(url);collectHistoryFromDay(data,t
 
 sortHistory(targets);
 
-let counts=racers.map(x=>{let no=getRacerNumber(x),c=course(num(x.entry_number));return targets[no]?.boats?.[c]?.length||0});
+let counts=racers.map(x=>{
+
+let no=getRacerNumber(x),c=course(num(x.entry_number));
+
+return targets[no]?.boats?.[c]?.length||0
+
+});
 
 $("message").innerHTML=`<span class="loading">🤖 ${counts.every(x=>x>=HISTORY_RACES)?"同コース過去15走を取得完了":"同コース過去15走を検索中..."}<br>現在：${counts.join(" / ")}走<br>対象：今回と同じ進入コース<br>検索：過去${Math.min(start+9,HISTORY_DAYS)}日</span>`
 
@@ -932,7 +1110,7 @@ let a=history(b),s=hstats(b),c=course(b);
 
 if(!a.length)return`<div class="history"><div class="historyTitle">📈 ${c}コース過去15走</div><div class="historyList"><span style="color:#777">${c}コースを走った過去15走を取得できていません</span></div></div>`;
 
-return`<div class="history"><div class="historyTitle">📈 ${c}コース過去${a.length}走</div><div class="historyStats"><div class="historyStat">1着<strong>${s.first}</strong></div><div class="historyStat">2着<strong>${s.second}</strong></div><div class="historyStat">3着<strong>${s.third}</strong></div><div class="historyStat">3連対率<strong>${s.rate.toFixed(1)}%</strong></div></div><div class="historyList">${a.map((x,i)=>`<div class="historyItem"><span>${i+1}. ${esc(String(x.date||"-").slice(5,10).replace("-","/"))}</span><span class="${x.place===1?"historyGood":x.place<=3?"historyMiddle":"historyBad"}">${x.place}着<span class="historyDecision"> / ${x.decision&&x.decision!=="-"?esc(x.decision):"なし"}</span></span></div>`).join("")}</div></div>`
+return`<div class="history"><div class="historyTitle">📈 ${c}コース過去${a.length}走</div><div class="historyStats"><div class="historyStat">1着<strong>${s.first}</strong></div><div class="historyStat">2着<strong>${s.second}</strong></div><div class="historyStat">3着<strong>${s.third}</strong></div><div class="historyStat">3連対率<strong>${s.rate.toFixed(1)}%</strong></div></div><div class="historyList">${a.map((x,i)=>`<div class="historyItem"><span>${i+1}. ${esc(String(x.date||"-").slice(5,10).replace("-","/"))}</span><span class="${x.place===1?"historyGood":x.place<=3?"historyMiddle":"historyBad"}">${x.place}着<span class="historyDecision"> / ${x.place===1?(x.decision&&x.decision!=="-"?esc(x.decision):"なし"):(x.againstDecision&&x.againstDecision!=="-"?esc(x.againstDecision):"なし")}</span></span></div>`).join("")}</div></div>`
 
 }
 
@@ -1244,11 +1422,19 @@ return v
 
 }
 
+/* 全体見通しの基準
+
+   65%以上：イン逃げ
+
+   50.0～64.9%：緑
+
+   49.9%以下：イン以外 */
+
 function overallEscapeProbability(){
 
 let r1=racer(1);
 
-if(!r1||course(1)!==1)return{escape:0,nonEscape:100,status:"イン逃げ軸ではない"};
+if(!r1||course(1)!==1)return{escape:0,nonEscape:100,status:"イン以外"};
 
 let d=decisions(r1),p=50;
 
@@ -1290,7 +1476,15 @@ p+=(vt.escape-1)*35;
 
 p=Math.max(5,Math.min(95,p));
 
-return{escape:p,nonEscape:100-p,status:p>=83?"鉄板激アツ":p>=65?"期待大":p>=50?"場平均以上":"イン逃げ警戒"}
+return{
+
+escape:p,
+
+nonEscape:100-p,
+
+status:p>=65?"イン逃げ":p>=50?"緑・イン逃げ五分以上":"イン以外"
+
+}
 
 }
 
@@ -1310,9 +1504,9 @@ let d=decisions(r);
 
 let s=num(r.national_win_rate||r.win_rate_national)*7+num(r.local_win_rate||r.win_rate_local)*4+num(r.national_top_2_percent||r.national_2ren_rate)*.12;
 
-let motor=num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren);
+s+=num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren)*.15;
 
-s+=motor*.15;
+let motor=num(r.motor_top_2_percent||r.motor_2ren_rate||r.motor_2ren);
 
 s+=motor>=40?7:motor>=35?5:motor>=30?2:motor<20?-3:0;
 
@@ -1588,7 +1782,7 @@ let main=dominant(o),mt=mainTypes(o),attacker=bestAttackBoat(main),wi=windInfo()
 
 let headline=o.escape>=60?"🔥 1号艇のイン逃げが鉄板級。":o.escape>=50?"1号艇のイン逃げを中心視。":o.escape<42?"1号艇のイン逃げ信頼度は低め。":"イン逃げは五分以上。相手展開も比較。";
 
-let outlookBand=outlook.escape>=60?"escapeHigh":outlook.escape<=44?"nonEscapeHigh":"balanced";
+let outlookBand=outlook.escape>=65?"escapeHigh":outlook.escape<=49.9?"nonEscapeHigh":"balanced";
 
 let escapeClass=outlookBand==="escapeHigh"?"decisionDanger":outlookBand==="nonEscapeHigh"?"decisionMuted":"decisionPositive";
 
@@ -1598,7 +1792,7 @@ let escapeLowClass=outlookBand==="nonEscapeHigh"?"outlookLow":"";
 
 let nonEscapeLowClass=outlookBand==="escapeHigh"?"outlookLow":"";
 
-$("attack").innerHTML=`<div class="attackBox"><div class="attackMain">${headline}</div><div class="attackSub">逃げ：${o.escape.toFixed(1)}%<br>差し：${o.sashi.toFixed(1)}%<br>まくり：${o.maki.toFixed(1)}%<br>まくり差し：${o.makiSashi.toFixed(1)}%<br><br><strong style="color:#d4af37">風展開</strong><br>${wi.mode==="head"&&wi.speed>=3?"🌬️ 向かい風3m以上 → アウトコース有利。特にまくり艇を上方補正。":wi.mode==="tail"&&wi.speed>=3?"🌬️ 追い風3m以上 → インコース有利。特に2・3コースの差しを上方補正。":wi.mode==="head"?"🌬️ 向かい風 → アウトコース・まくり方向を補正。":wi.mode==="tail"?"🌬️ 追い風 → インコース・差し方向を補正。":"風向データなし → 風補正なし。"}<br>風速：${wi.speed.toFixed(1)}m<br><br><strong style="color:#d4af37">今回の中心展開</strong><br>${mt.length?mt.map(x=>typeName(x[0])+" "+x[1].toFixed(1)+"%").join(" / "):typeName(main)}<br><br><strong style="color:#d4af37">主攻め候補</strong><br>${attacker}号艇<br><br><strong style="color:#d4af37">進入</strong><br>${[1,2,3,4,5,6].map(b=>`${b}号艇→${course(b)}コース`).join(" / ")}${main==="maki"||main==="makiSashi"?`<br><br>🟡 <strong style="color:#ffd84d">まくり艇直後・外側の展開を3着評価へ反映</strong><br>まくり買い目が成立する場合は、まくる艇の後ろからまくり差し候補を優先評価。<br>前艇がまくりの場合は条件を満たす艇を2着まで昇格。`:""}</div><div class="outlookBox"><div class="outlookTitle">🎯 全体見通し：イン逃げする / しない</div><div class="outlookGrid"><div class="outlookItem outlookEscape outlookBand-${outlookBand} ${escapeLowClass} ${outlook.escape<=0?"outlookInactive":""}"><div class="outlookLabel">イン逃げする</div><div class="outlookValue">${outlook.escape.toFixed(1)}%</div><div class="outlookStatus ${escapeClass}">${outlook.status}</div></div><div class="outlookItem outlookNonEscape outlookBand-${outlookBand} ${nonEscapeLowClass} ${outlook.nonEscape<=0?"outlookInactive":""}"><div class="outlookLabel">イン逃げしない</div><div class="outlookValue">${outlook.nonEscape.toFixed(1)}%</div><div class="outlookStatus ${nonEscapeClass}">${outlook.nonEscape>=65?"期待大":"展開警戒"}</div></div></div><div class="outlookCaution" style="display:${outlookBand==="balanced"?"block":"none"}">⚠️ 展開多数・買いすぎ注意！！</div><div class="overviewReason">イン逃げ/イン逃げしないを合計100%で評価。<br>${outlook.escape>=83?"🔥 1号艇の逃げ率83%以上。イン逃げ鉄板激アツ評価。":outlook.escape>=65?"🟡 1号艇の逃げ率65%以上。イン逃げ期待大として買い目評価へ反映。":outlook.escape>=50?"⚖️ イン逃げは場平均以上。50〜55%帯はイン逃げ・イン以外の両展開を評価。":"🔴 イン逃げ50%未満。イン以外の攻めを強く評価。"}<br>決まり手評価：1号艇逃げ50%=場平均 / 65%=期待大 / 83%=鉄板激アツ。<br>差し・まくり・まくり差し：7%=場平均 / 15%=期待大 / 20%=期待プラス / 25%=激アツ。<br>1号艇のまくられ・差され・まくり差されは7%未満=プラス、7〜14%=やや危険、15%以上=危険、25%以上=かなりマイナス。</div></div><div class="aiDetail"><strong>🤖 AI総合評価の主要項目</strong><br>機力・モーター・今節選手調子・展示タイム・ST・全国勝率・当地勝率・場特性・決まり手傾向・同コース過去15走・直近15走・進入・風向・風速・展開連動を統合評価。</div></div>`
+$("attack").innerHTML=`<div class="attackBox"><div class="attackMain">${headline}</div><div class="attackSub">逃げ：${o.escape.toFixed(1)}%<br>差し：${o.sashi.toFixed(1)}%<br>まくり：${o.maki.toFixed(1)}%<br>まくり差し：${o.makiSashi.toFixed(1)}%<br><br><strong style="color:#d4af37">風展開</strong><br>${wi.mode==="head"&&wi.speed>=3?"🌬️ 向かい風3m以上 → アウトコース有利。特にまくり艇を上方補正。":wi.mode==="tail"&&wi.speed>=3?"🌬️ 追い風3m以上 → インコース有利。特に2・3コースの差しを上方補正。":wi.mode==="head"?"🌬️ 向かい風 → アウトコース・まくり方向を補正。":wi.mode==="tail"?"🌬️ 追い風 → インコース・差し方向を補正。":"風向データなし → 風補正なし。"}<br>風速：${wi.speed.toFixed(1)}m<br><br><strong style="color:#d4af37">今回の中心展開</strong><br>${mt.length?mt.map(x=>typeName(x[0])+" "+x[1].toFixed(1)+"%").join(" / "):typeName(main)}<br><br><strong style="color:#d4af37">主攻め候補</strong><br>${attacker}号艇<br><br><strong style="color:#d4af37">進入</strong><br>${[1,2,3,4,5,6].map(b=>`${b}号艇→${course(b)}コース`).join(" / ")}${main==="maki"||main==="makiSashi"?`<br><br>🟡 <strong style="color:#ffd84d">まくり艇直後・外側の展開を3着評価へ反映</strong><br>まくり買い目が成立する場合は、まくる艇の後ろからまくり差し候補を優先評価。<br>前艇がまくりの場合は条件を満たす艇を2着まで昇格。`:""}</div><div class="outlookBox"><div class="outlookTitle">🎯 全体見通し：イン逃げする / しない</div><div class="outlookGrid"><div class="outlookItem outlookEscape outlookBand-${outlookBand} ${escapeLowClass} ${outlook.escape<=0?"outlookInactive":""}"><div class="outlookLabel">イン逃げする</div><div class="outlookValue">${outlook.escape.toFixed(1)}%</div><div class="outlookStatus ${escapeClass}">${outlook.status}</div></div><div class="outlookItem outlookNonEscape outlookBand-${outlookBand} ${nonEscapeLowClass} ${outlook.nonEscape<=0?"outlookInactive":""}"><div class="outlookLabel">イン逃げしない</div><div class="outlookValue">${outlook.nonEscape.toFixed(1)}%</div><div class="outlookStatus ${nonEscapeClass}">${outlook.nonEscape>=65?"期待大":"展開警戒"}</div></div></div><div class="outlookCaution" style="display:${outlookBand==="balanced"?"block":"none"}">⚠️ 展開多数・買いすぎ注意！！</div><div class="overviewReason">イン逃げ/イン逃げしないを合計100%で評価。<br>${outlook.escape>=83?"🔥 1号艇の逃げ率83%以上。イン逃げ鉄板激アツ評価。":outlook.escape>=65?"🔴 イン逃げ65%以上。イン逃げとして評価。":outlook.escape>=50?"🟢 イン逃げ50.0〜64.9%。緑評価。":"🔵 イン逃げ49.9%以下。イン以外として評価。"}<br>決まり手評価：1号艇逃げ50%=場平均 / 65%=期待大 / 83%=鉄板激アツ。<br>差し・まくり・まくり差し：7%=場平均 / 15%=期待大 / 20%=期待プラス / 25%=激アツ。<br>1号艇のまくられ・差され・まくり差されは7%未満=プラス、7〜14%=やや危険、15%以上=危険、25%以上=かなりマイナス。</div></div><div class="aiDetail"><strong>🤖 AI総合評価の主要項目</strong><br>機力・モーター・今節選手調子・展示タイム・ST・全国勝率・当地勝率・場特性・決まり手傾向・同コース過去15走・直近15走・進入・風向・風速・展開連動を統合評価。</div></div>`
 
 }
 
@@ -1746,7 +1940,7 @@ let counts=racers.map(x=>{let no=getRacerNumber(x),c=course(num(x.entry_number))
 
 let wi=windInfo();
 
-$("message").innerHTML=`<span class="success">✅ AI解析完了<br>🔥 主攻め：${typeName(dominant(o))}<br>📈 今回と同コースの過去15走：${counts.join(" / ")}走取得<br>🏟️ 場特性：${esc(venueTrait().name)}を評価<br>🌬️ 風情報：${esc(wi.label)} ${wi.speed.toFixed(1)}m<br>🎯 風補正：${wi.mode==="head"&&wi.speed>=3?"向かい風3m以上 → アウトコース・まくりを上方補正":wi.mode==="tail"&&wi.speed>=3?"追い風3m以上 → インコース・2・3コース差しを上方補正":wi.mode==="head"?"向かい風 → アウトコース・まくり方向を補正":wi.mode==="tail"?"追い風 → インコース・差し方向を補正":"風向データなし → 風補正なし"}<br>📊 全体見通し：イン逃げ ${outlook.escape.toFixed(1)}% / イン逃げしない ${outlook.nonEscape.toFixed(1)}%<br>📈 直近15走の調子：AIスコアへ反映<br>🛥️ 進入コース：AI評価へ反映<br>🎯 過去15走：全着順の決まり手を表示<br>📊 1号艇決まり手集計：母数15走。1着＋逃げ＝逃げ率、1着以外＋まくり＝まくられ率、1着以外＋差し＝差され率、1着以外＋まくり差し＝まくり差され率<br>🛡️ まくられ率・差され率・まくり差され率：1号艇のイン逃げ評価へ反映<br>✂️ 3着から切候補：0〜複数艇、無理に設定なし<br>🟡 展開復活：根拠がある場合のみ3着まで<br>⬆️ まくり後ろ：条件を満たせば2着まで昇格<br>🎯 AI評価：全国勝率・当地勝率・モーター・ST・展示・進入・決まり手・同コース過去15走・直近15走・風向・風速・場特性・展開連動を総合評価${outlook.escape>=65?"<br>🎯 イン逃げ65%以上：買い目パターン1・パターン2を生成":""}</span>`
+$("message").innerHTML=`<span class="success">✅ AI解析完了<br>🔥 主攻め：${typeName(dominant(o))}<br>📈 今回と同コースの過去15走：${counts.join(" / ")}走取得<br>🏟️ 場特性：${esc(venueTrait().name)}を評価<br>🌬️ 風情報：${esc(wi.label)} ${wi.speed.toFixed(1)}m<br>🎯 風補正：${wi.mode==="head"&&wi.speed>=3?"向かい風3m以上 → アウトコース・まくりを上方補正":wi.mode==="tail"&&wi.speed>=3?"追い風3m以上 → インコース・2・3コース差しを上方補正":wi.mode==="head"?"向かい風 → アウトコース・まくり方向を補正":wi.mode==="tail"?"追い風 → インコース・差し方向を補正":"風向データなし → 風補正なし"}<br>📊 全体見通し：イン逃げ ${outlook.escape.toFixed(1)}% / イン逃げしない ${outlook.nonEscape.toFixed(1)}%<br>📈 直近15走の調子：AIスコアへ反映<br>🛥️ 進入コース：AI評価へ反映<br>🎯 過去15走：1着は本人の決まり手、1着以外は1着艇の決まり手を表示<br>📊 決まり手集計：母数15走。差し・まくり・まくり差しは「1着」のみを分子に使用<br>🛡️ 1号艇のまくられ・差され・まくり差されは「1着以外」のみを分子に使用<br>📊 すべて今回と同コース過去15走の出走回数を母数として算出<br>✂️ 3着から切候補：0〜複数艇、無理に設定なし<br>🟡 展開復活：根拠がある場合のみ3着まで<br>⬆️ まくり後ろ：条件を満たせば2着まで昇格<br>🎯 AI評価：全国勝率・当地勝率・モーター・ST・展示・進入・決まり手・同コース過去15走・直近15走・風向・風速・場特性・展開連動を総合評価${outlook.escape>=65?"<br>🎯 イン逃げ65%以上：買い目パターン1・パターン2を生成":""}</span>`
 
 }catch(e){
 
