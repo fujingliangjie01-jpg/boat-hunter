@@ -4534,15 +4534,27 @@ makiEval=decisionEvaluation(x.boat,"maki"),
 
 makiSashiEval=decisionEvaluation(x.boat,"makiSashi");
 
-let status=
+let previous=i>0?a[i-1]:null,
 
-c.type==="cut"?
+gap=previous?previous.score-x.score:0,
 
-"<br><span style='color:#ff5555;font-size:9px'>✂️3着切候補</span>":
+under50=x.score<=50,
 
-c.type==="third"?
+under80Gap=x.score<=80&&previous&&gap>=21,
 
-"<br><span style='color:#ffd84d;font-size:9px'>△3着まで</span>":
+status=
+
+under50&&under80Gap?
+
+"<br><span style='color:#ff3b30;font-size:9px;font-weight:900'>⛔完全切り候補</span>":
+
+under80Gap?
+
+"<br><span style='color:#ffd84d;font-size:9px;font-weight:900'>△3着まで（展開からの2着）</span>":
+
+under50?
+
+"<br><span style='color:#ffd84d;font-size:9px;font-weight:900'>△3着まで</span>":
 
 "";
 
