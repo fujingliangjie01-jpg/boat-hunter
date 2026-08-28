@@ -4557,15 +4557,57 @@ function bhExtractAllV1Races(data,day){
   }
   return out
 }
-async function bhFetchAllResultsForDay(day=bhTodayKey()){
-  let rows=[];
-  for(const url of bhResultUrlsForDay(day)){
-    let data;try{data=await json(url)}catch(e){continue}
-    rows=bhExtractAllV1Races(data,day);
-    if(rows.length)break
+function bhExtractAllResultsGeneric(data,day){
+  let out=[],seen=new Set();
+  function add(rr,venueHint=0,raceHint=0){
+    if(!rr||typeof rr!=="object")return;
+    let resultObj=rr?.result||rr?.results||rr?.race_result||rr?.raceResult;
+    if(!resultObj)return;
+    let venue=Number(resultObj?.stadium_number??resultObj?.stadiumNumber??rr?.stadium_number??rr?.stadiumNumber??venueHint)||0;
+    let race=Number(resultObj?.race_number??resultObj?.raceNumber??rr?.race_number??rr?.raceNumber??raceHint)||0;
+    if(!(venue>=1&&venue<=24&&race>=1&&race<=12))return;
+    let top=bhExtractTop3Result(rr);if(!top)return;
+    let key=venue+"|"+race;if(seen.has(key))return;seen.add(key);
+    out.push({day,venue,race,result:top.join("-"),payout:bhExtractTrifectaPayout(rr,top)||0,time:Date.now()});
   }
-  if(!rows.length)return 0;
-  let store=bhAllResultStore();store[day]={updatedAt:Date.now(),rows};bhSaveAllResultStore(store);return rows.length
+  let stadiums=data?.programs?.stadiums;
+  if(stadiums&&typeof stadiums==="object"){
+    for(const [vk,st] of Object.entries(stadiums)){
+      let venue=Number(vk)||Number(st?.stadium_number||st?.stadiumNumber||0),races=st?.races;
+      if(!races)continue;
+      for(const [rk,rr] of Object.entries(races))add(rr,venue,Number(rk)||0)
+    }
+  }
+  function walk(obj,depth=0,venueHint=0,raceHint=0){
+    if(obj==null||depth>10)return;
+    if(Array.isArray(obj)){for(const x of obj)walk(x,depth+1,venueHint,raceHint);return}
+    if(typeof obj!=="object")return;
+    let v=Number(obj?.stadium_number??obj?.stadiumNumber??obj?.venue_number??obj?.venueNumber??venueHint)||venueHint;
+    let r=Number(obj?.race_number??obj?.raceNumber??obj?.race_no??obj?.raceNo??raceHint)||raceHint;
+    add(obj,v,r);
+    for(const [k,val] of Object.entries(obj)){
+      let nv=v,nr=r;
+      if(k==="stadiums"||k==="stadium")nv=v;
+      if(k==="races"||k==="race")nr=r;
+      walk(val,depth+1,nv,nr)
+    }
+  }
+  if(!out.length)walk(data);
+  return out.sort((a,b)=>a.venue-b.venue||a.race-b.race)
+}
+async function bhFetchAllResultsForDay(day=bhTodayKey()){
+  let merged=new Map(),okSources=0;
+  const urls=bhResultUrlsForDay(day);
+  for(const rawUrl of urls){
+    const url=rawUrl+(rawUrl.includes("?")?"&":"?")+"bhcb="+Date.now()+"_"+Math.random().toString(36).slice(2);
+    let data;try{data=await json(url)}catch(e){continue}
+    okSources++;
+    let got=bhExtractAllResultsGeneric(data,day);
+    for(const x of got){let k=x.venue+"|"+x.race,old=merged.get(k);if(!old||(!old.payout&&x.payout))merged.set(k,x)}
+  }
+  let rows=[...merged.values()].sort((a,b)=>a.venue-b.venue||a.race-b.race);
+  if(!rows.length)return {count:0,sources:okSources};
+  let store=bhAllResultStore();store[day]={updatedAt:Date.now(),rows};bhSaveAllResultStore(store);return {count:rows.length,sources:okSources}
 }
 let bhAutoResultLock=false,bhAutoResultTimer=null;
 function bhRaceKey(day=bhTodayKey(),venue=null,raceNo=null){
@@ -4659,9 +4701,9 @@ async function bhAutoCheckResults(force=false){
   let pending=Object.entries(snaps).filter(([k,x])=>x&&bhWithinPastDays(x.day,3)&&(!bhIsRaceRecorded(k)||!(Number(rec[k]?.payout||x?.payout||0)>0)));
   bhAutoStatus(force?"🤖 今日の全場結果を更新中…":`🤖 結果・払戻を確認中（${pending.length}R）`);
   try{
-    let allCount=await bhFetchAllResultsForDay(bhTodayKey());
+    let allInfo=await bhFetchAllResultsForDay(bhTodayKey()),allCount=Number(allInfo?.count||0);
     bhRenderResultHistory(window.bhStatsDate||bhTodayKey());
-    if(!pending.length){bhRefreshStatsDateOptions();bhRenderStats();bhAutoStatus(`✅ 本日 全場${allCount}R取得済み ／ AI判定待ち0R`);return}
+    if(!pending.length){bhRefreshStatsDateOptions();bhRenderStats();bhAutoStatus(`✅ 本日 全場${allCount}R取得済み ／ 取得元${Number(allInfo?.sources||0)}系統 ／ AI判定待ち0R`);return}
 
     let done=0,enriched=0,days=[...new Set(pending.map(([,x])=>x.day))].sort().reverse();
     for(const day of days){
