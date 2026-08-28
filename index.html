@@ -4453,17 +4453,22 @@ function bhStatDetail(s){
 const BH_VENUE_NAMES={1:"桐生",2:"戸田",3:"江戸川",4:"平和島",5:"多摩川",6:"浜名湖",7:"蒲郡",8:"常滑",9:"津",10:"三国",11:"びわこ",12:"住之江",13:"尼崎",14:"鳴門",15:"丸亀",16:"児島",17:"宮島",18:"徳山",19:"下関",20:"若松",21:"芦屋",22:"福岡",23:"唐津",24:"大村"};
 function bhVenueLabel(v){return BH_VENUE_NAMES[Number(v)]||`${Number(v)}場`}
 function bhRecordedRows(dayKey){
-  let rec=bhRecordedMap(),snaps=bhSnapshotStore(),rows=[];
-  for(const [key,r] of Object.entries(rec)){
-    if(!snaps[key])continue; // BOAT HUNTERでAI解析したレースだけ表示
+  let rec=bhRecordedMap(),snaps=bhSnapshotStore(),allStore=bhAllResultStore(),rows=[],seen=new Set();
+  const addRow=(key,base={})=>{
+    if(seen.has(key))return;seen.add(key);
     let p=key.split("|"),day=p[0],venue=Number(p[1]),race=Number(p[2]);
+    if(dayKey!=="all"&&day!==dayKey)return;
+    let r=rec[key]||{},snap=snaps[key],result=base.result||r?.result||snap?.result||"";
+    let th=snap?(typeof r?.ticketHit==="boolean"?r.ticketHit:(typeof snap?.ticketHit==="boolean"?snap.ticketHit:(result&&Array.isArray(snap?.expanded)?snap.expanded.includes(result):null))):null;
+    let oh=snap?(typeof r?.outlookHit==="boolean"?r.outlookHit:(typeof snap?.outlookHit==="boolean"?snap.outlookHit:(result&&snap?.pct!=null?bhOutlookHit(Number(result.split("-")[0]),num(snap.pct)):null))):null;
+    let payout=Number(base.payout??r?.payout??snap?.payout??0)||0;
+    rows.push({key,day,venue,race,result,th,oh,payout,odds:payout>0?payout/100:0,analyzed:!!snap,source:r?.source||"all",time:Number(base.time||r?.time||snap?.scoredAt||0)});
+  };
+  for(const [day,obj] of Object.entries(allStore)){
     if(dayKey!=="all"&&day!==dayKey)continue;
-    let snap=snaps[key],result=r?.result||snap?.result||"";
-    let th=typeof r?.ticketHit==="boolean"?r.ticketHit:(typeof snap?.ticketHit==="boolean"?snap.ticketHit:(result&&Array.isArray(snap?.expanded)?snap.expanded.includes(result):null));
-    let oh=typeof r?.outlookHit==="boolean"?r.outlookHit:(typeof snap?.outlookHit==="boolean"?snap.outlookHit:(result&&snap?.pct!=null?bhOutlookHit(Number(result.split("-")[0]),num(snap.pct)):null));
-    let payout=Number(r?.payout??snap?.payout??0)||0;
-    rows.push({key,day,venue,race,result,th,oh,payout,odds:payout>0?payout/100:0,source:r?.source||"",time:Number(r?.time||snap?.scoredAt||0)});
+    for(const x of (obj?.rows||[])){let key=bhRaceKey(day,x.venue,x.race);if(key)addRow(key,x)}
   }
+  for(const key of Object.keys(rec))addRow(key,{});
   return rows.sort((a,b)=>b.day.localeCompare(a.day)||a.venue-b.venue||a.race-b.race||a.time-b.time)
 }
 function bhJudgeBadge(label,v){return v===true?`<span class="bhHitBadge">⭕ ${label} 的中</span>`:v===false?`<span class="bhMissBadge">❌ ${label} 不的中</span>`:`<span class="bhUnknownBadge">— ${label} 判定なし</span>`}
@@ -4497,14 +4502,14 @@ function bhPayoutStatsHTML(dayKey){
 }
 function bhRenderResultHistory(dayKey=window.bhStatsDate||bhTodayKey()){
   let e=document.getElementById("bhResultHistory");if(!e)return;let rows=bhRecordedRows(dayKey);
-  if(!rows.length){e.innerHTML=`<div class="bhResultHistoryTitle">🎯 ${dayKey==="all"?"解析レース取得結果":"この日の解析レース結果"}</div><div class="bhResultHistoryEmpty">まだ取得済みのレース結果はありません。</div>`;return}
+  if(!rows.length){e.innerHTML=`<div class="bhResultHistoryTitle">🏁 ${dayKey==="all"?"全場取得結果":"この日の全場結果"}</div><div class="bhResultHistoryEmpty">まだ取得済みのレース結果はありません。</div>`;return}
   let groups=new Map();
   rows.forEach(x=>{let k=dayKey==="all"?`${x.day}|${x.venue}`:String(x.venue);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x)});
   let cards=[...groups.entries()].sort((a,b)=>{let A=a[1][0],B=b[1][0];return dayKey==="all"?(B.day.localeCompare(A.day)||A.venue-B.venue):(A.venue-B.venue)}).map(([k,list])=>{
     list.sort((a,b)=>a.race-b.race);let first=list[0],title=(dayKey==="all"?bhDateLabel(first.day)+" ":"")+bhVenueLabel(first.venue);
     return `<div class="bhResultVenueCard"><div class="bhResultVenueName">${title}</div><div class="bhResultMiniHead"><span>R</span><span>結果</span><span>買</span><span>見</span></div>${list.map(x=>`<div class="bhResultMiniRow"><span class="bhResultMiniRace">${x.race}R</span><span class="bhResultMiniResult">${x.result||"-"}</span>${bhMiniJudge(x.th)}${bhMiniJudge(x.oh)}${bhPayoutMiniHTML(x)}</div>`).join("")}</div>`
   }).join("");
-  e.innerHTML=`<div class="bhResultHistoryTitle">🎯 ${dayKey==="all"?"解析した全結果":bhDateLabel(dayKey)+" の解析結果"}　${rows.length}R</div><div class="bhResultVenueGrid">${cards}</div>`
+  e.innerHTML=`<div class="bhResultHistoryTitle">🏁 ${dayKey==="all"?"直近3日の全場結果":bhDateLabel(dayKey)+" の全場結果"}　${rows.length}R</div><div class="bhResultVenueGrid">${cards}</div>`
 }
 function bhRefreshStatsDateOptions(){
   let sel=document.getElementById("bhStatsDate");if(!sel)return;
@@ -4528,12 +4533,40 @@ function bhResultPanelIsOpen(){try{return localStorage.getItem(BH_RESULT_PANEL_O
 function bhToggleResultPanel(){let body=document.getElementById("bhResultBody"),btn=document.getElementById("bhResultToggle");if(!body||!btn)return;let open=!body.classList.contains("open");body.classList.toggle("open",open);btn.textContent=open?"📊 結果集計を隠す":"📊 結果集計を表示";try{localStorage.setItem(BH_RESULT_PANEL_OPEN_KEY,open?"1":"0")}catch(e){}}
 function bhResultPanelHTML(){
   let open=bhResultPanelIsOpen(),openClass=open?" open":"",toggleText=open?"📊 結果集計を隠す":"📊 結果集計を表示";
-  return `<div class="bhResultPanel"><button id="bhResultToggle" class="bhResultToggle" type="button" onclick="bhToggleResultPanel()">${toggleText}</button><div id="bhResultBody" class="bhResultBody${openClass}"><h3>📊 AI解析レース結果</h3><div id="bhAutoResultStatus" class="bhAutoResultStatus"><span>🤖 結果自動取得：直近3日追跡・待機中</span><button type="button" onclick="bhAutoCheckResults(true)">今すぐ確認</button></div><div id="bhResultMsg" class="bhResultMsg"></div><div id="bhResultHistory" class="bhResultHistory"></div><div class="bhStatsTools"><span>成績表示</span><select id="bhStatsDate" onchange="bhSetStatsDate(this.value)"></select></div><div id="bhStats" class="bhStats"></div></div></div>`
+  return `<div class="bhResultPanel"><button id="bhResultToggle" class="bhResultToggle" type="button" onclick="bhToggleResultPanel()">${toggleText}</button><div id="bhResultBody" class="bhResultBody${openClass}"><h3>📊 全場レース結果 ＋ AI解析判定</h3><div id="bhAutoResultStatus" class="bhAutoResultStatus"><span>🤖 全場結果自動取得：直近3日保持・待機中</span><button type="button" onclick="bhAutoCheckResults(true)">今すぐ確認</button></div><div id="bhResultMsg" class="bhResultMsg"></div><div id="bhResultHistory" class="bhResultHistory"></div><div class="bhStatsTools"><span>成績表示</span><select id="bhStatsDate" onchange="bhSetStatsDate(this.value)"></select></div><div id="bhStats" class="bhStats"></div></div></div>`
 }
 
 
 const BH_PREDICTION_SNAPSHOT_KEY="BOAT_HUNTER_PREDICTION_SNAPSHOTS_V1";
 const BH_RESULT_RECORDED_KEY="BOAT_HUNTER_RECORDED_RACES_V1";
+const BH_ALL_RESULTS_KEY="BOAT_HUNTER_ALL_RESULTS_3D_V1";
+function bhAllResultStore(){try{let x=JSON.parse(localStorage.getItem(BH_ALL_RESULTS_KEY)||"null");return x&&typeof x==="object"?x:{}}catch(e){return{}}}
+function bhSaveAllResultStore(x){try{localStorage.setItem(BH_ALL_RESULTS_KEY,JSON.stringify(x))}catch(e){}}
+function bhExtractAllV1Races(data,day){
+  let out=[],stadiums=data?.programs?.stadiums;
+  if(stadiums&&typeof stadiums==="object"){
+    for(const [vk,st] of Object.entries(stadiums)){
+      let venue=Number(vk)||Number(st?.stadium_number||st?.stadiumNumber||0),races=st?.races;
+      if(!venue||!races)continue;
+      for(const [rk,rr] of Object.entries(races)){
+        let race=Number(rr?.race_number??rr?.raceNumber??rk)||0,top=bhExtractTop3Result(rr);
+        if(!race||!top)continue;let payout=bhExtractTrifectaPayout(rr,top);
+        out.push({day,venue,race,result:top.join("-"),payout:payout||0,time:Date.now()});
+      }
+    }
+  }
+  return out
+}
+async function bhFetchAllResultsForDay(day=bhTodayKey()){
+  let rows=[];
+  for(const url of bhResultUrlsForDay(day)){
+    let data;try{data=await json(url)}catch(e){continue}
+    rows=bhExtractAllV1Races(data,day);
+    if(rows.length)break
+  }
+  if(!rows.length)return 0;
+  let store=bhAllResultStore();store[day]={updatedAt:Date.now(),rows};bhSaveAllResultStore(store);return rows.length
+}
 let bhAutoResultLock=false,bhAutoResultTimer=null;
 function bhRaceKey(day=bhTodayKey(),venue=null,raceNo=null){
   let v=Number((venue??document.getElementById("venue")?.value)||0),r=Number((raceNo??document.getElementById("race")?.value)||0);
@@ -4618,14 +4651,18 @@ function bhPruneResultDetails(){
   for(const [k,x] of Object.entries(snaps)){if(!x||!bhWithinPastDays(x.day,3)){delete snaps[k];changedS=true}}
   for(const k of Object.keys(rec)){let day=String(k).split("|")[0];if(!bhWithinPastDays(day,3)){delete rec[k];changedR=true}}
   if(changedS)bhSaveSnapshotStore(snaps);if(changedR)try{localStorage.setItem(BH_RESULT_RECORDED_KEY,JSON.stringify(rec))}catch(e){}
+  let allRes=bhAllResultStore(),changedA=false;for(const day of Object.keys(allRes)){if(!bhWithinPastDays(day,3)){delete allRes[day];changedA=true}}if(changedA)bhSaveAllResultStore(allRes);
   let store=bhLoadStatsStore(),changedD=false;for(const day of Object.keys(store.days||{})){if(!bhWithinPastDays(day,3)){delete store.days[day];changedD=true}}if(changedD)bhSaveStatsStore(store)
 }
 async function bhAutoCheckResults(force=false){
-  if(bhAutoResultLock)return;bhPruneResultDetails();let snaps=bhSnapshotStore(),rec=bhRecordedMap();
+  if(bhAutoResultLock)return;bhAutoResultLock=true;bhPruneResultDetails();let snaps=bhSnapshotStore(),rec=bhRecordedMap();
   let pending=Object.entries(snaps).filter(([k,x])=>x&&bhWithinPastDays(x.day,3)&&(!bhIsRaceRecorded(k)||!(Number(rec[k]?.payout||x?.payout||0)>0)));
-  if(!pending.length){let n=bhRecordedRows(bhTodayKey()).length;bhAutoStatus(`🤖 結果自動取得：本日 ${n}R取得済み ／ 未確定0R`);bhRenderResultHistory(window.bhStatsDate||bhTodayKey());bhRenderStats();return}
-  bhAutoResultLock=true;bhAutoStatus(`🤖 結果・払戻を確認中（${pending.length}R）`);
+  bhAutoStatus(force?"🤖 今日の全場結果を更新中…":`🤖 結果・払戻を確認中（${pending.length}R）`);
   try{
+    let allCount=await bhFetchAllResultsForDay(bhTodayKey());
+    bhRenderResultHistory(window.bhStatsDate||bhTodayKey());
+    if(!pending.length){bhRefreshStatsDateOptions();bhRenderStats();bhAutoStatus(`✅ 本日 全場${allCount}R取得済み ／ AI判定待ち0R`);return}
+
     let done=0,enriched=0,days=[...new Set(pending.map(([,x])=>x.day))].sort().reverse();
     for(const day of days){
       let dayPending=pending.filter(([,x])=>x.day===day);
@@ -4650,7 +4687,7 @@ async function bhAutoCheckResults(force=false){
     bhSaveSnapshotStore(snaps);bhRefreshStatsDateOptions();bhRenderStats();
     let latest=bhRecordedMap(),left=Object.entries(snaps).filter(([k,x])=>x&&bhWithinPastDays(x.day,3)&&(!bhIsRaceRecorded(k)||!(Number(latest[k]?.payout||x?.payout||0)>0))).length;
     let todayDone=bhRecordedRows(bhTodayKey()).length;
-    let msg=[];if(done)msg.push(`${done}R新規取得`);if(enriched)msg.push(`${enriched}R払戻補完`);msg.push(`本日${todayDone}R取得済み`);msg.push(`確認待ち${left}R`);bhAutoStatus(`✅ ${msg.join(" ／ ")}`)
+    let msg=[];if(done)msg.push(`${done}R新規取得`);if(enriched)msg.push(`${enriched}R払戻補完`);msg.push(`本日 全場${todayDone}R取得済み`);msg.push(`AI確認待ち${left}R`);bhAutoStatus(`✅ ${msg.join(" ／ ")}`)
   }catch(e){console.warn("結果自動取得",e);bhAutoStatus("⚠️ 結果・払戻：次回再確認")}
   finally{bhAutoResultLock=false}
 }
