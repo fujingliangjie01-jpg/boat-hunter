@@ -711,7 +711,7 @@ body.sgFestival .sgFestivalHero,body.allLadies:not(.sgFestival) .allLadiesHero{m
 </style>
 
 <style id="bh-result-learning">
-.bhUnclear{margin:10px 0;padding:12px;border:2px solid #f2b84b;border-radius:10px;background:#2a210c;animation:wallBlink 1.35s infinite}.bhUnclear b{font-size:17px;color:#ffd56b}.bhUnclear small{display:block;margin-top:4px;color:#f7e5b9}.bhResultPanel{margin-top:12px;padding:12px;border:1px solid #39444e;border-radius:10px;background:#0c1116}.bhResultPanel h3{margin:0 0 8px;color:#d4af37}.bhResultInputs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.bhResultInputs select,.bhResultInputs button{font-size:14px;padding:7px 9px;border-radius:7px}.bhResultInputs button{font-weight:900;background:#d4af37;color:#080808;border:0}.bhResultMsg{margin-top:8px;font-size:12px;line-height:1.6}.bhStats{margin-top:8px;font-size:11px;line-height:1.65;color:#c9d2da}
+.bhUnclear{margin:10px 0;padding:12px;border:2px solid #f2b84b;border-radius:10px;background:#2a210c;animation:wallBlink 1.35s infinite}.bhUnclear b{font-size:17px;color:#ffd56b}.bhUnclear small{display:block;margin-top:4px;color:#f7e5b9}.bhResultPanel{margin-top:12px;padding:12px;border:1px solid #39444e;border-radius:10px;background:#0c1116}.bhResultPanel h3{margin:0 0 8px;color:#d4af37}.bhResultMsg{margin-top:8px;font-size:12px;line-height:1.6}.bhStats{margin-top:8px;font-size:11px;line-height:1.65;color:#c9d2da}
 </style>
 
 <style id="bh-827-first-update">
@@ -741,7 +741,7 @@ body:not(.sgFestival):not(.allLadies) header:after{display:none!important}
 .bhResultToggle{width:100%;padding:10px 12px;border-radius:9px;border:1px solid #31546a;background:#0a1d2b;color:#dff5ff;font-weight:1000;font-size:13px;margin-bottom:8px}
 .bhResultBody{display:none}
 .bhResultBody.open{display:block}
-.bhRecordDate{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:0 0 9px;padding:8px;border:1px solid #2b4658;border-radius:8px;background:#07141d}.bhRecordDate span{font-size:11px;font-weight:900;color:#d4af37}.bhRecordDate input{width:auto;min-width:145px}
+
 .bhStatsTools{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:9px;padding-top:8px;border-top:1px solid #28343e}
 .bhStatsTools span{font-size:11px;font-weight:900;color:#d4af37}
 .bhStatsTools select{width:auto;min-width:130px}
@@ -4435,24 +4435,26 @@ function bhStatDetail(s){
     ${bhStatsRows(s.bands)}
   </div>`
 }
-function bhVenueLabel(v){return (typeof venueNames!=="undefined"&&venueNames?.[Number(v)])||`${Number(v)}場`}
+const BH_VENUE_NAMES={1:"桐生",2:"戸田",3:"江戸川",4:"平和島",5:"多摩川",6:"浜名湖",7:"蒲郡",8:"常滑",9:"津",10:"三国",11:"びわこ",12:"住之江",13:"尼崎",14:"鳴門",15:"丸亀",16:"児島",17:"宮島",18:"徳山",19:"下関",20:"若松",21:"芦屋",22:"福岡",23:"唐津",24:"大村"};
+function bhVenueLabel(v){return BH_VENUE_NAMES[Number(v)]||`${Number(v)}場`}
 function bhRecordedRows(dayKey){
   let rec=bhRecordedMap(),snaps=bhSnapshotStore(),rows=[];
   for(const [key,r] of Object.entries(rec)){
+    if(!snaps[key])continue; // BOAT HUNTERでAI解析したレースだけ表示
     let p=key.split("|"),day=p[0],venue=Number(p[1]),race=Number(p[2]);
     if(dayKey!=="all"&&day!==dayKey)continue;
-    let snap=snaps[key]||{},result=r?.result||snap?.result||"";
+    let snap=snaps[key],result=r?.result||snap?.result||"";
     let th=typeof r?.ticketHit==="boolean"?r.ticketHit:(typeof snap?.ticketHit==="boolean"?snap.ticketHit:(result&&Array.isArray(snap?.expanded)?snap.expanded.includes(result):null));
     let oh=typeof r?.outlookHit==="boolean"?r.outlookHit:(typeof snap?.outlookHit==="boolean"?snap.outlookHit:(result&&snap?.pct!=null?bhOutlookHit(Number(result.split("-")[0]),num(snap.pct)):null));
     rows.push({key,day,venue,race,result,th,oh,source:r?.source||"",time:Number(r?.time||snap?.scoredAt||0)});
   }
-  return rows.sort((a,b)=>b.day.localeCompare(a.day)||b.race-a.race||b.time-a.time).slice(0,100)
+  return rows.sort((a,b)=>b.day.localeCompare(a.day)||b.time-a.time||b.race-a.race).slice(0,30)
 }
 function bhJudgeBadge(label,v){return v===true?`<span class="bhHitBadge">⭕ ${label} 的中</span>`:v===false?`<span class="bhMissBadge">❌ ${label} 不的中</span>`:`<span class="bhUnknownBadge">— ${label} 判定なし</span>`}
 function bhRenderResultHistory(dayKey=window.bhStatsDate||bhTodayKey()){
   let e=document.getElementById("bhResultHistory");if(!e)return;let rows=bhRecordedRows(dayKey);
-  if(!rows.length){e.innerHTML=`<div class="bhResultHistoryTitle">🎯 ${dayKey==="all"?"取得済み結果":"この日の取得結果"}</div><div class="bhResultHistoryEmpty">まだ取得済みのレース結果はありません。</div>`;return}
-  e.innerHTML=`<div class="bhResultHistoryTitle">🎯 ${dayKey==="all"?"取得済み結果（新しい順）":bhDateLabel(dayKey)+" の取得結果"}　${rows.length}R</div>`+rows.map(x=>`<div class="bhResultHistoryRow"><div class="bhResultRace">${bhVenueLabel(x.venue)} ${x.race}R　結果 <b>${x.result||"-"}</b><small>${x.source==="auto"?"🤖 自動取得":"✍️ 手動記録"}</small></div><div class="bhResultJudges">${bhJudgeBadge("買い目",x.th)}${bhJudgeBadge("見通し",x.oh)}</div></div>`).join("")
+  if(!rows.length){e.innerHTML=`<div class="bhResultHistoryTitle">🎯 ${dayKey==="all"?"解析レース取得結果":"この日の解析レース結果"}</div><div class="bhResultHistoryEmpty">まだ取得済みのレース結果はありません。</div>`;return}
+  e.innerHTML=`<div class="bhResultHistoryTitle">🎯 ${dayKey==="all"?"解析レース結果（新しい順）":bhDateLabel(dayKey)+" の取得結果"}　${rows.length}R</div>`+rows.map(x=>`<div class="bhResultHistoryRow"><div class="bhResultRace">${bhVenueLabel(x.venue)} ${x.race}R　結果 <b>${x.result||"-"}</b><small>${x.source==="auto"?"🤖 自動取得":"✍️ 手動記録"}</small></div><div class="bhResultJudges">${bhJudgeBadge("買い目",x.th)}${bhJudgeBadge("見通し",x.oh)}</div></div>`).join("")
 }
 function bhRefreshStatsDateOptions(){
   let sel=document.getElementById("bhStatsDate");if(!sel)return;
@@ -4475,11 +4477,9 @@ const BH_RESULT_PANEL_OPEN_KEY="BOAT_HUNTER_RESULT_PANEL_OPEN_V1";
 function bhResultPanelIsOpen(){try{return localStorage.getItem(BH_RESULT_PANEL_OPEN_KEY)==="1"}catch(e){return false}}
 function bhToggleResultPanel(){let body=document.getElementById("bhResultBody"),btn=document.getElementById("bhResultToggle");if(!body||!btn)return;let open=!body.classList.contains("open");body.classList.toggle("open",open);btn.textContent=open?"📊 結果集計を隠す":"📊 結果集計を表示";try{localStorage.setItem(BH_RESULT_PANEL_OPEN_KEY,open?"1":"0")}catch(e){}}
 function bhResultPanelHTML(){
-  let o='<option value="">-</option>'+[1,2,3,4,5,6].map(x=>`<option>${x}</option>`).join("");
   let open=bhResultPanelIsOpen(),openClass=open?" open":"",toggleText=open?"📊 結果集計を隠す":"📊 結果集計を表示";
-  return `<div class="bhResultPanel"><button id="bhResultToggle" class="bhResultToggle" type="button" onclick="bhToggleResultPanel()">${toggleText}</button><div id="bhResultBody" class="bhResultBody${openClass}"><h3>📊 予想結果・自己採点</h3><div id="bhAutoResultStatus" class="bhAutoResultStatus"><span>🤖 結果自動取得：過去7日追跡・待機中</span><button type="button" onclick="bhAutoCheckResults(true)">今すぐ確認</button></div><div class="bhRecordDate"><span>記録する日付</span><input id="bhRecordDate" type="date" value="${bhTodayKey()}" max="${bhTodayKey()}"></div><div class="bhResultInputs">結果：<select id="bhR1">${o}</select>-<select id="bhR2">${o}</select>-<select id="bhR3">${o}</select><button onclick="bhRecordResult(bhR1.value,bhR2.value,bhR3.value)">結果を記録</button></div><div id="bhResultMsg" class="bhResultMsg"></div><div id="bhResultHistory" class="bhResultHistory"></div><div class="bhStatsTools"><span>成績表示</span><select id="bhStatsDate" onchange="bhSetStatsDate(this.value)"></select></div><div id="bhStats" class="bhStats"></div></div></div>`
+  return `<div class="bhResultPanel"><button id="bhResultToggle" class="bhResultToggle" type="button" onclick="bhToggleResultPanel()">${toggleText}</button><div id="bhResultBody" class="bhResultBody${openClass}"><h3>📊 AI解析レース結果</h3><div id="bhAutoResultStatus" class="bhAutoResultStatus"><span>🤖 結果自動取得：過去7日追跡・待機中</span><button type="button" onclick="bhAutoCheckResults(true)">今すぐ確認</button></div><div id="bhResultMsg" class="bhResultMsg"></div><div id="bhResultHistory" class="bhResultHistory"></div><div class="bhStatsTools"><span>成績表示</span><select id="bhStatsDate" onchange="bhSetStatsDate(this.value)"></select></div><div id="bhStats" class="bhStats"></div></div></div>`
 }
-
 
 
 const BH_PREDICTION_SNAPSHOT_KEY="BOAT_HUNTER_PREDICTION_SNAPSHOTS_V1";
