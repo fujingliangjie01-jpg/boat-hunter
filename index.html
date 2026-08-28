@@ -822,19 +822,34 @@ body:not(.sgFestival):not(.allLadies) header:after{display:none!important}
 </style>
 
 <style id="bh-result-history-ui">
-.bhResultHistory{margin:10px 0 12px;padding:10px;border:1px solid #304653;border-radius:10px;background:#08131b}
-.bhResultHistoryTitle{font-size:14px;font-weight:1000;color:#ffd54a;margin-bottom:8px}
-.bhResultHistoryEmpty{font-size:12px;color:#91a4b1;padding:7px 2px}
-.bhResultHistoryRow{display:grid;grid-template-columns:minmax(98px,1fr) auto;gap:8px;align-items:center;padding:9px 8px;border-top:1px solid #20323e}
-.bhResultHistoryRow:first-of-type{border-top:0}
-.bhResultRace{font-size:13px;font-weight:1000;color:#fff}
-.bhResultRace small{display:block;margin-top:3px;color:#9fb3c0;font-size:10px;font-weight:800}
-.bhResultJudges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bhResultHistory{margin:10px 0 12px;padding:8px;border:1px solid #304653;border-radius:10px;background:#08131b}
+.bhResultHistoryTitle{font-size:13px;font-weight:1000;color:#ffd54a;margin:0 0 7px}
+.bhResultHistoryEmpty{font-size:11px;color:#91a4b1;padding:7px 2px}
+.bhResultVenueGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-items:start}
+.bhResultVenueCard{min-width:0;border:1px solid #29404e;border-radius:8px;background:#091720;overflow:hidden}
+.bhResultVenueName{padding:6px 4px;text-align:center;font-size:11px;font-weight:1000;color:#ffd54a;background:#0c202d;border-bottom:1px solid #29404e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bhResultMiniHead,.bhResultMiniRow{display:grid;grid-template-columns:25px minmax(42px,1fr) 25px 25px;gap:2px;align-items:center;text-align:center}
+.bhResultMiniHead{padding:4px 2px;font-size:8px;font-weight:900;color:#8197a5;background:#07131b}
+.bhResultMiniRow{padding:5px 2px;border-top:1px solid #1c303c;font-size:9px;font-weight:900;color:#eaf5fb}
+.bhResultMiniRow:first-of-type{border-top:0}
+.bhResultMiniRace{color:#fff;white-space:nowrap}
+.bhResultMiniResult{font-size:9px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bhResultMiniJudge{font-size:11px;line-height:1}
+.bhResultMiniJudge.hit{color:#61e58d}.bhResultMiniJudge.miss{color:#ff6f7b}.bhResultMiniJudge.unknown{color:#70818c}
+.bhResultMiniPayout{grid-column:1/-1;text-align:left;padding:0 3px 3px;font-size:8px;font-weight:800;color:#9fc4d8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bhResultMiniPayout b{color:#ffd75d;font-weight:1000}
+.bhPayoutStats{margin-top:12px;border:1px solid #2c4352;border-radius:10px;background:#08131b;padding:9px}
+.bhPayoutStatsTitle{font-size:13px;font-weight:1000;color:#d4af37;margin-bottom:7px}
+.bhPayoutHead,.bhPayoutRow{display:grid;grid-template-columns:minmax(0,1.5fr) 38px 42px 60px;gap:4px;align-items:center}
+.bhPayoutHead{font-size:8px;color:#758896;font-weight:900;padding-bottom:4px}
+.bhPayoutRow{font-size:10px;font-weight:900;padding:5px 0;border-top:1px solid rgba(50,70,82,.45)}
+.bhPayoutBand{color:#e6eef4}.bhPayoutN{color:#9fb0bd;text-align:right}.bhPayoutHit{color:#7fe8a2;text-align:right}.bhPayoutRate{color:#7fe8a2;text-align:right;font-weight:1000}
+.bhPayoutNote{margin-top:6px;font-size:8px;line-height:1.5;color:#78909e}
 .bhHitBadge,.bhMissBadge,.bhUnknownBadge{display:inline-flex;align-items:center;padding:5px 7px;border-radius:7px;font-size:11px;font-weight:1000;white-space:nowrap}
 .bhHitBadge{background:#0d2a1e;border:1px solid #246849;color:#7ff0aa}
 .bhMissBadge{background:#31151a;border:1px solid #7b303c;color:#ff98a4}
 .bhUnknownBadge{background:#1b2530;border:1px solid #42566a;color:#b8c7d4}
-@media(max-width:600px){.bhResultHistoryRow{grid-template-columns:1fr}.bhResultJudges{justify-content:flex-start}}
+@media(max-width:380px){.bhResultVenueGrid{gap:4px}.bhResultHistory{padding:6px}.bhResultVenueName{font-size:10px}.bhResultMiniHead,.bhResultMiniRow{grid-template-columns:23px minmax(38px,1fr) 23px 23px}.bhResultMiniRow{font-size:8px}}
 </style>
 </head>
 <body>
@@ -4446,15 +4461,45 @@ function bhRecordedRows(dayKey){
     let snap=snaps[key],result=r?.result||snap?.result||"";
     let th=typeof r?.ticketHit==="boolean"?r.ticketHit:(typeof snap?.ticketHit==="boolean"?snap.ticketHit:(result&&Array.isArray(snap?.expanded)?snap.expanded.includes(result):null));
     let oh=typeof r?.outlookHit==="boolean"?r.outlookHit:(typeof snap?.outlookHit==="boolean"?snap.outlookHit:(result&&snap?.pct!=null?bhOutlookHit(Number(result.split("-")[0]),num(snap.pct)):null));
-    rows.push({key,day,venue,race,result,th,oh,source:r?.source||"",time:Number(r?.time||snap?.scoredAt||0)});
+    let payout=Number(r?.payout??snap?.payout??0)||0;
+    rows.push({key,day,venue,race,result,th,oh,payout,odds:payout>0?payout/100:0,source:r?.source||"",time:Number(r?.time||snap?.scoredAt||0)});
   }
-  return rows.sort((a,b)=>b.day.localeCompare(a.day)||b.time-a.time||b.race-a.race).slice(0,30)
+  return rows.sort((a,b)=>b.day.localeCompare(a.day)||a.venue-b.venue||a.race-b.race||a.time-b.time)
 }
 function bhJudgeBadge(label,v){return v===true?`<span class="bhHitBadge">⭕ ${label} 的中</span>`:v===false?`<span class="bhMissBadge">❌ ${label} 不的中</span>`:`<span class="bhUnknownBadge">— ${label} 判定なし</span>`}
+function bhMiniJudge(v){return v===true?'<span class="bhResultMiniJudge hit">○</span>':v===false?'<span class="bhResultMiniJudge miss">×</span>':'<span class="bhResultMiniJudge unknown">－</span>'}
+function bhPayoutMiniHTML(x){
+  if(!(x.payout>0))return '<span class="bhResultMiniPayout">払戻：取得待ち</span>';
+  return `<span class="bhResultMiniPayout">払 <b>¥${Math.round(x.payout).toLocaleString("ja-JP")}</b> ・ ${x.odds.toFixed(1)}倍</span>`
+}
+function bhPayoutBand(amount){
+  let a=Number(amount)||0;
+  if(a<=1500)return "～1,500円";
+  if(a<=3000)return "1,501～3,000円";
+  if(a<=6000)return "3,001～6,000円";
+  if(a<=10000)return "6,001～10,000円";
+  if(a<=20000)return "10,001～20,000円";
+  if(a<=50000)return "20,001～50,000円";
+  if(a<=100000)return "50,001～100,000円";
+  return "100,001円以上"
+}
+const BH_PAYOUT_BANDS=["～1,500円","1,501～3,000円","3,001～6,000円","6,001～10,000円","10,001～20,000円","20,001～50,000円","50,001～100,000円","100,001円以上"];
+function bhPayoutStatsHTML(dayKey){
+  let rows=bhRecordedRows(dayKey).filter(x=>x.payout>0),m={};BH_PAYOUT_BANDS.forEach(k=>m[k]={n:0,hit:0});
+  rows.forEach(x=>{let k=bhPayoutBand(x.payout);m[k].n++;if(x.th===true)m[k].hit++});
+  let body=BH_PAYOUT_BANDS.map(k=>{let v=m[k],rate=v.n?((v.hit/v.n)*100).toFixed(1)+"%":"-";return `<div class="bhPayoutRow"><span class="bhPayoutBand">${k}</span><span class="bhPayoutN">${v.n}R</span><span class="bhPayoutHit">${v.hit}</span><span class="bhPayoutRate">${rate}</span></div>`}).join("");
+  return `<div class="bhPayoutStats"><div class="bhPayoutStatsTitle">💰 3連単払戻金額帯別・買い目的中</div><div class="bhPayoutHead"><span>払戻金額</span><span>R</span><span>的中</span><span>的中率</span></div>${body}<div class="bhPayoutNote">※払戻は100円あたり。表示の「倍」は払戻÷100の確定倍率。</div></div>`
+}
 function bhRenderResultHistory(dayKey=window.bhStatsDate||bhTodayKey()){
   let e=document.getElementById("bhResultHistory");if(!e)return;let rows=bhRecordedRows(dayKey);
   if(!rows.length){e.innerHTML=`<div class="bhResultHistoryTitle">🎯 ${dayKey==="all"?"解析レース取得結果":"この日の解析レース結果"}</div><div class="bhResultHistoryEmpty">まだ取得済みのレース結果はありません。</div>`;return}
-  e.innerHTML=`<div class="bhResultHistoryTitle">🎯 ${dayKey==="all"?"解析レース結果（新しい順）":bhDateLabel(dayKey)+" の取得結果"}　${rows.length}R</div>`+rows.map(x=>`<div class="bhResultHistoryRow"><div class="bhResultRace">${bhVenueLabel(x.venue)} ${x.race}R　結果 <b>${x.result||"-"}</b><small>${x.source==="auto"?"🤖 自動取得":"✍️ 手動記録"}</small></div><div class="bhResultJudges">${bhJudgeBadge("買い目",x.th)}${bhJudgeBadge("見通し",x.oh)}</div></div>`).join("")
+  let groups=new Map();
+  rows.forEach(x=>{let k=dayKey==="all"?`${x.day}|${x.venue}`:String(x.venue);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x)});
+  let cards=[...groups.entries()].sort((a,b)=>{let A=a[1][0],B=b[1][0];return dayKey==="all"?(B.day.localeCompare(A.day)||A.venue-B.venue):(A.venue-B.venue)}).map(([k,list])=>{
+    list.sort((a,b)=>a.race-b.race);let first=list[0],title=(dayKey==="all"?bhDateLabel(first.day)+" ":"")+bhVenueLabel(first.venue);
+    return `<div class="bhResultVenueCard"><div class="bhResultVenueName">${title}</div><div class="bhResultMiniHead"><span>R</span><span>結果</span><span>買</span><span>見</span></div>${list.map(x=>`<div class="bhResultMiniRow"><span class="bhResultMiniRace">${x.race}R</span><span class="bhResultMiniResult">${x.result||"-"}</span>${bhMiniJudge(x.th)}${bhMiniJudge(x.oh)}${bhPayoutMiniHTML(x)}</div>`).join("")}</div>`
+  }).join("");
+  e.innerHTML=`<div class="bhResultHistoryTitle">🎯 ${dayKey==="all"?"解析した全結果":bhDateLabel(dayKey)+" の解析結果"}　${rows.length}R</div><div class="bhResultVenueGrid">${cards}</div>`
 }
 function bhRefreshStatsDateOptions(){
   let sel=document.getElementById("bhStatsDate");if(!sel)return;
@@ -4471,7 +4516,7 @@ function bhRenderStats(){
   window.bhStatsDate=key;
   bhRenderResultHistory(key);
   let s=key==="all"?store.all:(store.days[key]||bhEmptyStat());
-  e.innerHTML=`<div class="bhStatsSectionTitle">${key==="all"?"📚 全期間累計":"📅 "+bhDateLabel(key)+" の成績"}</div>${bhStatDetail(s)}${key==="all"?"":`<div class="bhStatsAll"><b>📚 全期間累計</b><br>${store.all.total}R　買い目 <b>${bhRate(store.all.ticketHit,store.all.total)}</b>　見通し <b>${bhRate(store.all.outlookHit,store.all.total)}</b></div>`}`
+  e.innerHTML=`<div class="bhStatsSectionTitle">${key==="all"?"📚 全期間累計":"📅 "+bhDateLabel(key)+" の成績"}</div>${bhStatDetail(s)}${bhPayoutStatsHTML(key)}${key==="all"?"":`<div class="bhStatsAll"><b>📚 全期間累計</b><br>${store.all.total}R　買い目 <b>${bhRate(store.all.ticketHit,store.all.total)}</b>　見通し <b>${bhRate(store.all.outlookHit,store.all.total)}</b></div>`}`
 }
 const BH_RESULT_PANEL_OPEN_KEY="BOAT_HUNTER_RESULT_PANEL_OPEN_V1";
 function bhResultPanelIsOpen(){try{return localStorage.getItem(BH_RESULT_PANEL_OPEN_KEY)==="1"}catch(e){return false}}
@@ -4539,6 +4584,18 @@ function bhExtractTop3Result(race){
   }
   return null
 }
+function bhExtractTrifectaPayout(race,top=null){
+  if(!race)return 0;let result=race?.result||race?.results||race?.race_result||race?.raceResult||race;
+  let tf=result?.payouts?.trifecta||race?.payouts?.trifecta||result?.payout?.trifecta||race?.payout?.trifecta||result?.trifecta_payout||race?.trifecta_payout;
+  let list=Array.isArray(tf)?tf:(tf&&typeof tf==="object"?Object.values(tf):[]),want=Array.isArray(top)?top.join("-"):"";
+  for(const x of list){
+    if(x==null)continue;let comb=String(x?.combination??x?.comb??x?.number??"").replace(/[^1-6]/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"");
+    let amount=Number(x?.amount??x?.payout??x?.payoff??x?.refund??x?.money??0)||0;if(amount>0&&(!want||!comb||comb===want))return amount
+  }
+  let candidates=[result?.trifecta_amount,result?.trifectaAmount,result?.trifecta_payout_amount,result?.trifectaPayoutAmount,race?.trifecta_amount,race?.trifectaAmount];
+  for(const v of candidates){let a=Number(String(v??"").replace(/[^0-9.]/g,""))||0;if(a>0)return a}
+  return 0
+}
 function bhAutoStatus(text){let e=document.getElementById("bhAutoResultStatus");if(e){let s=e.querySelector("span");if(s)s.textContent=text}}
 function bhDayParts(day){
   let m=String(day||"").match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?{year:m[1],ymd:m[1]+m[2]+m[3]}:null
@@ -4552,28 +4609,37 @@ function bhResultUrlsForDay(day){
   u.push(`${API_V1}/${p.year}/${p.ymd}.json`,`${API_RESULTS_V3}/${p.year}/${p.ymd}.json`,`${API_RESULTS_V2}/${p.year}/${p.ymd}.json`);return u
 }
 async function bhAutoCheckResults(force=false){
-  if(bhAutoResultLock)return;let snaps=bhSnapshotStore(),pending=Object.entries(snaps).filter(([k,x])=>x&&!x.scored&&bhWithinPastDays(x.day,7)&&!bhIsRaceRecorded(k));
-  if(!pending.length){let n=bhRecordedRows(bhTodayKey()).length;bhAutoStatus(`🤖 結果自動取得：本日 ${n}R取得済み ／ 未確定0R`);bhRenderResultHistory(window.bhStatsDate||bhTodayKey());return}
-  bhAutoResultLock=true;bhAutoStatus(`🤖 結果自動取得：過去7日を確認中（${pending.length}R）`);
+  if(bhAutoResultLock)return;let snaps=bhSnapshotStore(),rec=bhRecordedMap();
+  let pending=Object.entries(snaps).filter(([k,x])=>x&&bhWithinPastDays(x.day,7)&&(!bhIsRaceRecorded(k)||!(Number(rec[k]?.payout||x?.payout||0)>0)));
+  if(!pending.length){let n=bhRecordedRows(bhTodayKey()).length;bhAutoStatus(`🤖 結果自動取得：本日 ${n}R取得済み ／ 未確定0R`);bhRenderResultHistory(window.bhStatsDate||bhTodayKey());bhRenderStats();return}
+  bhAutoResultLock=true;bhAutoStatus(`🤖 結果・払戻を確認中（${pending.length}R）`);
   try{
-    let done=0,days=[...new Set(pending.map(([,x])=>x.day))].sort().reverse();
+    let done=0,enriched=0,days=[...new Set(pending.map(([,x])=>x.day))].sort().reverse();
     for(const day of days){
       let dayPending=pending.filter(([,x])=>x.day===day);
       for(const url of bhResultUrlsForDay(day)){
         let data;try{data=await json(url)}catch(e){continue}
         for(const [key,snap] of dayPending){
-          if(snap.scored||bhIsRaceRecorded(key))continue;let rr=directRace(data,snap.venue,snap.race)||findRace(data,snap.venue,snap.race)||bhFindRaceAny(data,snap.venue,snap.race),top=bhExtractTop3Result(rr);if(!top)continue;
-          let result=top.join("-"),first=top[0],th=(snap.expanded||[]).includes(result),oh=bhOutlookHit(first,num(snap.pct)),store=bhLoadStatsStore();
-          if(!store.days[snap.day])store.days[snap.day]=bhEmptyStat();bhAddResultStat(store.all,th,oh,snap.alerts?.length?snap.alerts:["アラートなし"],snap.band||bhBandName(num(snap.pct)));bhAddResultStat(store.days[snap.day],th,oh,snap.alerts?.length?snap.alerts:["アラートなし"],snap.band||bhBandName(num(snap.pct)));bhSaveStatsStore(store);
-          bhMarkRaceRecorded(key,result,"auto",{ticketHit:th,outlookHit:oh,pct:num(snap.pct)});snap.scored=true;snap.result=result;snap.ticketHit=th;snap.outlookHit=oh;snap.scoredAt=Date.now();done++
+          let current=bhRecordedMap()[key]||{},needResult=!bhIsRaceRecorded(key),needPayout=!(Number(current?.payout||snap?.payout||0)>0);
+          if(!needResult&&!needPayout)continue;
+          let rr=directRace(data,snap.venue,snap.race)||findRace(data,snap.venue,snap.race)||bhFindRaceAny(data,snap.venue,snap.race),top=bhExtractTop3Result(rr);if(!top)continue;
+          let result=top.join("-"),payout=bhExtractTrifectaPayout(rr,top);
+          if(needResult){
+            let first=top[0],th=(snap.expanded||[]).includes(result),oh=bhOutlookHit(first,num(snap.pct)),store=bhLoadStatsStore();
+            if(!store.days[snap.day])store.days[snap.day]=bhEmptyStat();bhAddResultStat(store.all,th,oh,snap.alerts?.length?snap.alerts:["アラートなし"],snap.band||bhBandName(num(snap.pct)));bhAddResultStat(store.days[snap.day],th,oh,snap.alerts?.length?snap.alerts:["アラートなし"],snap.band||bhBandName(num(snap.pct)));bhSaveStatsStore(store);
+            bhMarkRaceRecorded(key,result,"auto",{ticketHit:th,outlookHit:oh,pct:num(snap.pct),payout:payout||0});snap.scored=true;snap.result=result;snap.ticketHit=th;snap.outlookHit=oh;snap.payout=payout||0;snap.scoredAt=Date.now();done++
+          }else if(needPayout&&payout>0){
+            let map=bhRecordedMap();map[key]={...(map[key]||{}),payout};try{localStorage.setItem(BH_RESULT_RECORDED_KEY,JSON.stringify(map))}catch(e){}snap.payout=payout;enriched++
+          }
         }
-        if(dayPending.every(([key,snap])=>snap.scored||bhIsRaceRecorded(key)))break
+        let latest=bhRecordedMap();if(dayPending.every(([key,snap])=>bhIsRaceRecorded(key)&&Number(latest[key]?.payout||snap?.payout||0)>0))break
       }
     }
     bhSaveSnapshotStore(snaps);bhRefreshStatsDateOptions();bhRenderStats();
-    let left=Object.entries(snaps).filter(([k,x])=>x&&!x.scored&&bhWithinPastDays(x.day,7)&&!bhIsRaceRecorded(k)).length;
-    let todayDone=bhRecordedRows(bhTodayKey()).length;bhAutoStatus(done?`✅ ${done}R新規取得 ／ 本日${todayDone}R取得済み ／ 未確定${left}R`:`🤖 本日${todayDone}R取得済み ／ 未確定${left}R`)
-  }catch(e){console.warn("結果自動取得",e);bhAutoStatus("⚠️ 過去7日追跡：次回再確認")}
+    let latest=bhRecordedMap(),left=Object.entries(snaps).filter(([k,x])=>x&&bhWithinPastDays(x.day,7)&&(!bhIsRaceRecorded(k)||!(Number(latest[k]?.payout||x?.payout||0)>0))).length;
+    let todayDone=bhRecordedRows(bhTodayKey()).length;
+    let msg=[];if(done)msg.push(`${done}R新規取得`);if(enriched)msg.push(`${enriched}R払戻補完`);msg.push(`本日${todayDone}R取得済み`);msg.push(`確認待ち${left}R`);bhAutoStatus(`✅ ${msg.join(" ／ ")}`)
+  }catch(e){console.warn("結果自動取得",e);bhAutoStatus("⚠️ 結果・払戻：次回再確認")}
   finally{bhAutoResultLock=false}
 }
 function bhStartAutoResultCheck(){
