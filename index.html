@@ -849,6 +849,16 @@ body:not(.sgFestival):not(.allLadies) header:after{display:none!important}
 .bhHitBadge{background:#0d2a1e;border:1px solid #246849;color:#7ff0aa}
 .bhMissBadge{background:#31151a;border:1px solid #7b303c;color:#ff98a4}
 .bhUnknownBadge{background:#1b2530;border:1px solid #42566a;color:#b8c7d4}
+/* 全場結果は必要な時だけ展開 */
+.bhResultListToggle{width:100%;min-height:42px;margin:14px 0 8px;padding:9px 12px;border:1px solid #3d6176;border-radius:10px;background:#0b2230;color:#dff6ff;font-size:12px;font-weight:1000}
+.bhResultListWrap{display:none}
+.bhResultListWrap.open{display:block}
+/* 高い的中率を視覚強調 */
+.bhRateHigh{color:#ffe16a!important;background:linear-gradient(90deg,rgba(255,211,74,.18),rgba(255,211,74,.05));box-shadow:inset 0 0 0 1px rgba(255,211,74,.32);border-radius:6px;padding:2px 4px;text-shadow:0 0 8px rgba(255,215,80,.28)}
+.bhRateGood{color:#9ef0b5!important;background:rgba(73,190,118,.10);border-radius:6px;padding:2px 4px}
+.bhStatsSummaryCard.bhRateHigh,.bhStatsSummaryCard.bhRateGood{padding:10px!important}
+.bhPayoutRow.bhRateHigh{box-shadow:inset 3px 0 0 #ffd75d, inset 0 0 18px rgba(255,211,74,.07)}
+.bhPayoutRow.bhRateGood{box-shadow:inset 3px 0 0 rgba(126,232,162,.8)}
 @media(max-width:380px){.bhResultVenueGrid{gap:4px}.bhResultHistory{padding:6px}.bhResultVenueName{font-size:10px}.bhResultMiniHead,.bhResultMiniRow{grid-template-columns:23px minmax(38px,1fr) 23px 23px}.bhResultMiniRow{font-size:8px}}
 </style>
 </head>
@@ -4423,6 +4433,10 @@ function bhRecordResult(a,b,c){
   let msg=document.getElementById("bhResultMsg");if(msg)msg.innerHTML=`結果 ${result}　買い目：<b>${th?"⭕ 的中":"❌ 不的中"}</b>　全体見通し：<b>${oh?"⭕ 的中":"❌ 不的中"}</b>`;
   bhRefreshStatsDateOptions();bhRenderStats()
 }
+function bhRateClass(a,b){
+  if(!b)return"";let r=(Number(a)||0)/(Number(b)||0)*100;
+  return r>=70?"bhRateHigh":r>=60?"bhRateGood":""
+}
 function bhStatsRows(obj){
   let rows=Object.entries(obj||{});
   if(!rows.length)return'<div class="noPick">データなし</div>';
@@ -4430,16 +4444,16 @@ function bhStatsRows(obj){
   rows.map(([k,v])=>`<div class="bhStatsRow">
     <div class="bhStatsName">${k}</div>
     <div class="bhStatsCount">${v.n}R</div>
-    <div class="bhStatsPct ticket">${bhRate(v.ticket,v.n)}</div>
-    <div class="bhStatsPct outlook">${bhRate(v.outlook,v.n)}</div>
+    <div class="bhStatsPct ticket ${bhRateClass(v.ticket,v.n)}">${bhRate(v.ticket,v.n)}</div>
+    <div class="bhStatsPct outlook ${bhRateClass(v.outlook,v.n)}">${bhRate(v.outlook,v.n)}</div>
   </div>`).join("")
 }
 function bhStatDetail(s){
   return `
   <div class="bhStatsSummary">
     <div class="bhStatsSummaryCard"><span class="label">集計レース</span><span class="value">${s.total}R</span></div>
-    <div class="bhStatsSummaryCard ticket"><span class="label">買い目的中率</span><span class="value">${bhRate(s.ticketHit,s.total)}</span></div>
-    <div class="bhStatsSummaryCard outlook"><span class="label">全体見通し的中率</span><span class="value">${bhRate(s.outlookHit,s.total)}</span></div>
+    <div class="bhStatsSummaryCard ticket ${bhRateClass(s.ticketHit,s.total)}"><span class="label">買い目的中率</span><span class="value">${bhRate(s.ticketHit,s.total)}</span></div>
+    <div class="bhStatsSummaryCard outlook ${bhRateClass(s.outlookHit,s.total)}"><span class="label">全体見通し的中率</span><span class="value">${bhRate(s.outlookHit,s.total)}</span></div>
   </div>
   <div class="bhStatsSection">
     <div class="bhStatsSectionTitle">🚨 アラート別</div>
@@ -4497,7 +4511,7 @@ function bhPersistPayoutStat(day,amount,hit){
 }
 function bhPayoutStatsHTML(dayKey){
   let store=bhLoadStatsStore(),stat=dayKey==="all"?store.all:(store.days[dayKey]||bhEmptyStat()),m=stat.payoutBands||{};
-  let body=BH_PAYOUT_BANDS.map(k=>{let v=m[k]||{n:0,ticket:0},rate=v.n?((v.ticket/v.n)*100).toFixed(1)+"%":"-";return `<div class="bhPayoutRow"><span class="bhPayoutBand">${k}</span><span class="bhPayoutN">${v.n}R</span><span class="bhPayoutHit">${v.ticket||0}</span><span class="bhPayoutRate">${rate}</span></div>`}).join("");
+  let body=BH_PAYOUT_BANDS.map(k=>{let v=m[k]||{n:0,ticket:0},rate=v.n?((v.ticket/v.n)*100).toFixed(1)+"%":"-",rc=bhRateClass(v.ticket,v.n);return `<div class="bhPayoutRow ${rc}"><span class="bhPayoutBand">${k}</span><span class="bhPayoutN">${v.n}R</span><span class="bhPayoutHit">${v.ticket||0}</span><span class="bhPayoutRate ${rc}">${rate}</span></div>`}).join("");
   return `<div class="bhPayoutStats"><div class="bhPayoutStatsTitle">💰 3連単払戻金額帯別・買い目的中</div><div class="bhPayoutHead"><span>払戻金額</span><span>R</span><span>的中</span><span>的中率</span></div>${body}<div class="bhPayoutNote">※払戻は100円あたり。累計値は詳細結果が消えた後も保持。</div></div>`
 }
 function bhRenderResultHistory(dayKey=window.bhStatsDate||bhTodayKey()){
@@ -4519,23 +4533,29 @@ function bhRefreshStatsDateOptions(){
   sel.value=cur;window.bhStatsDate=cur
 }
 function bhSetStatsDate(v){window.bhStatsDate=v;bhRenderStats()}
+function bhResultListIsOpen(){let w=document.getElementById("bhResultListWrap");return !!w&&w.classList.contains("open")}
+function bhToggleResultList(){
+  let w=document.getElementById("bhResultListWrap"),btn=document.getElementById("bhResultListToggle");if(!w||!btn)return;
+  let open=!w.classList.contains("open");w.classList.toggle("open",open);
+  btn.textContent=open?"🏁 全場レース結果を隠す":"🏁 全場レース結果を表示";
+  if(open)bhRenderResultHistory(window.bhStatsDate||bhTodayKey());else{let e=document.getElementById("bhResultHistory");if(e)e.innerHTML=""}
+}
 function bhRenderStats(){
   let e=document.getElementById("bhStats");if(!e)return;
   let store=bhLoadStatsStore(),key=window.bhStatsDate||bhTodayKey();
   if(key!=="all"&&!store.days[key])key=Object.keys(store.days).sort().reverse()[0]||"all";
   window.bhStatsDate=key;
-  bhRenderResultHistory(key);
+  if(bhResultListIsOpen())bhRenderResultHistory(key);
   let s=key==="all"?store.all:(store.days[key]||bhEmptyStat());
-  e.innerHTML=`<div class="bhStatsSectionTitle">${key==="all"?"📚 全期間累計":"📅 "+bhDateLabel(key)+" の成績"}</div>${bhStatDetail(s)}${bhPayoutStatsHTML(key)}${key==="all"?"":`<div class="bhStatsAll"><b>📚 全期間累計</b><br>${store.all.total}R　買い目 <b>${bhRate(store.all.ticketHit,store.all.total)}</b>　見通し <b>${bhRate(store.all.outlookHit,store.all.total)}</b></div>`}`
+  e.innerHTML=`<div class="bhStatsSectionTitle">${key==="all"?"📚 全期間累計":"📅 "+bhDateLabel(key)+" の成績"}</div>${bhStatDetail(s)}${bhPayoutStatsHTML(key)}${key==="all"?"":`<div class="bhStatsAll"><b>📚 全期間累計</b><br>${store.all.total}R　買い目 <b class="${bhRateClass(store.all.ticketHit,store.all.total)}">${bhRate(store.all.ticketHit,store.all.total)}</b>　見通し <b class="${bhRateClass(store.all.outlookHit,store.all.total)}">${bhRate(store.all.outlookHit,store.all.total)}</b></div>`}`
 }
 const BH_RESULT_PANEL_OPEN_KEY="BOAT_HUNTER_RESULT_PANEL_OPEN_V1";
 function bhResultPanelIsOpen(){try{return localStorage.getItem(BH_RESULT_PANEL_OPEN_KEY)==="1"}catch(e){return false}}
 function bhToggleResultPanel(){let body=document.getElementById("bhResultBody"),btn=document.getElementById("bhResultToggle");if(!body||!btn)return;let open=!body.classList.contains("open");body.classList.toggle("open",open);btn.textContent=open?"📊 結果集計を隠す":"📊 結果集計を表示";try{localStorage.setItem(BH_RESULT_PANEL_OPEN_KEY,open?"1":"0")}catch(e){}}
 function bhResultPanelHTML(){
   let open=bhResultPanelIsOpen(),openClass=open?" open":"",toggleText=open?"📊 結果集計を隠す":"📊 結果集計を表示";
-  return `<div class="bhResultPanel"><button id="bhResultToggle" class="bhResultToggle" type="button" onclick="bhToggleResultPanel()">${toggleText}</button><div id="bhResultBody" class="bhResultBody${openClass}"><h3>📊 全場レース結果 ＋ AI解析判定</h3><div id="bhAutoResultStatus" class="bhAutoResultStatus"><span>🤖 全場結果自動取得：直近3日保持・待機中</span><button type="button" onclick="bhAutoCheckResults(true)">今すぐ確認</button></div><div id="bhResultMsg" class="bhResultMsg"></div><div id="bhResultHistory" class="bhResultHistory"></div><div class="bhStatsTools"><span>成績表示</span><select id="bhStatsDate" onchange="bhSetStatsDate(this.value)"></select></div><div id="bhStats" class="bhStats"></div></div></div>`
+  return `<div class="bhResultPanel"><button id="bhResultToggle" class="bhResultToggle" type="button" onclick="bhToggleResultPanel()">${toggleText}</button><div id="bhResultBody" class="bhResultBody${openClass}"><h3>📊 AI解析・累計成績</h3><div id="bhAutoResultStatus" class="bhAutoResultStatus"><span>🤖 全場結果自動取得：直近3日保持・待機中</span><button type="button" onclick="bhAutoCheckResults(true)">今すぐ確認</button></div><div id="bhResultMsg" class="bhResultMsg"></div><div class="bhStatsTools"><span>成績表示</span><select id="bhStatsDate" onchange="bhSetStatsDate(this.value)"></select></div><div id="bhStats" class="bhStats"></div><button id="bhResultListToggle" class="bhResultListToggle" type="button" onclick="bhToggleResultList()">🏁 全場レース結果を表示</button><div id="bhResultListWrap" class="bhResultListWrap"><div id="bhResultHistory" class="bhResultHistory"></div></div></div></div>`
 }
-
 
 const BH_PREDICTION_SNAPSHOT_KEY="BOAT_HUNTER_PREDICTION_SNAPSHOTS_V1";
 const BH_RESULT_RECORDED_KEY="BOAT_HUNTER_RECORDED_RACES_V1";
