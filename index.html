@@ -867,6 +867,21 @@ body:not(.sgFestival):not(.allLadies) header:after{display:none!important}
 .bhPayoutRow.bhRateGood{box-shadow:inset 3px 0 0 rgba(126,232,162,.8)}
 @media(max-width:380px){.bhResultVenueGrid{gap:4px}.bhResultHistory{padding:6px}.bhResultVenueName{font-size:10px}.bhResultMiniHead,.bhResultMiniRow{grid-template-columns:23px minmax(38px,1fr) 23px 23px}.bhResultMiniRow{font-size:8px}}
 </style>
+
+<style id="bh-start-prediction-style">
+/* dev: result/betting UI temporarily removed */
+.bhResultPanel,#bettingCard,#betJumpWrap{display:none!important}
+.bhStartCard{overflow:hidden}
+.bhStartLead{font-size:13px;line-height:1.55;color:#cfd3da;background:#11151b;border:1px solid #2a303a;border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.bhStartSummary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.bhStartMetric{background:#11151b;border:1px solid #2b313b;border-radius:12px;padding:10px;text-align:center}
+.bhStartMetric small{display:block;color:#969daa;font-size:10px;margin-bottom:3px}.bhStartMetric b{font-size:17px}
+.bhSlip{position:relative;background:linear-gradient(180deg,#111820,#0d1117);border:1px solid #303744;border-radius:16px;padding:14px 10px 12px;margin:12px 0 16px;overflow:hidden}
+.bhSlipTitle{font-weight:800;margin-bottom:10px}.bhSlipScale{position:absolute;top:38px;bottom:10px;right:52px;width:2px;background:#f4f4f4;opacity:.9}.bhSlipScale:after{content:'START';position:absolute;top:-18px;right:-22px;font-size:9px;color:#fff;letter-spacing:.08em}
+.bhSlipRow{display:grid;grid-template-columns:30px 1fr 50px;align-items:center;height:44px;position:relative;z-index:2}.bhSlipBoat{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;border:2px solid rgba(255,255,255,.5);background:#202630}.bhSlipLane{position:relative;height:30px}.bhSlipTrack{position:absolute;left:0;right:0;top:14px;height:1px;background:rgba(255,255,255,.12)}.bhSlipMarker{position:absolute;top:5px;width:28px;height:20px;border-radius:9px 12px 12px 9px;background:#f1f1f1;box-shadow:0 0 10px rgba(255,255,255,.16);transform:translateX(-50%)}.bhSlipMarker:after{content:'›';position:absolute;right:4px;top:-3px;font-size:21px;color:#111}.bhSlipST{text-align:right;font-weight:900;font-variant-numeric:tabular-nums}.bhSlipAhead .bhSlipST{color:#ffd75a}.bhSlipBehind .bhSlipST{color:#ff8d8d}
+.bhStartGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.bhStartBoatCard{background:#11151b;border:1px solid #2b313b;border-radius:14px;padding:12px;min-width:0}.bhStartBoatHead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.bhStartBoatName{font-weight:900;font-size:15px}.bhStartBoatCourse{font-size:11px;color:#9ca3af}.bhStartAvg{font-size:20px;font-weight:950}.bhStartTags{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0}.bhStartTag{font-size:10px;padding:3px 6px;border-radius:999px;background:#222936;border:1px solid #394252}.bhStartTag.good{background:#173621;border-color:#2e7543}.bhStartTag.warn{background:#3b2519;border-color:#84532f}.bhStartSeries{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}.bhStartChip{font-size:10px;padding:3px 5px;border-radius:6px;background:#1c222c;font-variant-numeric:tabular-nums}.bhStartChip.fast{outline:1px solid #8f7d2c}.bhStartChip.slow{opacity:.55}.bhStartNone{color:#8d94a0;font-size:12px;line-height:1.5}.bhStartNote{font-size:11px;color:#9299a5;margin-top:12px;line-height:1.55}
+@media(max-width:600px){.bhStartGrid{grid-template-columns:1fr}.bhStartSummary{grid-template-columns:1fr 1fr}.bhStartSummary .bhStartMetric:last-child{grid-column:1/-1}}
+</style>
 </head>
 <body>
 <header>
@@ -952,10 +967,15 @@ body:not(.sgFestival):not(.allLadies) header:after{display:none!important}
 <div id="message" class="message"></div>
 </div>
 <div id="raceCard" class="card" style="display:none">
-<div id="betJumpWrap" class="betJumpWrap"><button id="betJumpBtn" class="betJumpBtn" type="button">🎯 AI買い目まで移動</button></div>
+
 <h2>🏁 出走表</h2>
 <div id="raceInfo"></div>
 <div id="racers" class="racers"></div>
+</div>
+<div id="startPredictionCard" class="card bhStartCard" style="display:none">
+<h2>🚦 スタート予測</h2>
+<div class="bhStartLead">今回と同じ進入コースの過去最大15走STから、スタートの速さ・安定度・スリット隊形を表示します。<br><b>0.15秒差 ≒ 1艇身</b>として隊形差を換算。</div>
+<div id="startPrediction"></div>
 </div>
 <div id="analysisCard" class="card analysisCardFlash" style="display:none">
 <h2>🤖 AI期待値ランキング</h2>
@@ -968,10 +988,7 @@ body:not(.sgFestival):not(.allLadies) header:after{display:none!important}
 <div id="decisionRankPanel" class="decisionRankPanel"></div>
 </div>
 </div>
-<div id="bettingCard" class="card">
-<h2>🎯 AI買い目</h2>
-<div id="bettingPatterns"></div>
-</div>
+
 <div class="footer">BOAT HUNTER © 2026</div>
 <button class="topBtn" id="topBtn" type="button">⬆️ 1番上へ</button>
 </div>
@@ -1228,7 +1245,7 @@ for(let c=1;c<=6;c++)
 e.add(new Option(c+"コース",c));
 e.value=String(b);
 manualCourses[b]=b;
-e.onchange=()=>manualCourses[b]=Number(e.value)
+e.onchange=()=>{manualCourses[b]=Number(e.value);historyData={};let sc=$("startPredictionCard");if(sc)sc.style.display="block";let sb=$("startPrediction");if(sb)sb.innerHTML='<div class="bhStartNone">進入変更後の同コースSTを再検索しています…</div>';loadHistory({silent:true}).then(()=>renderStartPrediction()).catch(()=>renderStartPrediction())}
 }
 }
 function resetCourses(){
@@ -1280,9 +1297,10 @@ $("message").innerHTML=
 
 setTimeout(()=>{
 loadHistory({silent:true}).then(()=>{
+renderStartPrediction();
 if(racers.length===6&&historyComplete(historyData)){
 let m=$("message");
-if(m&&m.textContent.includes("先読み"))m.innerHTML='<span class="success">✅ 出走表取得成功<br>⚡ AI解析データ先読み完了</span>'
+if(m&&m.textContent.includes("先読み"))m.innerHTML='<span class="success">✅ 出走表取得成功<br>⚡ 過去15走・スタートデータ先読み完了</span>'
 }
 }).catch(()=>{})
 },0);
@@ -1752,7 +1770,12 @@ let no=getResultRacerNumber(x);
 let c=getCourse(x);
 let place=getPlace(x);
 let technique=getDecisionValue(x,result,race);
-return{raw:x,no,c,place,technique}
+let st=num(
+ x?.start_timing??x?.startTiming??x?.st??x?.ST??
+ x?.start_time??x?.startTime??x?.start??x?.start_timing_time??
+ x?.timing??x?.start_timing_value
+);
+return{raw:x,no,c,place,technique,st:(st>0&&st<1?st:null)}
 }).filter(x=>x.no>0&&x.c>=1&&x.c<=6&&x.place>=1&&x.place<=6);
 let winner=normalized.find(x=>x.place===1);
 let winningDecision=winner?.technique||null;
@@ -1769,6 +1792,7 @@ date,
 place,
 course:c,
 decision:x.technique&&x.technique!=="-"?x.technique:null,
+st:x.st,
 againstDecision:null
 });
 return
@@ -1778,6 +1802,7 @@ date,
 place,
 course:c,
 decision:null,
+st:x.st,
 againstDecision:
 winningDecision&&winningDecision!=="-"?
 winningDecision:null,
@@ -1822,14 +1847,14 @@ if(arr.length>HISTORY_RACES)arr.splice(HISTORY_RACES)
 )
 }
 function historyCacheKey(){
-return "bh-history-course-v19-"+
+return "bh-history-course-v20-start-"+
 today().ymd+"-"+
 $("venue").value+"-"+
 racers.map(r=>getRacerNumber(r)).join("-")+"-"+
 Object.values(manualCourses).join("")
 }
 function playerCourseCacheKey(no,c){
-return `bh-player-course-v19-${today().ymd}-${no}-${c}`
+return `bh-player-course-v20-start-${today().ymd}-${no}-${c}`
 }
 function hydratePlayerCourseCache(targets){
 racers.forEach(r=>{
@@ -1936,6 +1961,55 @@ if(!r)return[];
 let no=getRacerNumber(r),c=course(b);
 return(historyData[no]?.boats?.[c]||[])
 .slice(0,HISTORY_RACES)
+}
+
+function bhStartRows(b){
+ return history(b).map(x=>({...x,st:num(x.st)})).filter(x=>x.st>0&&x.st<1).slice(0,HISTORY_RACES)
+}
+function bhStartStats(b){
+ let rows=bhStartRows(b),vals=rows.map(x=>x.st),n=vals.length;
+ if(!n)return{boat:b,count:0,avg:null,median:null,min:null,max:null,sd:null,cv:null,fast10:0,fast15:0,predict:null,stable:false,label:"データなし",rows:[]};
+ let avg=vals.reduce((a,v)=>a+v,0)/n,sorted=[...vals].sort((a,v)=>a-v),median=n%2?sorted[(n-1)/2]:(sorted[n/2-1]+sorted[n/2])/2;
+ let variance=vals.reduce((a,v)=>a+(v-avg)*(v-avg),0)/n,sd=Math.sqrt(variance),recent=vals.slice(0,Math.min(5,n)),recentAvg=recent.reduce((a,v)=>a+v,0)/recent.length;
+ // 15走平均を軸に、直近5走を30%だけ反映。安定型は中央値へ10%寄せる
+ let base=avg*.70+recentAvg*.30,predict=base;
+ if(sd<=.025)predict=base*.90+median*.10;
+ predict=Math.max(.01,Math.min(.30,predict));
+ let stable=sd<=.025,label=sd<=.018?"かなり安定":sd<=.025?"安定":sd<=.040?"標準":"ばらつき大";
+ return{boat:b,count:n,avg,median,min:Math.min(...vals),max:Math.max(...vals),sd,cv:avg?sd/avg:0,fast10:vals.filter(v=>v<=.10).length/n*100,fast15:vals.filter(v=>v<=.15).length/n*100,recentAvg,predict,stable,label,rows};
+}
+function bhFmtST(v){return Number.isFinite(v)?Number(v).toFixed(2):"－"}
+function bhBoatLabel(b){let r=racer(b);return `${b}号艇 ${esc(r?.name||"")}`.trim()}
+function bhStartCardHTML(x){
+ let c=course(x.boat),tags=[];
+ if(x.count){
+  tags.push(`<span class="bhStartTag ${x.stable?'good':''}">🎯 ${x.label}</span>`);
+  tags.push(`<span class="bhStartTag">0.15以内 ${x.fast15.toFixed(0)}%</span>`);
+  if(x.fast10>=25)tags.push(`<span class="bhStartTag good">🔥 0.10以内 ${x.fast10.toFixed(0)}%</span>`);
+  if(x.sd>.04)tags.push(`<span class="bhStartTag warn">⚠️ ST幅大</span>`);
+ }
+ return `<div class="bhStartBoatCard"><div class="bhStartBoatHead"><div><div class="bhStartBoatName">${bhBoatLabel(x.boat)}</div><div class="bhStartBoatCourse">今回 ${c}コース / 同コース ${x.count}走</div></div><div class="bhStartAvg">${x.count?bhFmtST(x.predict):'－'}</div></div>${x.count?`<div class="bhStartTags">${tags.join('')}</div><div style="font-size:11px;color:#a7aebb">平均 ${bhFmtST(x.avg)}　中央値 ${bhFmtST(x.median)}　最速 ${bhFmtST(x.min)}　最遅 ${bhFmtST(x.max)}　σ ${x.sd.toFixed(3)}</div><div class="bhStartSeries">${x.rows.map((r,i)=>`<span class="bhStartChip ${r.st<=.10?'fast':r.st>=.20?'slow':''}">${i+1}:${bhFmtST(r.st)}</span>`).join('')}</div>`:`<div class="bhStartNone">今回と同じ${c}コースのSTを取得できていません。データ元にSTが無いレースは集計から除外します。</div>`}</div>`;
+}
+function bhStartSlipHTML(stats){
+ let usable=stats.filter(x=>Number.isFinite(x.predict));
+ if(!usable.length)return `<div class="bhStartNone">STデータ取得後にスリット隊形を表示します。</div>`;
+ let fastest=Math.min(...usable.map(x=>x.predict)),slowest=Math.max(...usable.map(x=>x.predict));
+ // 0.15秒=1艇身。表示は最速艇をSTART直前に置き、遅いほど左へずらす。最大1.5艇身を画面幅に圧縮。
+ let maxBody=1.5;
+ return `<div class="bhSlip"><div class="bhSlipTitle">🚤 予測スリット隊形 <span style="font-size:10px;color:#9aa1ad">（0.15秒＝1艇身換算）</span></div><div class="bhSlipScale"></div>${stats.map(x=>{
+   let ok=Number.isFinite(x.predict),body=ok?(x.predict-fastest)/.15:1.5,pct=ok?Math.max(6,Math.min(94,94-(body/maxBody)*76)):10;
+   let cls=ok&&x.predict===fastest?' bhSlipAhead':ok&&x.predict===slowest&&slowest-fastest>=.04?' bhSlipBehind':'';
+   return `<div class="bhSlipRow${cls}"><div class="bhSlipBoat">${x.boat}</div><div class="bhSlipLane"><div class="bhSlipTrack"></div>${ok?`<div class="bhSlipMarker" style="left:${pct}%" title="${body.toFixed(2)}艇身差"></div>`:''}</div><div class="bhSlipST">${ok?bhFmtST(x.predict):'－'}</div></div>`;
+ }).join('')}</div>`;
+}
+function renderStartPrediction(){
+ let card=$("startPredictionCard"),box=$("startPrediction");if(!card||!box||racers.length!==6)return;
+ let stats=[1,2,3,4,5,6].map(bhStartStats),usable=stats.filter(x=>Number.isFinite(x.predict));
+ card.style.display="block";
+ if(!usable.length){box.innerHTML=`<div class="bhStartNone">同コース過去15走のSTを検索しています。取得できたSTだけで自動集計します。</div>`;return}
+ let fastest=[...usable].sort((a,b)=>a.predict-b.predict)[0],stable=[...usable].filter(x=>x.count>=3).sort((a,b)=>a.sd-b.sd)[0]||fastest;
+ let spread=Math.max(...usable.map(x=>x.predict))-Math.min(...usable.map(x=>x.predict)),body=spread/.15;
+ box.innerHTML=`<div class="bhStartSummary"><div class="bhStartMetric"><small>予測ST最速</small><b>${fastest.boat}号艇 ${bhFmtST(fastest.predict)}</b></div><div class="bhStartMetric"><small>スタート安定</small><b>${stable.boat}号艇 σ${stable.sd.toFixed(3)}</b></div><div class="bhStartMetric"><small>最大スリット差</small><b>${body.toFixed(2)}艇身</b></div></div>${bhStartSlipHTML(stats)}<div class="bhStartGrid">${stats.map(bhStartCardHTML).join('')}</div><div class="bhStartNote">※予測STは「今回と同じコース」の最大15走を使用。15走平均70%＋直近5走平均30%を基本とし、STが安定している選手は中央値を10%反映。これは予測補助であり、実際の進入・展示・F状況・風などで変化します。</div>`;
 }
 
 
@@ -4764,7 +4838,7 @@ async function bhAutoCheckResults(force=false){
 function bhStartAutoResultCheck(){
   bhPruneResultDetails();if(bhAutoResultTimer)clearInterval(bhAutoResultTimer);setTimeout(()=>bhAutoCheckResults(false),3500);bhAutoResultTimer=setInterval(()=>bhAutoCheckResults(false),90000)
 }
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bhStartAutoResultCheck);else bhStartAutoResultCheck();
+/* dev stage: 結果集計は一時停止 */
 </script>
 </body>
 </html>
